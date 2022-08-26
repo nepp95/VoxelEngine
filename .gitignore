@@ -1,0 +1,11 @@
+﻿# Visual studio/code
+.vs
+*.vcxproj*
+*.sln
+
+# Cache
+__pycache__
+
+# Binaries
+bin
+bin-int
