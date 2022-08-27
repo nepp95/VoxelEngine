@@ -16,7 +16,10 @@ project "Engine"
     }
 
     includedirs {
-        "src"
+        "src",
+        "%{IncludeDir.glfw}",
+        "%{IncludeDir.glm}",
+        "%{IncludeDir.imgui}",
     }
 
     filter "configurations:Debug"

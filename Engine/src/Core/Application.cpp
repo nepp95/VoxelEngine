@@ -1,4 +1,13 @@
-﻿#include "pch.h"
+﻿// VoxelEngine - Engine
+// Application.cpp
+// 
+// Niels Eppenhof
+// https://github.com/nepp95
+// 
+// Created on: 25-08-2022 15:21
+// Last update: 27-08-2022 11:28
+
+#include "pch.h"
 #include "Application.h"
 
 namespace VoxelEngine
@@ -6,7 +15,7 @@ namespace VoxelEngine
 	Application* Application::s_instance = nullptr;
 
 	Application::Application(const ApplicationSpecification& specification)
-		: m_specification{ specification }
+		: m_specification{specification}
 	{
 		// Todo: assert s_instance
 		s_instance = this;
