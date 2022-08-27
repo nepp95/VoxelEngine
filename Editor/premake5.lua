@@ -20,6 +20,9 @@ project "Editor"
         "Engine"
     }
 
+    filter "system:windows"
+		systemversion "latest"
+
     filter "configurations:Debug"
 		defines "V_DEBUG"
 		runtime "Debug"

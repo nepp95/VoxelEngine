@@ -17,10 +17,14 @@ project "Engine"
 
     includedirs {
         "src",
+        "%{IncludeDir.glad}",
         "%{IncludeDir.glfw}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.imgui}",
     }
+
+    filter "system:windows"
+		systemversion "latest"
 
     filter "configurations:Debug"
         defines "V_DEBUG"
