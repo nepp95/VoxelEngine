@@ -13,7 +13,8 @@ project "Editor"
     }
 
     includedirs {
-        "%{wks.location}/Engine/src"
+        "%{wks.location}/Engine/src",
+        "%{wks.location}/Engine/vendor"
     }
 
     links {
