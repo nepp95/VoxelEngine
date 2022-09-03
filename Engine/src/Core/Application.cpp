@@ -5,7 +5,7 @@
 // https://github.com/nepp95
 // 
 // Created on: 25-08-2022 15:21
-// Last update: 03-09-2022 17:21
+// Last update: 03-09-2022 17:26
 
 #include "pch.h"
 #include "Application.h"
@@ -42,6 +42,8 @@ namespace VoxelEngine
 
 	Application::~Application()
 	{
+		CORE_INFO("Shutting down...");
+
 		Renderer::Shutdown();
 	}
 
