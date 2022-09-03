@@ -5,10 +5,12 @@
 // https://github.com/nepp95
 // 
 // Created on: 25-08-2022 15:21
-// Last update: 31-08-2022 21:43
+// Last update: 03-09-2022 17:21
 
 #include "pch.h"
 #include "Application.h"
+
+#include "Renderer/Renderer.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -33,9 +35,15 @@ namespace VoxelEngine
 		WindowSpecification spec{m_specification.Name, m_specification.WindowWidth, m_specification.WindowHeight};
 		m_window = CreateScope<Window>(spec);
 		m_window->SetEventCallback([this](Event& e) { Application::OnEvent(e); });
+
+		// Initialize renderer
+		Renderer::Init();
 	}
 
-	Application::~Application() { }
+	Application::~Application()
+	{
+		Renderer::Shutdown();
+	}
 
 	void Application::Close()
 	{

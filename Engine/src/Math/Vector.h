@@ -5,19 +5,19 @@
 // https://github.com/nepp95
 // 
 // Created on: 31-08-2022 21:48
-// Last update: 01-09-2022 20:33
+// Last update: 03-09-2022 17:15
 
 #pragma once
 
 namespace VoxelEngine
 {
-	// To achieve xyz / rgb having the same values, both are initialized to the same value.
-	// Every operator is overloaded to change both values.
 	struct Vec2
 	{
-		float x, y;
+		union { float x, r; };
+		union { float y, g; };
 
-		Vec2();
+		Vec2()
+			: x(0.0f), y(0.0f) {}
 
 		Vec2(float x, float y)
 			: x(x), y(y) {}
@@ -50,105 +50,207 @@ namespace VoxelEngine
 			y /= v.y;
 			return *this;
 		}
+
+		// Prefix increment
+		Vec2& operator++()
+		{
+			x++;
+			y++;
+			return *this;
+		}
+
+		// Postfix increment
+		Vec2& operator++(int)
+		{
+			Vec2 v = *this;
+			operator++();
+			return v;
+		}
+
+		// Prefix decrement
+		Vec2& operator--()
+		{
+			x--;
+			y--;
+			return *this;
+		}
+
+		// Postfix decrement
+		Vec2& operator--(int)
+		{
+			Vec2 v = *this;
+			operator--();
+			return v;
+		}
 	};
 
 	struct Vec3
 	{
-		union
-		{
-			struct { float x, y, z; } xyz;
-			struct { float r, g, b; } rgb;
-		};
+		union { float x, r; };
+		union { float y, g; };
+		union { float z, b; };
 
-		Vec3();
+		Vec3()
+			: x(0.0f), y(0.0f), z(0.0f) {}
 
 		Vec3(float x, float y, float z)
-			: xyz{ x, y, z } {}
-		Vec3(float r, float g, float b)
-			: rgb{ r, g, b } {}
+			: x(x), y(y), z(z) {}
 
 		// Operators
 		Vec3& operator+=(const Vec3& v)
 		{
-			X += v.X;
-			Y += v.Y;
-			Z += v.Z;
+			x += v.x;
+			y += v.y;
+			z += v.z;
 			return *this;
 		}
 
 		Vec3& operator-=(const Vec3& v)
 		{
-			X -= v.X;
-			Y -= v.Y;
-			Z -= v.Z;
+			x -= v.x;
+			y -= v.y;
+			z -= v.z;
 			return *this;
 		}
 
 		Vec3& operator*=(const Vec3& v)
 		{
-			X *= v.X;
-			Y *= v.Y;
-			Z *= v.Z;
+			x *= v.x;
+			y *= v.y;
+			z *= v.z;
 			return *this;
 		}
 
 		Vec3& operator/=(const Vec3& v)
 		{
-			X /= v.X;
-			Y /= v.Y;
-			Z /= v.Z;
+			x /= v.x;
+			y /= v.y;
+			z /= v.z;
 			return *this;
+		}
+
+		// Prefix increment
+		Vec3& operator++()
+		{
+			x++;
+			y++;
+			z++;
+			return *this;
+		}
+
+		// Postfix increment
+		Vec3& operator++(int)
+		{
+			Vec3 v = *this;
+			operator++();
+			return v;
+		}
+
+		// Prefix decrement
+		Vec3& operator--()
+		{
+			x--;
+			y--;
+			z--;
+			return *this;
+		}
+
+		// Postfix decrement
+		Vec3& operator--(int)
+		{
+			Vec3 v = *this;
+			operator--();
+			return v;
 		}
 	};
 
 	struct Vec4
 	{
-		union
-		{
-			struct { float x, y, z, w; } xyzw;
-			struct { float r, g, b, a; } rgba;
-		};
+		union { float x, r; };
+		union { float y, g; };
+		union { float z, b; };
+		union { float w, a; };
 
-		Vec4();
+		Vec4()
+			: x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
+
+		Vec4(float x, float y, float z)
+			: x(x), y(y), z(z), w(0.0f) {}
 
 		Vec4(float x, float y, float z, float w)
-			: X(x), Y(y), Z(z), W(w) {}
+			: x(x), y(y), z(z), w(w) {}
 
 		// Operators
 		Vec4& operator+=(const Vec4& v)
 		{
-			X += v.X;
-			Y += v.Y;
-			Z += v.Z;
-			W += v.W;
+			x += v.x;
+			y += v.y;
+			z += v.z;
+			w += v.w;
 			return *this;
 		}
 
 		Vec4& operator-=(const Vec4& v)
 		{
-			X -= v.X;
-			Y -= v.Y;
-			Z -= v.Z;
-			W -= v.W;
+			x -= v.x;
+			y -= v.y;
+			z -= v.z;
+			w -= v.w;
 			return *this;
 		}
 
 		Vec4& operator*=(const Vec4& v)
 		{
-			X *= v.X;
-			Y *= v.Y;
-			Z *= v.Z;
-			W *= v.W;
+			x *= v.x;
+			y *= v.y;
+			z *= v.z;
+			w *= v.w;
 			return *this;
 		}
 
 		Vec4& operator/=(const Vec4& v)
 		{
-			X /= v.X;
-			Y /= v.Y;
-			Z /= v.Z;
-			W /= v.W;
+			x /= v.x;
+			y /= v.y;
+			z /= v.z;
+			w /= v.w;
 			return *this;
+		}
+
+		// Prefix increment
+		Vec4& operator++()
+		{
+			x++;
+			y++;
+			z++;
+			w++;
+			return *this;
+		}
+
+		// Postfix increment
+		Vec4& operator++(int)
+		{
+			Vec4 v = *this;
+			operator++();
+			return v;
+		}
+
+		// Prefix decrement
+		Vec4& operator--()
+		{
+			x--;
+			y--;
+			z--;
+			w--;
+			return *this;
+		}
+
+		// Postfix decrement
+		Vec4& operator--(int)
+		{
+			Vec4 v = *this;
+			operator--();
+			return v;
 		}
 	};
 }

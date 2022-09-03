@@ -5,7 +5,7 @@
 // https://github.com/nepp95
 // 
 // Created on: 29-08-2022 20:42
-// Last update: 31-08-2022 21:24
+// Last update: 03-09-2022 17:19
 
 #include "pch.h"
 #include "Window.h"
@@ -75,6 +75,13 @@ namespace VoxelEngine
 		{
 			EventCallbackFn& callback = *(EventCallbackFn*)glfwGetWindowUserPointer(window);
 			WindowCloseEvent event;
+			callback(event);
+		});
+
+		glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int width, int height)
+		{
+			EventCallbackFn& callback = *(EventCallbackFn*)glfwGetWindowUserPointer(window);
+			WindowResizeEvent event(width, height);
 			callback(event);
 		});
 	}

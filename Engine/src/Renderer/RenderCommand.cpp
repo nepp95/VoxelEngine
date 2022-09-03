@@ -5,7 +5,7 @@
 // https://github.com/nepp95
 // 
 // Created on: 31-08-2022 22:04
-// Last update: 31-08-2022 22:14
+// Last update: 03-09-2022 17:18
 
 #include "pch.h"
 #include "RenderCommand.h"
@@ -68,8 +68,11 @@ namespace VoxelEngine
 
 	void RenderCommand::SetClearColor(const Vec4& color)
 	{
-		glClearColor(color.X, color.Y, color.Z, color.W);
+		glClearColor(color.r, color.g, color.b, color.a);
 	}
 
-	void RenderCommand::Clear() {}
+	void RenderCommand::Clear()
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
 }
