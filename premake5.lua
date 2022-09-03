@@ -18,6 +18,8 @@ workspace "VoxelEngine"
 	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 	
 	group "Dependencies"
+		include "Engine/vendor/glad"
+		include "Engine/vendor/glfw"
 	group ""
 
 	group "Core"

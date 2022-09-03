@@ -5,7 +5,7 @@
 // https://github.com/nepp95
 // 
 // Created on: 25-08-2022 15:21
-// Last update: 27-08-2022 11:18
+// Last update: 31-08-2022 21:58
 
 #pragma once
 
@@ -13,3 +13,9 @@
 #include "Core/Base.h"
 
 #include "Core/Application.h"
+#include "Core/Assert.h"
+#include "Core/Layer.h"
+#include "Core/Log.h"
+
+// Math
+#include "Math/Vector.h"

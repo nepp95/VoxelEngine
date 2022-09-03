@@ -13,12 +13,16 @@ project "Editor"
     }
 
     includedirs {
-        "%{wks.location}/Engine/src"
+        "%{wks.location}/Engine/src",
+        "%{wks.location}/Engine/vendor"
     }
 
     links {
         "Engine"
     }
+
+    filter "system:windows"
+		systemversion "latest"
 
     filter "configurations:Debug"
 		defines "V_DEBUG"

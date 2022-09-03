@@ -10,6 +10,11 @@ project "Engine"
     pchheader "pch.h"
     pchsource "src/pch.cpp"
 
+    defines {
+        "_CRT_SECURE_NO_WARNINGS",
+        "GLFW_INCLUDE_NONE"
+    }
+
     files {
         "src/**.h",
         "src/**.cpp"
@@ -17,10 +22,19 @@ project "Engine"
 
     includedirs {
         "src",
+        "%{IncludeDir.glad}",
         "%{IncludeDir.glfw}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.imgui}",
     }
+
+    links {
+        "Glad",
+        "Glfw"
+    }
+
+    filter "system:windows"
+		systemversion "latest"
 
     filter "configurations:Debug"
         defines "V_DEBUG"

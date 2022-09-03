@@ -5,7 +5,7 @@
 // https://github.com/nepp95
 // 
 // Created on: 26-08-2022 21:45
-// Last update: 27-08-2022 11:27
+// Last update: 29-08-2022 20:38
 
 #pragma once
 
@@ -43,12 +43,18 @@ namespace VoxelEngine
 		template <typename T>
 		void LogMessage(T t)
 		{
+			// Nothing special, just log the parameter
 			std::cout << t << std::endl;
 		}
 
 		template <typename T, typename... Args>
 		void LogMessage(T t, Args ... args)
 		{
+			// TODO: Attempt of parameter logging
+			//std::string tempStr{t};
+			//size_t pos = tempStr.find_first_of('{');
+			//
+
 			std::cout << t << std::endl;
 
 			LogMessage(args...);
