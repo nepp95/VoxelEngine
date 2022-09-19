@@ -11,7 +11,10 @@
 
 EditorLayer::EditorLayer() {}
 
-void EditorLayer::OnAttach() {}
+void EditorLayer::OnAttach()
+{
+	CORE_INFO("EditorLayer");	
+}
 
 void EditorLayer::OnDetach() {}
 
