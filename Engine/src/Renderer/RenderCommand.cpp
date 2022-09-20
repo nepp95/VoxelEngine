@@ -4,8 +4,8 @@
 // Niels Eppenhof
 // https://github.com/nepp95
 // 
-// Created on: 31-08-2022 22:04
-// Last update: 03-09-2022 17:18
+// Created on: 03-09-2022 17:26
+// Last update: 20-09-2022 15:07
 
 #include "pch.h"
 #include "RenderCommand.h"
@@ -59,6 +59,10 @@ namespace VoxelEngine
 		glDebugMessageCallback(OpenGLMessageCallback, nullptr);
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, false);
 		#endif
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)

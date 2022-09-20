@@ -17,7 +17,7 @@ uniform mat4 uViewProjection;
 
 void main()
 {
-	vColor = aColor;
+	vOutput.Color = aColor;
 
 	gl_Position = vec4(aPosition, 1.0);
 	//gl_Position = uViewProjection * vec4(aPosition, 1.0);
@@ -26,7 +26,7 @@ void main()
 #type fragment
 #version 450 core
 
-layout(location = 0) out vec4 o_Color;
+layout(location = 0) out vec4 oColor;
 
 struct VertexOutput
 {
@@ -42,6 +42,5 @@ void main()
 	if (texColor.a == 0)
 		discard;
 
-	o_Color = texColor;
-	o_EntityID = v_EntityID;
+	oColor = texColor;
 }

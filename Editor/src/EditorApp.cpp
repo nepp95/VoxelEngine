@@ -5,7 +5,7 @@
 // https://github.com/nepp95
 // 
 // Created on: 25-08-2022 15:21
-// Last update: 31-08-2022 21:47
+// Last update: 20-09-2022 15:05
 
 #include <Engine.h>
 #include <Core/Entrypoint.h>
@@ -20,7 +20,7 @@ namespace VoxelEngine
 		Editor(const ApplicationSpecification& specification)
 			: Application{specification}
 		{
-			PushLayer(new EditorLayer());
+			PushLayer(new EditorLayer("EditorLayer"));
 		}
 
 		~Editor() = default;

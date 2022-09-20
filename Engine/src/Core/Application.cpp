@@ -5,7 +5,7 @@
 // https://github.com/nepp95
 // 
 // Created on: 25-08-2022 15:21
-// Last update: 03-09-2022 17:26
+// Last update: 17-09-2022 20:06
 
 #include "pch.h"
 #include "Application.h"
@@ -23,7 +23,6 @@ namespace VoxelEngine
 		: m_specification{specification}
 	{
 		// Set instance if not set. If it is, abort. We can only have one instance!
-		// Todo: assert s_instance
 		CORE_ASSERT(!s_instance, "Application instance already exists!");
 		s_instance = this;
 
