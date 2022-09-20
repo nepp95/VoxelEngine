@@ -4,10 +4,20 @@
 // Niels Eppenhof
 // https://github.com/nepp95
 // 
-// Created on: 31-08-2022 21:48
-// Last update: 03-09-2022 17:15
+// Created on: 03-09-2022 17:26
+// Last update: 20-09-2022 18:45
 
 #pragma once
+
+// We use our own vector class instead of GLM's because we want to control how many bytes we upload to the GPU
+// Update 20-9: And then we did a little "sizeof(glm::vecX)" and found that they were the exact same size. GG.
+
+/*namespace glm
+{
+	struct vec2;
+	struct vec3;
+	struct vec4;
+}
 
 namespace VoxelEngine
 {
@@ -17,10 +27,12 @@ namespace VoxelEngine
 		union { float y, g; };
 
 		Vec2()
-			: x(0.0f), y(0.0f) {}
+			: x{ 0.0f }, y{ 0.0f } {}
 
 		Vec2(float x, float y)
-			: x(x), y(y) {}
+			: x{ x }, y{ y } {}
+
+		Vec2(const glm::vec2& v);
 
 		// Operators
 		Vec2& operator+=(const Vec2& v)
@@ -91,10 +103,13 @@ namespace VoxelEngine
 		union { float z, b; };
 
 		Vec3()
-			: x(0.0f), y(0.0f), z(0.0f) {}
+			: x{ 0.0f }, y{ 0.0f }, z{ 0.0f } {}
+
+		Vec3(float x, float y)
+			: x{ x }, y{ y }, z{ 0.0f } {}
 
 		Vec3(float x, float y, float z)
-			: x(x), y(y), z(z) {}
+			: x{ x }, y{ y }, z{ z } {}
 
 		// Operators
 		Vec3& operator+=(const Vec3& v)
@@ -172,13 +187,13 @@ namespace VoxelEngine
 		union { float w, a; };
 
 		Vec4()
-			: x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
+			: x{ 0.0f }, y{ 0.0f }, z{ 0.0f }, w{ 0.0f } {}
 
 		Vec4(float x, float y, float z)
-			: x(x), y(y), z(z), w(0.0f) {}
+			: x{ x }, y{ y }, z{ z }, w{ 0.0f } {}
 
 		Vec4(float x, float y, float z, float w)
-			: x(x), y(y), z(z), w(w) {}
+			: x{ x }, y{ y }, z{ z }, w{ w } {}
 
 		// Operators
 		Vec4& operator+=(const Vec4& v)
@@ -254,3 +269,4 @@ namespace VoxelEngine
 		}
 	};
 }
+*/

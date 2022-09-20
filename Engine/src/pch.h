@@ -5,7 +5,7 @@
 // https://github.com/nepp95
 // 
 // Created on: 25-08-2022 15:21
-// Last update: 03-09-2022 17:01
+// Last update: 20-09-2022 18:40
 
 #pragma once
 
@@ -25,4 +25,3 @@
 #include <Windows.h>
 
 #include "Core/Base.h"
-#include "Math/Vector.h"

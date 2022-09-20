@@ -5,7 +5,7 @@
 // https://github.com/nepp95
 // 
 // Created on: 03-09-2022 17:26
-// Last update: 20-09-2022 15:07
+// Last update: 20-09-2022 18:44
 
 #include "pch.h"
 #include "RenderCommand.h"
@@ -70,7 +70,7 @@ namespace VoxelEngine
 		glViewport(x, y, width, height);
 	}
 
-	void RenderCommand::SetClearColor(const Vec4& color)
+	void RenderCommand::SetClearColor(const glm::vec4& color)
 	{
 		glClearColor(color.r, color.g, color.b, color.a);
 	}
