@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Engine
-// LayerStack.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 31-08-2022 21:01
-// Last update: 31-08-2022 21:28
-
-#pragma once
+﻿#pragma once
 
 #include <vector>
 

@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Engine
-// LayerStack.cpp
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 31-08-2022 21:01
-// Last update: 31-08-2022 21:08
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "LayerStack.h"
 
 namespace VoxelEngine

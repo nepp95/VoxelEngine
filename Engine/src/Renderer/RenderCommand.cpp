@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Engine
-// RenderCommand.cpp
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 03-09-2022 17:26
-// Last update: 20-09-2022 18:44
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "RenderCommand.h"
 
 #include <glad/glad.h>

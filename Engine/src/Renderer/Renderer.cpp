@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Engine
-// Renderer.cpp
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 03-09-2022 17:26
-// Last update: 20-09-2022 19:09
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "Renderer.h"
 
 #include "Renderer/RenderCommand.h"

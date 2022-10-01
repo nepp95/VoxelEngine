@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Engine
-// Layer.cpp
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 31-08-2022 21:02
-// Last update: 31-08-2022 21:06
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "Layer.h"
 
 namespace VoxelEngine

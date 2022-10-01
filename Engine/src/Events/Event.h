@@ -1,12 +1,3 @@
-// VoxelEngine - Engine
-// Event.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 31-08-2022 20:51
-// Last update: 31-08-2022 20:56
-
 #pragma once
 
 namespace VoxelEngine

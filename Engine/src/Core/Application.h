@@ -1,12 +1,3 @@
-// VoxelEngine - Engine
-// Application.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 25-08-2022 15:21
-// Last update: 31-08-2022 21:43
-
 #pragma once
 
 #include <string>

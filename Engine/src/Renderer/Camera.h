@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Engine
-// Camera.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 20-09-2022 15:43
-// Last update: 20-09-2022 18:59
-
-#pragma once
+﻿#pragma once
 
 #include "Events/Event.h"
 

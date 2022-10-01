@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Engine
-// Base.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 26-08-2022 22:41
-// Last update: 31-08-2022 21:35
-
-#pragma once
+﻿#pragma once
 
 #include <memory>
 

@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Editor
-// EditorLayer.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 31-08-2022 21:38
-// Last update: 20-09-2022 15:05
-
-#pragma once
+﻿#pragma once
 
 #include <Engine.h>
 

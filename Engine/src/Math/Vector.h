@@ -1,12 +1,3 @@
-// VoxelEngine - Engine
-// Vector.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 03-09-2022 17:26
-// Last update: 20-09-2022 18:45
-
 #pragma once
 
 // We use our own vector class instead of GLM's because we want to control how many bytes we upload to the GPU

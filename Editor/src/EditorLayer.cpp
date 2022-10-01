@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Editor
-// EditorLayer.cpp
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 31-08-2022 21:38
-// Last update: 20-09-2022 15:08
-
-#include "EditorLayer.h"
+﻿#include "EditorLayer.h"
 
 void EditorLayer::OnAttach()
 {

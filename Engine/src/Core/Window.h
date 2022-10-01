@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Engine
-// Window.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 29-08-2022 20:40
-// Last update: 31-08-2022 21:28
-
-#pragma once
+﻿#pragma once
 
 #include <functional>
 
