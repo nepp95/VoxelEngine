@@ -1,0 +1,33 @@
+name: CI Develop Debug
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Fetch our code
+        uses: actions/checkout@v3
+        
+      - name: Setup Premake
+        uses: abel0b/setup-premake@v2.1
+        with:
+          version: "5.0.0-beta2"
+          
+      - name: Run Premake
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: .premake/premake5.exe vs2022
+        
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+        
+      - name: Build solution
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: msbuild /m /p:Configuration=Debug VoxelEngine.sln
