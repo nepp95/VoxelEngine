@@ -20,6 +20,7 @@ workspace "VoxelEngine"
 	group "Dependencies"
 		include "Engine/vendor/glad"
 		include "Engine/vendor/glfw"
+		include "Engine/vendor/imgui"
 	group ""
 
 	group "Core"

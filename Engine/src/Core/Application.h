@@ -6,6 +6,7 @@
 #include "Core/Window.h"
 #include "Events/ApplicationEvent.h"
 #include "Events/Event.h"
+#include "Layers/ImGuiLayer.h"
 
 int main(int argc, char** argv);
 
@@ -50,6 +51,7 @@ namespace VoxelEngine
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
 
+		ImGuiLayer* GetImGuiLayer() { return m_imGuiLayer; }
 		Window& GetWindow() { return *m_window; }
 
 		const ApplicationSpecification& GetSpecification() const { return m_specification; }
@@ -58,6 +60,7 @@ namespace VoxelEngine
 	private:
 		ApplicationSpecification m_specification;
 		LayerStack m_layerStack;
+		ImGuiLayer* m_imGuiLayer;
 
 		Scope<Window> m_window;
 

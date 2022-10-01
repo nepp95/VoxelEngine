@@ -30,7 +30,9 @@ project "Engine"
 
     links {
         "Glad",
-        "Glfw"
+        "Glfw",
+        "Imgui",
+        "opengl32.lib"
     }
 
     filter "system:windows"
