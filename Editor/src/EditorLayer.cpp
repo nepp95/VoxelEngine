@@ -4,6 +4,10 @@
 
 void EditorLayer::OnAttach()
 {
+	// Set settings
+	auto& app = VE::Application::Get();
+	m_enableVSync = app.GetWindow().IsVSync();
+
 	VE::FramebufferSpecification fbSpecification;
 	fbSpecification.Width = 1280;
 	fbSpecification.Height = 720;
@@ -118,6 +122,9 @@ void EditorLayer::OnImGuiRender()
 	// -----------------------------------------
 	ImGui::Begin("Settings");
 	
+	if (ImGui::Checkbox("VSync", &m_enableVSync))
+		VE::Application::Get().GetWindow().SetVSync(m_enableVSync);
+
 	ImGui::End();
 
 	// -----------------------------------------
