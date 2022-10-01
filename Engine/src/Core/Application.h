@@ -6,6 +6,7 @@
 #include "Core/Window.h"
 #include "Events/ApplicationEvent.h"
 #include "Events/Event.h"
+#include "Layers/ImGuiLayer.h"
 
 int main(int argc, char** argv);
 
@@ -58,6 +59,7 @@ namespace VoxelEngine
 	private:
 		ApplicationSpecification m_specification;
 		LayerStack m_layerStack;
+		ImGuiLayer* m_imGuiLayer;
 
 		Scope<Window> m_window;
 

@@ -28,6 +28,10 @@ namespace VoxelEngine
 
 		// Initialize renderer
 		Renderer::Init();
+
+		// Add ImGui layer
+		m_imGuiLayer = new ImGuiLayer();
+		PushOverlay(m_imGuiLayer);
 	}
 
 	Application::~Application()
@@ -55,6 +59,10 @@ namespace VoxelEngine
 					layer->OnUpdate(ts);
 
 			// Render gui
+			m_imGuiLayer->Begin();
+			for (Layer* layer : m_layerStack)
+				layer->OnImGuiRender();
+			m_imGuiLayer->End();
 
 			// Update window
 			m_window->OnUpdate();

@@ -8,6 +8,9 @@
 #include "Core/Layer.h"
 #include "Core/Log.h"
 
+// Layers
+#include "Layers/ImGuiLayer.h"
+
 // Math
 #include "Math/Vector.h"
 
