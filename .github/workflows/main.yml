@@ -21,4 +21,4 @@ jobs:
           version: "5.0.0-beta2"
           
       - working-directory: ${{env.GITHUB_WORKSPACE}}
-        run: scripts/Win-GenProjects.bat
+        run: dir
