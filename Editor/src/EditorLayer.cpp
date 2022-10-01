@@ -4,6 +4,11 @@
 
 void EditorLayer::OnAttach()
 {
+	VE::FramebufferSpecification fbSpecification;
+	fbSpecification.Width = 1280;
+	fbSpecification.Height = 720;
+	fbSpecification.Attachments = { VE::FramebufferTextureFormat::RGBA8, VE::FramebufferTextureFormat::Depth };
+	m_framebuffer = CreateRef<VE::Framebuffer>(fbSpecification);
 }
 
 void EditorLayer::OnDetach() {}
@@ -13,14 +18,27 @@ void EditorLayer::OnUpdate(float ts)
 	// Reset render stats
 	VE::Renderer::ResetStats();
 
+	// Handle resize
+	if (VE::FramebufferSpecification specification = m_framebuffer->GetSpecification();
+		m_viewportSize.x > 0.0f && m_viewportSize.y > 0.0f &&
+		(specification.Width != m_viewportSize.x || specification.Height != m_viewportSize.y))
+	{
+		m_framebuffer->Resize((uint32_t) m_viewportSize.x, (uint32_t) m_viewportSize.y);
+	}
+
 	// Prepare for render
+	m_framebuffer->Bind();
 	VE::RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 	VE::RenderCommand::Clear();
 
 	// Render scene
 	VE::Renderer::BeginScene(m_camera);
 	VE::Renderer::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f });
+	VE::Renderer::DrawQuad({ 0.5f, 0.0f }, { 1.0f, 1.0f });
+	VE::Renderer::DrawQuad({ 0.0f, 0.5f }, { 1.0f, 1.0f });
 	VE::Renderer::EndScene();
+
+	m_framebuffer->Unbind();
 }
 
 void EditorLayer::OnImGuiRender()
@@ -101,6 +119,33 @@ void EditorLayer::OnImGuiRender()
 	ImGui::Begin("Settings");
 	
 	ImGui::End();
+
+	// -----------------------------------------
+	//
+	//    Viewport
+	//
+	// -----------------------------------------
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+	ImGui::Begin("Viewport");
+	auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+	auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+	auto viewportOffset = ImGui::GetWindowPos();
+	m_viewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+	m_viewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+
+	m_viewportFocused = ImGui::IsWindowFocused();
+	m_viewportHovered = ImGui::IsWindowHovered();
+	VE::Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportFocused && !m_viewportHovered);
+
+	ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+	m_viewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+
+	uint64_t textureID = m_framebuffer->GetColorAttachmentRendererID();
+	ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ m_viewportSize.x, m_viewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+	ImGui::End();
+
+	ImGui::PopStyleVar();
 
 	ImGui::End();
 }

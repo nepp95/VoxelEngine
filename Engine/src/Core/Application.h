@@ -51,6 +51,7 @@ namespace VoxelEngine
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
 
+		ImGuiLayer* GetImGuiLayer() { return m_imGuiLayer; }
 		Window& GetWindow() { return *m_window; }
 
 		const ApplicationSpecification& GetSpecification() const { return m_specification; }
