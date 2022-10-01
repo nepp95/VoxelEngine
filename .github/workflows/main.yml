@@ -27,3 +27,12 @@ jobs:
         
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
+        
+      - name: Build solution (debug)
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: msbuild /m /p:Configuration=Debug VoxelEngine.sln
+        
+      - name: Build solution (release)
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: msbuild /m /p:Configuration=Release VoxelEngine.sln
+
