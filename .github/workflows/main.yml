@@ -1,4 +1,4 @@
-name: CI
+name: CI Debug
 
 on:
   push:
@@ -31,8 +31,3 @@ jobs:
       - name: Build solution (debug)
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: msbuild /m /p:Configuration=Debug VoxelEngine.sln
-        
-      - name: Build solution (release)
-        working-directory: ${{env.GITHUB_WORKSPACE}}
-        run: msbuild /m /p:Configuration=Release VoxelEngine.sln
-
