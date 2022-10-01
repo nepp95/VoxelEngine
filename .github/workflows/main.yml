@@ -13,12 +13,17 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Fetch our code
+        uses: actions/checkout@v3
         
-      - name: Setup premake
+      - name: Setup Premake
         uses: abel0b/setup-premake@v2.1
         with:
           version: "5.0.0-beta2"
           
-      - working-directory: ${{env.GITHUB_WORKSPACE}}
-        run: dir
+      - name: Run Premake
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: cd .premake; dir
+        
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
