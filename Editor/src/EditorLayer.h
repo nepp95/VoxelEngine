@@ -21,5 +21,6 @@ public:
 	void OnEvent(VE::Event& e) override;
 
 private:
+	VE::Camera m_camera{ { 0.0f, 0.0f, 3.0f } };
 	bool m_viewportFocused{false}, m_viewportHovered{false};
 };
