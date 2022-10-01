@@ -27,3 +27,5 @@ jobs:
         
       - name: Setup premake
         uses: abel0b/setup-premake@v2.1
+        with:
+          version: "5.0.0-beta2"
