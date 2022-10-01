@@ -14,7 +14,8 @@ project "Editor"
 
     includedirs {
         "%{wks.location}/Engine/src",
-        "%{wks.location}/Engine/vendor"
+        "%{wks.location}/Engine/vendor",
+        "%{IncludeDir.glm}"
     }
 
     links {

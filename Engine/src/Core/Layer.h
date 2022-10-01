@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Engine
-// Layer.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 31-08-2022 21:02
-// Last update: 31-08-2022 21:07
-
-#pragma once
+﻿#pragma once
 
 #include "Events/Event.h"
 

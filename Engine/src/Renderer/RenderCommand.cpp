@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Engine
-// RenderCommand.cpp
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 31-08-2022 22:04
-// Last update: 03-09-2022 17:18
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "RenderCommand.h"
 
 #include <glad/glad.h>
@@ -59,6 +50,10 @@ namespace VoxelEngine
 		glDebugMessageCallback(OpenGLMessageCallback, nullptr);
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, false);
 		#endif
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
@@ -66,7 +61,7 @@ namespace VoxelEngine
 		glViewport(x, y, width, height);
 	}
 
-	void RenderCommand::SetClearColor(const Vec4& color)
+	void RenderCommand::SetClearColor(const glm::vec4& color)
 	{
 		glClearColor(color.r, color.g, color.b, color.a);
 	}
@@ -74,5 +69,12 @@ namespace VoxelEngine
 	void RenderCommand::Clear()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	void RenderCommand::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount /*= 0*/)
+	{
+		vertexArray->Bind();
+		uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 	}
 }

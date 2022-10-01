@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Engine
-// Log.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 26-08-2022 21:45
-// Last update: 29-08-2022 20:38
-
-#pragma once
+﻿#pragma once
 
 #include <iostream>
 

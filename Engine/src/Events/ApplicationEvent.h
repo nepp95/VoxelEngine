@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Engine
-// ApplicationEvent.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 31-08-2022 20:56
-// Last update: 31-08-2022 20:58
-
-#pragma once
+﻿#pragma once
 
 #include "Events/Event.h"
 

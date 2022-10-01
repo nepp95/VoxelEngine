@@ -1,13 +1,4 @@
-﻿// VoxelEngine - Engine
-// Window.cpp
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 29-08-2022 20:42
-// Last update: 03-09-2022 17:19
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "Window.h"
 
 #include "Events/ApplicationEvent.h"
