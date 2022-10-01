@@ -1,10 +1,10 @@
-name: CI Debug
+name: CI Master Release
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "master" ]
 
   workflow_dispatch:
 
@@ -28,6 +28,6 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
         
-      - name: Build solution (debug)
+      - name: Build solution
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: msbuild /m /p:Configuration=Debug VoxelEngine.sln
