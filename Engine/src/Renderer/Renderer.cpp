@@ -335,6 +335,7 @@ namespace VoxelEngine
 
 	void Renderer::RenderBlock(const glm::vec3& position, const Ref<Block>& block)
 	{
+
 	}
 
 	void Renderer::ResetStats()
