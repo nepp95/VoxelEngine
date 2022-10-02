@@ -2,6 +2,8 @@
 #include "Window.h"
 
 #include "Events/ApplicationEvent.h"
+#include "Events/KeyEvent.h"
+#include "Events/MouseEvent.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -73,6 +75,81 @@ namespace VoxelEngine
 		{
 			EventCallbackFn& callback = *(EventCallbackFn*)glfwGetWindowUserPointer(window);
 			WindowResizeEvent event(width, height);
+			callback(event);
+		});
+
+		glfwSetKeyCallback(m_window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+		{
+			EventCallbackFn& callback = *(EventCallbackFn*) glfwGetWindowUserPointer(window);
+			
+			switch (action)
+			{
+				case GLFW_PRESS:
+				{
+					KeyPressedEvent event(key, 0);
+					callback(event);
+					break;
+				}
+
+				case GLFW_RELEASE:
+				{
+					KeyReleasedEvent event(key);
+					callback(event);
+					break;
+				}
+
+				case GLFW_REPEAT:
+				{
+					KeyPressedEvent event(key, true);
+					callback(event);
+					break;
+				}
+			}
+		});
+
+		glfwSetCharCallback(m_window, [](GLFWwindow* window, unsigned int keycode)
+		{
+			EventCallbackFn& callback = *(EventCallbackFn*) glfwGetWindowUserPointer(window);
+
+			KeyTypedEvent event(keycode);
+			callback(event);
+		});
+
+		glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods)
+		{
+			EventCallbackFn& callback = *(EventCallbackFn*) glfwGetWindowUserPointer(window);
+
+			switch (action)
+			{
+				case GLFW_PRESS:
+				{
+					MouseButtonPressedEvent event(button);
+					callback(event);
+					break;
+				}
+
+				case GLFW_RELEASE:
+				{
+					MouseButtonReleasedEvent event(button);
+					callback(event);
+					break;
+				}
+			}
+		});
+
+		glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xOffset, double yOffset)
+		{
+			EventCallbackFn& callback = *(EventCallbackFn*) glfwGetWindowUserPointer(window);
+
+			MouseScrolledEvent event((float) xOffset, (float) yOffset);
+			callback(event);
+		});
+
+		glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xPos, double yPos)
+		{
+			EventCallbackFn& callback = *(EventCallbackFn*) glfwGetWindowUserPointer(window);
+
+			MouseMovedEvent event((float) xPos, (float) yPos);
 			callback(event);
 		});
 	}

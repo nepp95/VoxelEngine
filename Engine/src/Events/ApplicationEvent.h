@@ -10,6 +10,7 @@ namespace VoxelEngine
 		WindowCloseEvent() = default;
 
 		EVENT_CLASS_TYPE(WindowClose);
+		EVENT_CLASS_CATEGORY(EventCategoryApplication);
 	};
 
 	class WindowResizeEvent : public Event
@@ -21,6 +22,7 @@ namespace VoxelEngine
 		}
 
 		EVENT_CLASS_TYPE(WindowResize);
+		EVENT_CLASS_CATEGORY(EventCategoryApplication);
 
 		uint32_t GetWidth() const { return m_width; }
 		uint32_t GetHeight() const { return m_height; }

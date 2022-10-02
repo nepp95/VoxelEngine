@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "Events/Event.h"
+#include "Events/KeyEvent.h"
+#include "Events/MouseEvent.h"
 
 #include <glm/glm.hpp>
 
@@ -32,8 +34,8 @@ namespace VoxelEngine
 	private:
 		void UpdateCameraVectors();
 
-		//bool OnMouseMoved(MouseMovedEvent& e);
-		//bool OnKeyPressed(KeyPressedEvent& e);
+		bool OnMouseMoved(MouseMovedEvent& e);
+		bool OnKeyPressed(KeyPressedEvent& e);
 
 	private:
 		glm::vec3 m_position;

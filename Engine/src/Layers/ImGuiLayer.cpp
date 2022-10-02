@@ -57,7 +57,12 @@ namespace VoxelEngine
 
 	void ImGuiLayer::OnEvent(Event& e)
 	{
-
+		if (m_blockEvents)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+			e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+		}
 	}
 
 	void ImGuiLayer::Begin()

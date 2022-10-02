@@ -2,10 +2,9 @@
 
 #include <Engine.h>
 
-namespace VE = VoxelEngine;
-using VE::Ref, VE::Scope, VE::CreateRef, VE::CreateScope;
+using namespace VoxelEngine;
 
-class EditorLayer : public VE::Layer
+class EditorLayer : public Layer
 {
 public:
 	EditorLayer(const std::string& name)
@@ -19,11 +18,15 @@ public:
 
 	void OnUpdate(float ts) override;
 	void OnImGuiRender() override;
-	void OnEvent(VE::Event& e) override;
+	void OnEvent(Event& e) override;
+
+private:
+	bool OnKeyPressed(KeyPressedEvent& e);
+	bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
 private:
 	// Camera
-	VE::Camera m_camera{ { 0.0f, 0.0f, 3.0f } };
+	Camera m_camera{ { 0.0f, 0.0f, 3.0f } };
 
 	// Viewport
 	bool m_viewportFocused{false}, m_viewportHovered{false};
@@ -31,7 +34,7 @@ private:
 	glm::vec2 m_viewportSize{ 0.0f, 0.0f };
 
 	// Framebuffer
-	Ref<VE::Framebuffer> m_framebuffer;
+	Ref<Framebuffer> m_framebuffer;
 
 	// Settings
 	bool m_enableVSync;
