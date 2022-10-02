@@ -5,8 +5,16 @@
 
 #include "Core/Application.h"
 #include "Core/Assert.h"
+#include "Core/Input.h"
+#include "Core/KeyCodes.h"
 #include "Core/Layer.h"
 #include "Core/Log.h"
+#include "Core/MouseCodes.h"
+
+// Events
+#include "Events/ApplicationEvent.h"
+#include "Events/KeyEvent.h"
+#include "Events/MouseEvent.h"
 
 // Layers
 #include "Layers/ImGuiLayer.h"

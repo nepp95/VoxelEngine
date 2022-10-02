@@ -5,14 +5,14 @@
 void EditorLayer::OnAttach()
 {
 	// Set settings
-	auto& app = VE::Application::Get();
+	auto& app = Application::Get();
 	m_enableVSync = app.GetWindow().IsVSync();
 
-	VE::FramebufferSpecification fbSpecification;
+	FramebufferSpecification fbSpecification;
 	fbSpecification.Width = 1280;
 	fbSpecification.Height = 720;
-	fbSpecification.Attachments = { VE::FramebufferTextureFormat::RGBA8, VE::FramebufferTextureFormat::Depth };
-	m_framebuffer = CreateRef<VE::Framebuffer>(fbSpecification);
+	fbSpecification.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+	m_framebuffer = CreateRef<Framebuffer>(fbSpecification);
 }
 
 void EditorLayer::OnDetach() {}
@@ -20,27 +20,30 @@ void EditorLayer::OnDetach() {}
 void EditorLayer::OnUpdate(float ts)
 {
 	// Reset render stats
-	VE::Renderer::ResetStats();
+	Renderer::ResetStats();
 
 	// Handle resize
-	if (VE::FramebufferSpecification specification = m_framebuffer->GetSpecification();
+	if (FramebufferSpecification specification = m_framebuffer->GetSpecification();
 		m_viewportSize.x > 0.0f && m_viewportSize.y > 0.0f &&
 		(specification.Width != m_viewportSize.x || specification.Height != m_viewportSize.y))
 	{
 		m_framebuffer->Resize((uint32_t) m_viewportSize.x, (uint32_t) m_viewportSize.y);
 	}
 
+	// Update
+	m_camera.OnUpdate(ts);
+
 	// Prepare for render
 	m_framebuffer->Bind();
-	VE::RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
-	VE::RenderCommand::Clear();
+	RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+	RenderCommand::Clear();
 
 	// Render scene
-	VE::Renderer::BeginScene(m_camera);
-	VE::Renderer::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f });
-	VE::Renderer::DrawQuad({ 0.5f, 0.0f }, { 1.0f, 1.0f });
-	VE::Renderer::DrawQuad({ 0.0f, 0.5f }, { 1.0f, 1.0f });
-	VE::Renderer::EndScene();
+	Renderer::BeginScene(m_camera);
+	Renderer::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f });
+	Renderer::DrawQuad({ 0.5f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f, 1.0f });
+	Renderer::DrawQuad({ 0.0f, 0.5f }, { 1.0f, 1.0f }, { 0.5f, 0.5f, 0.5f, 1.0f });
+	Renderer::EndScene();
 
 	m_framebuffer->Unbind();
 }
@@ -106,12 +109,20 @@ void EditorLayer::OnImGuiRender()
 	// -----------------------------------------
 	ImGui::Begin("Statistics");
 
-	auto stats = VE::Renderer::GetStats();
-	ImGui::Text("Renderer2D Statistics:");
-	ImGui::Text("Draw calls: %d", stats.DrawCalls);
-	ImGui::Text("Quads: %d", stats.QuadCount);
-	ImGui::Text("Vertices: %d", stats.VertexCount);
-	ImGui::Text("Indices: %d", stats.IndexCount);
+	auto stats = Renderer::GetStats();
+	ImGui::Text("Renderer Statistics");
+	ImGui::Text("\tDraw calls: %d", stats.DrawCalls);
+	ImGui::Text("\tQuads: %d", stats.QuadCount);
+	ImGui::Text("\tVertices: %d", stats.VertexCount);
+	ImGui::Text("\tIndices: %d", stats.IndexCount);
+	
+	ImGui::NewLine();
+	
+	ImGui::Text("Camera");
+	auto& cameraPosition = m_camera.GetPosition();
+	ImGui::Text("\tPosition: %.2f/%.2f/%.2f", cameraPosition.x, cameraPosition.y, cameraPosition.z);
+	ImGui::Text("\tYaw: %.2f", m_camera.GetYaw());
+	ImGui::Text("\tPitch: %.2f", m_camera.GetPitch());
 
 	ImGui::End();
 
@@ -123,7 +134,7 @@ void EditorLayer::OnImGuiRender()
 	ImGui::Begin("Settings");
 	
 	if (ImGui::Checkbox("VSync", &m_enableVSync))
-		VE::Application::Get().GetWindow().SetVSync(m_enableVSync);
+		Application::Get().GetWindow().SetVSync(m_enableVSync);
 
 	ImGui::End();
 
@@ -142,7 +153,7 @@ void EditorLayer::OnImGuiRender()
 
 	m_viewportFocused = ImGui::IsWindowFocused();
 	m_viewportHovered = ImGui::IsWindowHovered();
-	VE::Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportFocused && !m_viewportHovered);
+	Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportFocused && !m_viewportHovered);
 
 	ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 	m_viewportSize = { viewportPanelSize.x, viewportPanelSize.y };
@@ -157,4 +168,36 @@ void EditorLayer::OnImGuiRender()
 	ImGui::End();
 }
 
-void EditorLayer::OnEvent(VoxelEngine::Event& e) {}
+void EditorLayer::OnEvent(VoxelEngine::Event& e)
+{
+	m_camera.OnEvent(e);
+
+	EventDispatcher dispatcher(e);
+
+	dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+	dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
+}
+
+bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
+{
+	if (e.IsRepeat())
+		return false;
+
+	bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+	bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+
+	switch (e.GetKeyCode())
+	{
+		
+	}
+}
+
+bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+{
+	if (e.GetMouseButton() == Mouse::ButtonLeft)
+	{
+		
+	}
+
+	return false;
+}
