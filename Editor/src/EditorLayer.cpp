@@ -8,6 +8,7 @@ void EditorLayer::OnAttach()
 	auto& app = Application::Get();
 	m_enableVSync = app.GetWindow().IsVSync();
 
+	// Create framebuffer
 	FramebufferSpecification fbSpecification;
 	fbSpecification.Width = 1280;
 	fbSpecification.Height = 720;
@@ -40,11 +41,10 @@ void EditorLayer::OnUpdate(float ts)
 
 	// Render scene
 	Renderer::BeginScene(m_camera);
-	Renderer::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f });
-	Renderer::DrawQuad({ 0.5f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f, 1.0f });
-	Renderer::DrawQuad({ 0.0f, 0.5f }, { 1.0f, 1.0f }, { 0.5f, 0.5f, 0.5f, 1.0f });
+	Renderer::DrawCube({ 0.0f, 0.0f });
 	Renderer::EndScene();
 
+	// Unbind framebuffer
 	m_framebuffer->Unbind();
 }
 
@@ -112,6 +112,7 @@ void EditorLayer::OnImGuiRender()
 	auto stats = Renderer::GetStats();
 	ImGui::Text("Renderer Statistics");
 	ImGui::Text("\tDraw calls: %d", stats.DrawCalls);
+	ImGui::Text("\tCubes: %d", stats.CubeCount);
 	ImGui::Text("\tQuads: %d", stats.QuadCount);
 	ImGui::Text("\tVertices: %d", stats.VertexCount);
 	ImGui::Text("\tIndices: %d", stats.IndexCount);
@@ -188,8 +189,14 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
 
 	switch (e.GetKeyCode())
 	{
-		
+		case Key::Escape:
+		{
+			Application::Get().Close();
+			return true;
+		}
 	}
+
+	return false;
 }
 
 bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)

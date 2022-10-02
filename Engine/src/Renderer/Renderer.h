@@ -4,6 +4,18 @@
 
 namespace VoxelEngine
 {
+	enum class QuadSide
+	{
+		Front = 0,
+		Right,
+		Back,
+		Left,
+		Bottom,
+		Top,
+
+		Default = Front
+	};
+
 	class Renderer
 	{
 	public:
@@ -15,15 +27,19 @@ namespace VoxelEngine
 		static void EndScene();
 
 		// Rendering
-		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
-		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
-		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f }, QuadSide side = QuadSide::Default);
+		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f }, QuadSide side = QuadSide::Default);
+		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f }, QuadSide side = QuadSide::Default);
+
+		static void DrawCube(const glm::vec2& position, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+		static void DrawCube(const glm::vec3& position, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 
 		// Stats
 		struct Statistics
 		{
 			uint32_t DrawCalls{ 0 };
 
+			uint32_t CubeCount{ 0 };
 			uint32_t QuadCount{ 0 };
 			uint32_t VertexCount{ 0 };
 			uint32_t IndexCount{ 0 };

@@ -24,7 +24,7 @@ namespace VoxelEngine
 		Ref<VertexBuffer> QuadVertexBuffer;
 		Vertex* QuadVertexBufferBase{ nullptr };
 		Vertex* QuadVertexBufferPtr{ nullptr };
-		glm::vec4 QuadVertexPositions[4];
+		std::vector<glm::vec4> QuadVertexPositions;
 		uint32_t QuadIndexCount{ 0 };
 
 		// Shader
@@ -59,17 +59,41 @@ namespace VoxelEngine
 		uint32_t* indices = new uint32_t[s_data.MaxIndices];
 		uint32_t offset{ 0 };
 
-		for (uint32_t i = 0; i < s_data.MaxIndices; i += 6)
+		for (uint32_t i = 0; i < s_data.MaxIndices; i += 24)
 		{
-			indices[i + 0] = offset + 0;
-			indices[i + 1] = offset + 1;
-			indices[i + 2] = offset + 2;
-			
-			indices[i + 3] = offset + 2;
-			indices[i + 4] = offset + 3;
-			indices[i + 5] = offset + 0;
+			// Front
+			indices[i + 0]	= offset + 0;
+			indices[i + 1]	= offset + 1;
+			indices[i + 2]	= offset + 2;
+			indices[i + 3]	= offset + 2;
+			indices[i + 4]	= offset + 3;
+			indices[i + 5]	= offset + 0;
 
-			offset += 4;
+			// Right
+			indices[i + 6]	= offset + 4;
+			indices[i + 7]	= offset + 6;
+			indices[i + 8]	= offset + 7;
+			indices[i + 9]	= offset + 7;
+			indices[i + 10] = offset + 5;
+			indices[i + 11] = offset + 4;
+
+			// Back
+			indices[i + 12] = offset + 9;
+			indices[i + 13] = offset + 8;
+			indices[i + 14] = offset + 11;
+			indices[i + 15] = offset + 11;
+			indices[i + 16] = offset + 10;
+			indices[i + 17] = offset + 9;
+
+			// Left
+			indices[i + 18] = offset + 14;
+			indices[i + 19] = offset + 12;
+			indices[i + 20] = offset + 13;
+			indices[i + 21] = offset + 13;
+			indices[i + 22] = offset + 15;
+			indices[i + 23] = offset + 14;
+
+			offset += 8;
 		}
 
 		Ref<IndexBuffer> indexBuffer = CreateRef<IndexBuffer>(indices, s_data.MaxIndices);
@@ -77,10 +101,37 @@ namespace VoxelEngine
 		delete[] indices;
 
 		// Set quad vertex positions
-		s_data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
-		s_data.QuadVertexPositions[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
-		s_data.QuadVertexPositions[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
-		s_data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+		s_data.QuadVertexPositions = {
+			{ -0.5f, -0.5f, 0.0f, 1.0f }, // FRONT
+			{  0.5f, -0.5f, 0.0f, 1.0f }, // FRONT
+			{  0.5f,  0.5f, 0.0f, 1.0f }, // FRONT
+			{ -0.5f,  0.5f, 0.0f, 1.0f }, // FRONT
+
+			{  0.5f, -0.5f, 0.0f, 1.0f }, // RIGHT
+			{  0.5f,  0.5f, 0.0f, 1.0f }, // RIGHT
+			{  0.5f, -0.5f, 1.0f, 1.0f }, // RIGHT
+			{  0.5f,  0.5f, 1.0f, 1.0f }, // RIGHT
+
+			{ -0.5f, -0.5f, 1.0f, 1.0f }, // BACK
+			{  0.5f, -0.5f, 1.0f, 1.0f }, // BACK
+			{  0.5f,  0.5f, 1.0f, 1.0f }, // BACK
+			{ -0.5f,  0.5f, 1.0f, 1.0f }, // BACK
+
+			{ -0.5f, -0.5f, 0.0f, 1.0f }, // LEFT
+			{ -0.5f,  0.5f, 0.0f, 1.0f }, // LEFT
+			{ -0.5f, -0.5f, 1.0f, 1.0f }, // LEFT
+			{ -0.5f,  0.5f, 1.0f, 1.0f }, // LEFT
+
+			{ -0.5f, -0.5f, 0.0f, 1.0f }, // BOTTOM
+			{  0.5f, -0.5f, 0.0f, 1.0f }, // BOTTOM
+			{ -0.5f, -0.5f, 1.0f, 1.0f }, // BOTTOM
+			{  0.5f, -0.5f, 1.0f, 1.0f }, // BOTTOM
+
+			{  0.5f,  0.5f, 0.0f, 1.0f }, // TOP
+			{ -0.5f,  0.5f, 0.0f, 1.0f }, // TOP
+			{  0.5f,  0.5f, 1.0f, 1.0f }, // TOP
+			{ -0.5f,  0.5f, 1.0f, 1.0f }, // TOP
+		};
 
 		// Load shader
 		s_data.BaseShader = CreateRef<Shader>("assets/shaders/quad.glsl");
@@ -103,18 +154,18 @@ namespace VoxelEngine
 		Flush();
 	}
 
-	void Renderer::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
+	void Renderer::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, QuadSide side)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, size, color);
+		DrawQuad({ position.x, position.y, 0.0f }, size, color, side);
 	}
 
-	void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
+	void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, QuadSide side)
 	{
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-		DrawQuad(transform, color);
+		DrawQuad(transform, color, side);
 	}
 
-	void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+	void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color, QuadSide side)
 	{
 		if (s_data.QuadIndexCount >= s_data.MaxIndices)
 			NextBatch();
@@ -123,13 +174,32 @@ namespace VoxelEngine
 
 		for (int i = 0; i < quadVertexCount; i++)
 		{
-			s_data.QuadVertexBufferPtr->Position = transform * s_data.QuadVertexPositions[i];
+			auto vertexPosition = s_data.QuadVertexPositions[i + ((int) side * 4)];
+
+			s_data.QuadVertexBufferPtr->Position = transform * vertexPosition;
 			s_data.QuadVertexBufferPtr->Color = color;
 			s_data.QuadVertexBufferPtr++;
 		}
 
 		s_data.QuadIndexCount += 6;
 		s_data.Stats.AddQuad();
+	}
+
+	void Renderer::DrawCube(const glm::vec2& position, const glm::vec4& color)
+	{
+		DrawCube({ position.x, position.y, 0.0f }, color);
+	}
+
+	void Renderer::DrawCube(const glm::vec3& position, const glm::vec4& color)
+	{
+		DrawQuad(position, { 1.0f, 1.0f }, color, QuadSide::Front);
+		DrawQuad(position, { 1.0f, 1.0f }, color, QuadSide::Right);
+		DrawQuad(position, { 1.0f, 1.0f }, color, QuadSide::Back);
+		DrawQuad(position, { 1.0f, 1.0f }, color, QuadSide::Left);
+		DrawQuad(position, { 1.0f, 1.0f }, color, QuadSide::Bottom);
+		DrawQuad(position, { 1.0f, 1.0f }, color, QuadSide::Top);
+
+		s_data.Stats.CubeCount++;
 	}
 
 	void Renderer::ResetStats()
