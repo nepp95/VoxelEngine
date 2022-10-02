@@ -35,7 +35,6 @@ namespace VoxelEngine
 		void UpdateCameraVectors();
 
 		bool OnMouseMoved(MouseMovedEvent& e);
-		bool OnKeyPressed(KeyPressedEvent& e);
 
 	private:
 		glm::vec3 m_position;

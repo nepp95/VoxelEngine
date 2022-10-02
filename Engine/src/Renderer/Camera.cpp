@@ -2,6 +2,7 @@
 #include "Camera.h"
 
 #include "Core/Application.h"
+#include "Core/Input.h"
 
 #include <glm/ext/matrix_transform.hpp>
 
@@ -33,6 +34,17 @@ namespace VoxelEngine
 		float velocity{ m_movementSpeed * ts };
 
 		// Input
+		// Forward/Backward
+		if (Input::IsKeyPressed(Key::W))
+			m_position += m_front * velocity;
+		else if (Input::IsKeyPressed(Key::S))
+			m_position -= m_front * velocity;
+
+		// Left/Right
+		if (Input::IsKeyPressed(Key::A))
+			m_position -= m_right * velocity;
+		else if (Input::IsKeyPressed(Key::D))
+			m_position += m_right * velocity;
 
 		UpdateCameraVectors();
 	}
@@ -42,7 +54,6 @@ namespace VoxelEngine
 		EventDispatcher dispatcher(e);
 
 		dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(Camera::OnMouseMoved));
-		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(Camera::OnKeyPressed));
 	}
 
 	void Camera::SetPosition(const glm::vec3& position)
@@ -116,10 +127,5 @@ namespace VoxelEngine
 		UpdateCameraVectors();
 
 		return true;
-	}
-	
-	bool Camera::OnKeyPressed(KeyPressedEvent& e)
-	{
-		return false;
 	}
 }

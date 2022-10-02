@@ -30,6 +30,9 @@ void EditorLayer::OnUpdate(float ts)
 		m_framebuffer->Resize((uint32_t) m_viewportSize.x, (uint32_t) m_viewportSize.y);
 	}
 
+	// Update
+	m_camera.OnUpdate(ts);
+
 	// Prepare for render
 	m_framebuffer->Bind();
 	RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
