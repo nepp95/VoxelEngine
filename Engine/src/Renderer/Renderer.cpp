@@ -318,6 +318,25 @@ namespace VoxelEngine
 		s_data.Stats.CubeCount++;
 	}
 
+	void Renderer::DrawCube(const glm::vec2& position, const std::vector<Ref<Texture>>& textures, float tilingFactor, const glm::vec4& tintColor)
+	{
+		DrawCube({ position.x, position.y, 0.0f }, textures, tilingFactor, tintColor);
+	}
+
+	void Renderer::DrawCube(const glm::vec3& position, const std::vector<Ref<Texture>>& textures, float tilingFactor, const glm::vec4& tintColor)
+	{
+
+	}
+
+	void Renderer::RenderBlock(const glm::vec2& position, const Ref<Block>& block)
+	{
+		RenderBlock({ position.x, position.y, 0.0f }, block);
+	}
+
+	void Renderer::RenderBlock(const glm::vec3& position, const Ref<Block>& block)
+	{
+	}
+
 	void Renderer::ResetStats()
 	{
 		// Because we want to reset each value of the struct to zero, we can do this by setting the entire memory block sizeof(Statistics) to zero.

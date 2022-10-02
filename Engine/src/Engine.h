@@ -19,6 +19,9 @@
 // Layers
 #include "Layers/ImGuiLayer.h"
 
+// Level
+#include "Level/Block.h"
+
 // Math
 #include "Math/Vector.h"
 

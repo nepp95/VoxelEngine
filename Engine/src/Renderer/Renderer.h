@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Level/Block.h"
 #include "Renderer/Camera.h"
 #include "Renderer/Texture.h"
 
@@ -39,6 +40,12 @@ namespace VoxelEngine
 		// Render Cube
 		static void DrawCube(const glm::vec2& position, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 		static void DrawCube(const glm::vec3& position, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+		// Render Cube with texture
+		static void DrawCube(const glm::vec2& position, const std::vector<Ref<Texture>>& textures, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
+		static void DrawCube(const glm::vec3& position, const std::vector<Ref<Texture>>& textures, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
+		// Render Block
+		static void RenderBlock(const glm::vec2& position, const Ref<Block>& block);
+		static void RenderBlock(const glm::vec3& position, const Ref<Block>& block);
 
 		// Stats
 		struct Statistics
