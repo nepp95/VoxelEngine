@@ -17,7 +17,9 @@ project "Engine"
 
     files {
         "src/**.h",
-        "src/**.cpp"
+        "src/**.cpp",
+        "vendor/stb/*.h",
+        "vendor/stb/*.cpp"
     }
 
     includedirs {
@@ -26,6 +28,7 @@ project "Engine"
         "%{IncludeDir.glfw}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.imgui}",
+        "%{IncludeDir.stb}"
     }
 
     links {

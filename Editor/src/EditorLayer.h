@@ -25,6 +25,9 @@ private:
 	bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
 private:
+	// Test data
+	Ref<Texture> m_grassTexture;
+
 	// Camera
 	Camera m_camera{ { 0.0f, 0.0f, 3.0f } };
 

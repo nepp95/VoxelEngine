@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Renderer/Camera.h"
+#include "Renderer/Texture.h"
 
 namespace VoxelEngine
 {
@@ -27,10 +28,15 @@ namespace VoxelEngine
 		static void EndScene();
 
 		// Rendering
-		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f }, QuadSide side = QuadSide::Default);
-		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f }, QuadSide side = QuadSide::Default);
+		// Render Quad
+		static void DrawQuad(const glm::vec2& position, const glm::vec4& color = glm::vec4(1.0f), QuadSide side = QuadSide::Default);
+		static void DrawQuad(const glm::vec3& position, const glm::vec4& color = glm::vec4(1.0f), QuadSide side = QuadSide::Default);
 		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f }, QuadSide side = QuadSide::Default);
-
+		// Render Quad with Texture
+		static void DrawQuad(const glm::vec2& position, const Ref<Texture>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f), QuadSide side = QuadSide::Default);
+		static void DrawQuad(const glm::vec3& position, const Ref<Texture>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f), QuadSide side = QuadSide::Default);
+		static void DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f), QuadSide side = QuadSide::Default);
+		// Render Cube
 		static void DrawCube(const glm::vec2& position, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 		static void DrawCube(const glm::vec3& position, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 

@@ -4,6 +4,8 @@
 
 void EditorLayer::OnAttach()
 {
+	m_grassTexture = CreateRef<Texture>("assets/textures/grass.png");
+
 	// Set settings
 	auto& app = Application::Get();
 	m_enableVSync = app.GetWindow().IsVSync();
@@ -41,7 +43,7 @@ void EditorLayer::OnUpdate(float ts)
 
 	// Render scene
 	Renderer::BeginScene(m_camera);
-	Renderer::DrawCube({ 0.0f, 0.0f });
+	Renderer::DrawQuad({ 0.0f, 0.0f }, m_grassTexture);
 	Renderer::EndScene();
 
 	// Unbind framebuffer
