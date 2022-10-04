@@ -35,40 +35,62 @@ namespace VoxelEngine
 			: m_instance(instance)
 		{
 			static_assert(std::is_base_of<RefCounted, T>::value, "Class is not RefCounted!");
-			m_instance->IncrementRefCount();
+			IncrementRef();
 		};
 
 		// Other Ref class arg
 		Ref(const Ref<T>& other)
 			: m_instance(other.m_instance)
 		{
-			m_instance->IncrementRefCount();
+			IncrementRef();
 		}
 
 		// Destructor, decreases ref count
 		~Ref()
 		{
-			m_instance->DecrementRefCount();
+			DecrementRef();
 		}; 
 
-		// Operators
+		// If object
 		operator bool() { return m_instance != nullptr; }
 		operator bool() const { return m_instance != nullptr; }
 
+		// Pointer to object
 		T* operator->() { return m_instance; }
 		const T* operator->() const { return m_instance; }
 
+		// Dereferenced object
 		T& operator*() { return *m_instance; }
 		const T& operator*() const { return *m_instance; }
 
+		// Equals
 		bool operator==(const Ref<T>& other) const
 		{
 			return m_instance == other.m_instance;
 		}
 
+		// Not equals
 		bool operator!=(const Ref<T>& other) const
 		{
 			return !(*this == other);
+		}
+
+		// Assignment with nullptr
+		Ref& operator=(std::nullptr_t)
+		{
+			DecrementRef();
+			m_instance = nullptr;
+			return *this;
+		}
+
+		// Assignment with other ref object
+		Ref& operator=(const Ref<T>& other)
+		{
+			other.IncrementRef();
+			DecrementRef();
+
+			m_instance = other.m_instance;
+			return *this;
 		}
 
 		// Raw pointer
@@ -83,13 +105,13 @@ namespace VoxelEngine
 		}
 
 		//  Increment/decrement
-		void IncrementRef()
+		void IncrementRef() const
 		{
 			if (m_instance)
 				m_instance->IncrementRefCount();
 		}
 
-		void DecrementRef()
+		void DecrementRef() const
 		{
 			if (m_instance)
 			{
