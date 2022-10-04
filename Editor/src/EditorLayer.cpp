@@ -4,7 +4,7 @@
 
 void EditorLayer::OnAttach()
 {
-	m_grassTexture = CreateRef<Texture>("assets/textures/grass.png");
+	m_grassTexture = Ref<Texture>::Create("assets/textures/grass.png");
 
 	// Set settings
 	auto& app = Application::Get();
@@ -15,7 +15,7 @@ void EditorLayer::OnAttach()
 	fbSpecification.Width = 1280;
 	fbSpecification.Height = 720;
 	fbSpecification.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
-	m_framebuffer = CreateRef<Framebuffer>(fbSpecification);
+	m_framebuffer = Ref<Framebuffer>::Create(fbSpecification);
 }
 
 void EditorLayer::OnDetach() {}

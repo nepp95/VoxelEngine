@@ -6,7 +6,7 @@ typedef unsigned int GLenum;
 
 namespace VoxelEngine {
 
-	class Shader
+	class Shader : public RefCounted
 	{
 	public:
 		Shader(const std::string& filepath);

@@ -85,7 +85,7 @@ namespace VoxelEngine {
 	};
 
 
-	class VertexBuffer
+	class VertexBuffer : public RefCounted
 	{
 	public:
 		VertexBuffer(uint32_t size);
@@ -106,7 +106,7 @@ namespace VoxelEngine {
 		BufferLayout m_layout;
 	};
 
-	class IndexBuffer
+	class IndexBuffer : public RefCounted
 	{
 	public:
 		IndexBuffer(uint32_t count);

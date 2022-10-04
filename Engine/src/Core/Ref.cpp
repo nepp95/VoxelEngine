@@ -3,12 +3,13 @@
 
 namespace VoxelEngine
 {
-	void RefCounted::Increment() const
+	// RefCounted
+	void RefCounted::IncrementRefCount() const
 	{
 		++m_refCount;
 	}
 
-	void RefCounted::Decrement() const
+	void RefCounted::DecrementRefCount() const
 	{
 		--m_refCount;
 	}

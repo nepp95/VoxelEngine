@@ -4,7 +4,7 @@ typedef unsigned int GLenum;
 
 namespace VoxelEngine
 {
-	class Texture
+	class Texture : public RefCounted
 	{
 	public:
 		Texture(uint32_t width, uint32_t height);
