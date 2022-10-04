@@ -46,6 +46,12 @@ namespace VoxelEngine
 		else if (Input::IsKeyPressed(Key::D))
 			m_position += m_right * velocity;
 
+		// Up/Down
+		if (Input::IsKeyPressed(Key::Space))
+			m_position += m_up * velocity;
+		else if (Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl))
+			m_position -= m_up * velocity;
+
 		UpdateCameraVectors();
 	}
 
