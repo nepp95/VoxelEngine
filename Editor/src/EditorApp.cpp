@@ -11,7 +11,7 @@ namespace VoxelEngine
 		Editor(const ApplicationSpecification& specification)
 			: Application{specification}
 		{
-			PushLayer(new EditorLayer("EditorLayer"));
+			PushLayer(new EditorLayer());
 		}
 
 		~Editor() = default;

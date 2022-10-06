@@ -13,9 +13,9 @@ namespace VoxelEngine
 	static void GLFWErrorCallback(int error, const char* description)
 	{
 		// TODO: Refactor when logging fixed
-		CORE_ERROR("GLFW Error!");
-		CORE_ERROR(error);
-		CORE_ERROR(description);
+		std::stringstream ss;
+		ss << "GLFW Error: (" << error << ") " << description;
+		CORE_ERROR(ss.str());
 	}
 
 	Window::Window(const WindowSpecification& specification)
@@ -156,6 +156,13 @@ namespace VoxelEngine
 
 	Window::~Window()
 	{
+		Shutdown();
+	}
+
+	void Window::Shutdown()
+	{
+		// Don't use OpenGL destroy methods in destructors because of unexpected behaviour.
+		// Source: https://www.khronos.org/opengl/wiki/Common_Mistakes#RAII_and_hidden_destructor_calls
 		glfwDestroyWindow(m_window);
 		glfwTerminate();
 	}
