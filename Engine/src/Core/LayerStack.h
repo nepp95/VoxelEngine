@@ -30,6 +30,6 @@ namespace VoxelEngine
 
 	private:
 		std::vector<Layer*> m_layers;
-		uint32_t m_layerInsertIndex = 0;
+		uint32_t m_layerInsertIndex{ 0 };
 	};
 }

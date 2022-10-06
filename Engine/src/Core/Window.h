@@ -31,6 +31,8 @@ namespace VoxelEngine
 		Window(const WindowSpecification& specification);
 		~Window();
 
+		void Shutdown();
+
 		void OnUpdate();
 
 		uint32_t GetWidth() const { return m_specification.Width; }
