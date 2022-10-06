@@ -93,6 +93,13 @@ namespace VoxelEngine
 			return *this;
 		}
 
+		// As
+		template<typename T2>
+		Ref<T2> As() const
+		{
+			return Ref<T2>(*this);
+		}
+
 		// Raw pointer
 		T* Raw() { return m_instance; }
 		const T* Raw() const { return m_instance; }
