@@ -7,8 +7,8 @@ using namespace VoxelEngine;
 class EditorLayer : public Layer
 {
 public:
-	EditorLayer(const std::string& name)
-		: Layer(name)
+	EditorLayer(const std::string& name = "")
+		: Layer(name == "" ? name : "EditorLayer")
 	{}
 
 	~EditorLayer() override = default;

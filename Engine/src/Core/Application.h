@@ -58,11 +58,11 @@ namespace VoxelEngine
 		static Application& Get() { return *s_instance; }
 
 	private:
+		Scope<Window> m_window;
 		ApplicationSpecification m_specification;
 		LayerStack m_layerStack;
 		ImGuiLayer* m_imGuiLayer;
 
-		Scope<Window> m_window;
 
 		bool m_isRunning{true};
 		bool m_isMinimized{false};
