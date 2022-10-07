@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace VoxelEngine
 {
 	enum class AssetType

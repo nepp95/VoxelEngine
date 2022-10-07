@@ -10,6 +10,12 @@
 #include "Core/Layer.h"
 #include "Core/Log.h"
 #include "Core/MouseCodes.h"
+#include "Core/UUID.h"
+
+// Assets
+#include "Asset/Asset.h"
+#include "Asset/AssetManager.h"
+#include "Asset/AssetMetadata.h"
 
 // Events
 #include "Events/ApplicationEvent.h"

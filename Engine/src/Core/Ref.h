@@ -45,6 +45,14 @@ namespace VoxelEngine
 			IncrementRef();
 		}
 
+		// Convert to T2
+		template<typename T2>
+		Ref(const Ref<T2>& other)
+		{
+			m_instance = (T*) other.m_instance;
+			IncrementRef();
+		}
+
 		// Destructor, decreases ref count
 		~Ref()
 		{
@@ -93,7 +101,17 @@ namespace VoxelEngine
 			return *this;
 		}
 
-		// As
+		template<typename T2>
+		Ref& operator=(const Ref<T2>& other)
+		{
+			other.IncrementRef();
+			DecrementRef();
+
+			m_instance = other.m_instance;
+			return *this;
+		}
+
+		// Cast to T2
 		template<typename T2>
 		Ref<T2> As() const
 		{

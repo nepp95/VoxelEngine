@@ -11,14 +11,15 @@ namespace VoxelEngine
 	class AssetManager
 	{
 	public:
-		AssetManager() = default;
-		~AssetManager() = default;
+		static void Init();
+		static void Shutdown();
 
 		template<typename T, typename... Args>
 		static Ref<T> CreateAsset(const std::string& filepath, Args&&... args)
 		{
 			static_assert(std::is_base_of<Asset, T>::value, "CreateAsset only works for types derived from Asset!");
 
+			// Create metadata
 			AssetMetadata metadata;
 			metadata.Handle = AssetHandle();
 			metadata.FilePath = filepath;
@@ -41,24 +42,22 @@ namespace VoxelEngine
 		template<typename T>
 		static Ref<T> GetAsset(AssetHandle assetHandle)
 		{
-			if (m_memoryAssets.find(assetHandle) != m_memoryAssets.end())
-				return m_memoryAssets[assetHandle].As<T>();
-
-			AssetMetadata& metadata;
+			// Get asset metadata from registry
+			AssetMetadata& metadata = AssetMetadata();
 			if (m_assetRegistry.find(assetHandle) != m_assetRegistry.end())
-				metadata = m_assetRegistry.find(assetHandle);
+				metadata = m_assetRegistry.at(assetHandle); // asset metadata
 
 			Ref<T> asset{ nullptr };
 			if (!metadata.IsDataLoaded)
 			{
 				// Create asset
-				//asset = //
+				asset = Ref<Texture>::Create(metadata.FilePath.string());
 				asset->Handle = metadata.Handle;
 
 				// Test is asset can be loaded
-				// metadata.IsDataLoaded = asset.As<???>()->Loaded();
-				//if (!metadata.IsDataLoaded);
-				//	return nullptr;
+				metadata.IsDataLoaded = asset.As<Texture>()->IsLoaded();
+				if (!metadata.IsDataLoaded)
+					return nullptr;
 
 				// Asset is now loaded
 				m_loadedAssets[assetHandle] = asset;
@@ -68,10 +67,30 @@ namespace VoxelEngine
 
 			return asset.As<T>();
 		}
+
+		template<typename T>
+		static Ref<T> GetAsset(const std::string& filepath)
+		{
+			// todo: Relative paths conversion
+			
+			// Find handle in registry
+			for (auto& [handle, metadata] : m_assetRegistry)
+				if (metadata.FilePath == filepath)
+					return GetAsset<T>(metadata.Handle);
+
+			// Return invalid metadata
+			return GetAsset<T>(AssetMetadata().Handle);
+		}
+
+	private:
+		bool TryLoadData(const std::string& filepath, Ref<Asset>& asset);
 		
 	private:
-		std::unordered_map<AssetHandle, Ref<Asset>> m_loadedAssets;
-		std::unordered_map<AssetHandle, Ref<Asset>> m_memoryAssets; // Assets which have been loaded
-		std::unordered_map<AssetHandle, AssetMetadata> m_assetRegistry; // Registry with assethandles corresponding with their metadata
+		// Assets
+		static std::unordered_map<AssetHandle, Ref<Asset>> m_loadedAssets; // Assets which are loaded
+		static std::unordered_map<AssetHandle, AssetMetadata> m_assetRegistry; // Registry with assethandles corresponding with their metadata
+
+		// Serialization
+		//std::unordered_map<AssetType, AssetSerializer> m_serializers;
 	};
 }

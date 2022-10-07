@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "Application.h"
 
+#include "Asset/AssetManager.h"
 #include "Renderer/Renderer.h"
 
 #include <glad/glad.h>
@@ -25,6 +26,9 @@ namespace VoxelEngine
 		WindowSpecification spec{m_specification.Name, m_specification.WindowWidth, m_specification.WindowHeight};
 		m_window = CreateScope<Window>(spec);
 		m_window->SetEventCallback([this](Event& e) { Application::OnEvent(e); });
+
+		// Assets manager
+		AssetManager::Init();
 
 		// Initialize renderer
 		Renderer::Init();

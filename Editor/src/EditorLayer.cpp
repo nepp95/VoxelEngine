@@ -4,7 +4,8 @@
 
 void EditorLayer::OnAttach()
 {
-	m_grassTexture = Ref<Texture>::Create("assets/textures/grass.png");
+	Ref<Asset> grassAsset = AssetManager::GetAsset<Asset>("assets/textures/grass.png");
+	m_grassTexture = grassAsset.As<Texture>();
 
 	// Set settings
 	auto& app = Application::Get();
