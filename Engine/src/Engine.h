@@ -16,6 +16,7 @@
 #include "Asset/Asset.h"
 #include "Asset/AssetManager.h"
 #include "Asset/AssetMetadata.h"
+#include "Asset/AssetTypes.h"
 
 // Events
 #include "Events/ApplicationEvent.h"

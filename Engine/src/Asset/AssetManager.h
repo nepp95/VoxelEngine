@@ -15,7 +15,7 @@ namespace VoxelEngine
 		static void Shutdown();
 
 		template<typename T, typename... Args>
-		static Ref<T> CreateAsset(const std::string& filepath, Args&&... args)
+		static Ref<T> CreateAsset(const std::filesystem::path& filepath, Args&&... args)
 		{
 			static_assert(std::is_base_of<Asset, T>::value, "CreateAsset only works for types derived from Asset!");
 
@@ -27,43 +27,42 @@ namespace VoxelEngine
 			metadata.Type = T::GetStaticType();
 
 			// Check if file exists
-			
+			if (!std::filesystem::exists(filepath))
+				return nullptr;
 
-			m_assetRegistry[metadata.Handle] = metadata;
-			// todo: save registry to file, load on startup
+			s_assetRegistry.insert_or_assign(metadata.Handle, metadata);
+			
+			WriteRegistry();
 
 			Ref<T> asset = Ref<T>::Create(std::forward<Args>(args)...);
 			asset->Handle = metadata.Handle;
-			m_loadedAssets[asset->Handle] = asset;
+			s_loadedAssets.insert_or_assign(asset->Handle, asset);
 
 			return asset;
 		}
 
 		template<typename T>
-		static Ref<T> GetAsset(AssetHandle assetHandle)
+		static Ref<T> GetAsset(AssetHandle handle)
 		{
 			// Get asset metadata from registry
-			AssetMetadata& metadata = AssetMetadata();
-			if (m_assetRegistry.find(assetHandle) != m_assetRegistry.end())
-				metadata = m_assetRegistry.at(assetHandle); // asset metadata
+			AssetMetadata& metadata = GetMetadataInternal(handle);
+
+			if (!metadata.IsValid())
+				return nullptr;
 
 			Ref<T> asset{ nullptr };
 			if (!metadata.IsDataLoaded)
 			{
-				// Create asset
-				asset = Ref<Texture>::Create(metadata.FilePath.string());
-				asset->Handle = metadata.Handle;
-
-				// Test is asset can be loaded
-				metadata.IsDataLoaded = asset.As<Texture>()->IsLoaded();
+				// Test if asset can be loaded
+				metadata.IsDataLoaded = TryLoadData(metadata, asset);
 				if (!metadata.IsDataLoaded)
 					return nullptr;
 
 				// Asset is now loaded
-				m_loadedAssets[assetHandle] = asset;
+				s_loadedAssets.insert_or_assign(handle, asset);
 			}
 				
-			asset = m_loadedAssets[assetHandle];
+			asset = s_loadedAssets.at(handle);
 
 			return asset.As<T>();
 		}
@@ -74,7 +73,7 @@ namespace VoxelEngine
 			// todo: Relative paths conversion
 			
 			// Find handle in registry
-			for (auto& [handle, metadata] : m_assetRegistry)
+			for (auto& [handle, metadata] : s_assetRegistry)
 				if (metadata.FilePath == filepath)
 					return GetAsset<T>(metadata.Handle);
 
@@ -83,12 +82,22 @@ namespace VoxelEngine
 		}
 
 	private:
-		bool TryLoadData(const std::string& filepath, Ref<Asset>& asset);
+		static AssetMetadata& GetMetadataInternal(AssetHandle handle);
+		static const AssetMetadata& GetMetadata(AssetHandle handle);
+		static const AssetMetadata& GetMetadata(const std::filesystem::path& filepath);
+
+		static bool TryLoadData(const AssetMetadata& metadata, Ref<Asset>& asset);
+
+		static void WriteRegistry();
 		
 	private:
 		// Assets
-		static std::unordered_map<AssetHandle, Ref<Asset>> m_loadedAssets; // Assets which are loaded
-		static std::unordered_map<AssetHandle, AssetMetadata> m_assetRegistry; // Registry with assethandles corresponding with their metadata
+		static std::unordered_map<AssetHandle, Ref<Asset>> s_loadedAssets; // Assets which are loaded
+		static std::unordered_map<AssetHandle, AssetMetadata> s_assetRegistry; // Registry with assethandles corresponding with their metadata
+
+		static std::filesystem::path s_assetsDir;
+		static std::filesystem::path s_assetRegistryFilepath;
+		static std::filesystem::path s_texturesDir;
 
 		// Serialization
 		//std::unordered_map<AssetType, AssetSerializer> m_serializers;
