@@ -63,7 +63,6 @@ namespace VoxelEngine
 		LayerStack m_layerStack;
 		ImGuiLayer* m_imGuiLayer;
 
-
 		bool m_isRunning{true};
 		bool m_isMinimized{false};
 		float m_lastFrameTime{0.0f};

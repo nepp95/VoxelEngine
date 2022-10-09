@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "Renderer.h"
 
+#include "Asset/AssetManager.h"
 #include "Renderer/RenderCommand.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Vertex.h"
@@ -299,6 +300,14 @@ namespace VoxelEngine
 
 		s_data.QuadIndexCount += 6;
 		s_data.Stats.AddQuad();
+	}
+
+	void Renderer::DrawSprite(const glm::mat4& transform, SpriteComponent& sc)
+	{
+		if (sc.Texture)
+			DrawQuad(transform, AssetManager::GetAsset<Texture>(sc.Texture));
+		else
+			DrawQuad(transform, sc.Color);
 	}
 
 	void Renderer::DrawCube(const glm::vec2& position, const glm::vec4& color)

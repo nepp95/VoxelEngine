@@ -21,6 +21,7 @@ workspace "VoxelEngine"
 		include "Engine/vendor/glad"
 		include "Engine/vendor/glfw"
 		include "Engine/vendor/imgui"
+		include "Engine/vendor/yaml-cpp"
 	group ""
 
 	group "Core"

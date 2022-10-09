@@ -28,13 +28,12 @@ namespace VoxelEngine
 			if (in.is_open())
 			{
 				CORE_INFO("Asset registry file found");
-			} else
-			{
-				CORE_WARN("Asset registry file not found or can't be opened");
 			}
 
 			in.close();
 		}
+
+		CORE_WARN("Asset registry file not found or can't be opened");
 
 		// Load assets to registry from recursive file dir search
 		std::stringstream ss;

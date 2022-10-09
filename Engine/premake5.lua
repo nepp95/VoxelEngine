@@ -24,18 +24,21 @@ project "Engine"
 
     includedirs {
         "src",
+        "%{IncludeDir.entt}",
         "%{IncludeDir.glad}",
         "%{IncludeDir.glfw}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.imgui}",
-        "%{IncludeDir.stb}"
+        "%{IncludeDir.stb}",
+        "%{IncludeDir.yaml_cpp}"
     }
 
     links {
-        "Glad",
-        "Glfw",
-        "Imgui",
-        "opengl32.lib"
+        "glad",
+        "glfw",
+        "imgui",
+        "opengl32.lib",
+        "yaml-cpp"
     }
 
     filter "system:windows"

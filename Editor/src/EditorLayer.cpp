@@ -4,8 +4,17 @@
 
 void EditorLayer::OnAttach()
 {
+	m_level = Ref<Level>::Create();
+	auto cameraEntity = m_level->CreateEntity("Camera");
+	cameraEntity.AddComponent<CameraComponent>();
+
 	Ref<Asset> grassAsset = AssetManager::GetAsset<Asset>("assets/textures/grass.png");
 	m_grassTexture = grassAsset.As<Texture>();
+	
+	auto testEntity = m_level->CreateEntity("TestEntity");
+	testEntity.AddComponent<SpriteComponent>();
+	auto& sc = testEntity.GetComponent<SpriteComponent>();
+	sc.Texture = m_grassTexture->Handle;
 
 	// Set settings
 	auto& app = Application::Get();
@@ -43,6 +52,8 @@ void EditorLayer::OnUpdate(float ts)
 	RenderCommand::Clear();
 
 	// Render scene
+	m_level->OnUpdate(ts);
+
 	Renderer::BeginScene(m_camera);
 	Renderer::DrawQuad({ 0.0f, 0.0f }, m_grassTexture);
 	Renderer::EndScene();

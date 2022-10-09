@@ -28,6 +28,9 @@
 
 // Level
 #include "Level/Block.h"
+#include "Level/Components.h"
+#include "Level/Entity.h"
+#include "Level/Level.h"
 
 // Math
 #include "Math/Vector.h"

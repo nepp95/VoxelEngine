@@ -7,8 +7,8 @@ using namespace VoxelEngine;
 class EditorLayer : public Layer
 {
 public:
-	EditorLayer(const std::string& name = "")
-		: Layer(name == "" ? name : "EditorLayer")
+	EditorLayer(const std::string& name = std::string())
+		: Layer(name.empty() ? name : "EditorLayer")
 	{}
 
 	~EditorLayer() override = default;
@@ -30,6 +30,9 @@ private:
 
 	// Camera
 	Camera m_camera{ { 0.0f, 0.0f, 3.0f } };
+
+	// Level
+	Ref<Level> m_level;
 
 	// Viewport
 	bool m_viewportFocused{false}, m_viewportHovered{false};
