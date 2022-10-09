@@ -2,6 +2,7 @@
 
 #include "Asset/Asset.h"
 #include "Core/UUID.h"
+#include "Renderer/Camera.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>

@@ -108,10 +108,23 @@ namespace VoxelEngine
 	bool AssetManager::TryLoadData(const AssetMetadata& metadata, Ref<Asset>& asset)
 	{
 		// Create asset
-		asset = Ref<Texture>::Create(metadata.FilePath.string());
-		asset->Handle = metadata.Handle;
+		switch (metadata.Type)
+		{
+			case AssetType::None:
+			{
+				return false;
+			}
 
-		return asset.As<Texture>()->IsLoaded();
+			case AssetType::Texture:
+			{
+				asset = Ref<Texture>::Create(metadata.FilePath.string());
+				asset->Handle = metadata.Handle;
+
+				return asset.As<Texture>()->IsLoaded();
+			}
+		}
+		
+		return false;
 	}
 
 	void AssetManager::WriteRegistry()

@@ -23,6 +23,8 @@ namespace VoxelEngine
 			auto [transform, sprite] = view.get<TransformComponent, SpriteComponent>(entity);
 			Renderer::DrawSprite(transform.GetTransform(), sprite);
 		}
+		
+		Renderer::DrawCube({ 0.0f, 1.0f, 0.0f });
 
 		Renderer::EndScene();
 	}

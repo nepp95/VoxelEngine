@@ -50,7 +50,7 @@ namespace VoxelEngine
 			if (!metadata.IsValid())
 				return nullptr;
 
-			Ref<T> asset{ nullptr };
+			Ref<Asset> asset{ nullptr };
 			if (!metadata.IsDataLoaded)
 			{
 				// Test if asset can be loaded

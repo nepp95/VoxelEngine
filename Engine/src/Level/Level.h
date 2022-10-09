@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/UUID.h"
+
 #include <entt/entt.hpp>
 
 namespace VoxelEngine
