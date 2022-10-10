@@ -7,11 +7,13 @@
 
 namespace VoxelEngine
 {
+	using EntityHandle = entt::entity;
+
 	class Entity
 	{
 	public:
 		Entity() = default;
-		Entity(entt::entity handle, Level* level);
+		Entity(EntityHandle handle, Level* level);
 		Entity(const Entity& other) = default;
 
 		// Component logic
@@ -54,7 +56,7 @@ namespace VoxelEngine
 		//
 
 		operator bool() const { return m_entityHandle != entt::null; }
-		operator entt::entity() const { return m_entityHandle; }
+		operator EntityHandle() const { return m_entityHandle; }
 
 		bool operator==(const Entity& other) const
 		{
@@ -67,7 +69,7 @@ namespace VoxelEngine
 		}
 
 	private:
-		entt::entity m_entityHandle{ entt::null };
+		EntityHandle m_entityHandle{ entt::null };
 		Level* m_level{ nullptr };
 	};
 }

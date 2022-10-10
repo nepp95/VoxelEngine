@@ -35,6 +35,14 @@ namespace VoxelEngine
 		}
 	};
 
+	struct BlockComponent
+	{
+		BlockType Type;
+
+		BlockComponent() = default;
+		BlockComponent(const BlockComponent&) = default;
+	};
+
 	struct SpriteComponent
 	{
 		AssetHandle Texture;

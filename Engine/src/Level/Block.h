@@ -5,9 +5,17 @@ namespace VoxelEngine
 	enum class BlockType
 	{
 		Air = 0,
+		Coal,
 		Dirt,
+		Glass,
+		Gold,
 		Grass,
+		Redstone,
 		Sand,
+		Stone,
+		Tnt,
+		Water,
+		Wood
 	};
 
 	struct BlockData

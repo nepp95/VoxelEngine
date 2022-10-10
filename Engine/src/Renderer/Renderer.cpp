@@ -321,7 +321,7 @@ namespace VoxelEngine
 	void Renderer::DrawSprite(const glm::mat4& transform, SpriteComponent& sc)
 	{
 		if (sc.Texture)
-			DrawQuad(transform, AssetManager::GetAsset<Texture>(sc.Texture));
+			DrawCube(transform, { sc.Texture });
 		else
 			DrawQuad(transform, sc.Color);
 	}
@@ -333,12 +333,18 @@ namespace VoxelEngine
 
 	void Renderer::DrawCube(const glm::vec3& position, const glm::vec4& color)
 	{
-		DrawQuad(position, color, QuadSide::Front);
-		DrawQuad(position, color, QuadSide::Right);
-		DrawQuad(position, color, QuadSide::Back);
-		DrawQuad(position, color, QuadSide::Left);
-		DrawQuad(position, color, QuadSide::Bottom);
-		DrawQuad(position, color, QuadSide::Top);
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+		DrawCube(transform, color);
+	}
+
+	void Renderer::DrawCube(const glm::mat4& transform, const glm::vec4& color)
+	{
+		DrawQuad(transform, color, QuadSide::Front);
+		DrawQuad(transform, color, QuadSide::Right);
+		DrawQuad(transform, color, QuadSide::Back);
+		DrawQuad(transform, color, QuadSide::Left);
+		DrawQuad(transform, color, QuadSide::Bottom);
+		DrawQuad(transform, color, QuadSide::Top);
 
 		s_data.Stats.CubeCount++;
 	}
@@ -350,20 +356,32 @@ namespace VoxelEngine
 
 	void Renderer::DrawCube(const glm::vec3& position, const std::vector<Ref<Texture>>& textures, float tilingFactor, const glm::vec4& tintColor)
 	{
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+		DrawCube(transform, textures, tilingFactor, tintColor);
+	}
+
+	void Renderer::DrawCube(const glm::mat4& transform, const std::vector<Ref<Texture>>& textures, float tilingFactor, const glm::vec4& tintColor)
+	{
 		if (textures.size() == 1)
 			for (int i = 0; i < 6; i++)
-				DrawQuad(position, textures.at(0), tilingFactor, tintColor, (QuadSide) i);
+				DrawQuad(transform, textures.at(0), tilingFactor, tintColor, (QuadSide)i);
 		else if (textures.size() == 6)
 			for (int i = 0; i < 6; i++)
-				DrawQuad(position, textures.at(i), tilingFactor, tintColor, (QuadSide) i);
+				DrawQuad(transform, textures.at(i), tilingFactor, tintColor, (QuadSide)i);
 	}
 
-	void Renderer::RenderBlock(const glm::vec2& position, const Ref<Block>& block)
+	void Renderer::RenderEntity(const glm::vec2& position, EntityHandle entity)
 	{
-		RenderBlock({ position.x, position.y, 0.0f }, block);
+		RenderEntity({ position.x, position.y, 0.0f }, entity);
 	}
 
-	void Renderer::RenderBlock(const glm::vec3& position, const Ref<Block>& block)
+	void Renderer::RenderEntity(const glm::vec3& position, EntityHandle entity)
+	{
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+		RenderEntity(transform, entity);
+	}
+
+	void Renderer::RenderEntity(const glm::mat4& transform, EntityHandle entity)
 	{
 
 	}
