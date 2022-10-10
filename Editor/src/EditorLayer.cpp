@@ -5,17 +5,28 @@
 void EditorLayer::OnAttach()
 {
 	m_level = Ref<Level>::Create();
+
+	// Camera
 	auto cameraEntity = m_level->CreateEntity("Camera");
 	auto& cc = cameraEntity.AddComponent<CameraComponent>();
+	cc.Camera.SetPitch(0.0f);
+	cc.Camera.SetYaw(0.0f);
 	m_camera = &cc.Camera;
 
-	Ref<Asset> grassAsset = AssetManager::GetAsset<Asset>("assets/textures/grass.png");
-	m_grassTexture = grassAsset.As<Texture>();
-	
-	auto testEntity = m_level->CreateEntity("TestEntity");
-	testEntity.AddComponent<SpriteComponent>();
-	auto& sc = testEntity.GetComponent<SpriteComponent>();
-	sc.Texture = m_grassTexture->Handle;
+	for (int x = 0; x < 5; x++)
+	{
+		for (int z = 0; z < 5; z++)
+		{
+			auto testEntity = m_level->CreateEntity("TestEntity");
+			
+			auto& bc = testEntity.AddComponent<BlockComponent>();
+			bc.Data.Type = BlockType::Grass;
+			bc.Data.TextureHandle = AssetManager::GetMetadata("assets/textures/grass.png").Handle;
+
+			auto& tc = testEntity.GetComponent<TransformComponent>();
+			tc.Translation = { x * 2.0f, 0.0f, z * 2.0f };
+		}
+	}
 
 	// Set settings
 	auto& app = Application::Get();

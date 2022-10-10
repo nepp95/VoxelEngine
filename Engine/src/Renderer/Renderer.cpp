@@ -49,6 +49,7 @@ namespace VoxelEngine
 	void Renderer::Init()
 	{
 		RenderCommand::Init();
+		AssetManager::Init();
 
 		// Create vertex array and buffers
 		s_data.QuadVertexArray = Ref<VertexArray>::Create();
@@ -318,14 +319,6 @@ namespace VoxelEngine
 		s_data.Stats.AddQuad();
 	}
 
-	void Renderer::DrawSprite(const glm::mat4& transform, SpriteComponent& sc)
-	{
-		if (sc.Texture)
-			DrawCube(transform, { sc.Texture });
-		else
-			DrawQuad(transform, sc.Color);
-	}
-
 	void Renderer::DrawCube(const glm::vec2& position, const glm::vec4& color)
 	{
 		DrawCube({ position.x, position.y, 0.0f }, color);
@@ -368,22 +361,27 @@ namespace VoxelEngine
 		else if (textures.size() == 6)
 			for (int i = 0; i < 6; i++)
 				DrawQuad(transform, textures.at(i), tilingFactor, tintColor, (QuadSide)i);
+
+		s_data.Stats.CubeCount++;
 	}
 
-	void Renderer::RenderEntity(const glm::vec2& position, EntityHandle entity)
+	void Renderer::DrawEntity(const glm::vec2& position, const BlockComponent& bc)
 	{
-		RenderEntity({ position.x, position.y, 0.0f }, entity);
+		DrawEntity({ position.x, position.y, 0.0f }, bc);
 	}
 
-	void Renderer::RenderEntity(const glm::vec3& position, EntityHandle entity)
+	void Renderer::DrawEntity(const glm::vec3& position, const BlockComponent& bc)
 	{
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
-		RenderEntity(transform, entity);
+		DrawEntity(transform, bc);
 	}
 
-	void Renderer::RenderEntity(const glm::mat4& transform, EntityHandle entity)
+	void Renderer::DrawEntity(const glm::mat4& transform, const BlockComponent& bc)
 	{
+		Ref<Texture> texture = AssetManager::GetAsset<Texture>(bc.Data.TextureHandle);
 
+		if (texture)
+			DrawCube(transform, std::vector<Ref<Texture>>({ texture }));
 	}
 
 	void Renderer::ResetStats()

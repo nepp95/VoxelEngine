@@ -39,9 +39,6 @@ namespace VoxelEngine
 		static void DrawQuad(const glm::vec2& position, const Ref<Texture>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f), QuadSide side = QuadSide::Default);
 		static void DrawQuad(const glm::vec3& position, const Ref<Texture>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f), QuadSide side = QuadSide::Default);
 		static void DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f), QuadSide side = QuadSide::Default);
-		// Render Sprite
-		static void DrawSprite(const glm::mat4& transform, SpriteComponent& sc);
-		
 		// Render Cube
 		static void DrawCube(const glm::vec2& position, const glm::vec4& color = glm::vec4(1.0f));
 		static void DrawCube(const glm::vec3& position, const glm::vec4& color = glm::vec4(1.0f));
@@ -51,9 +48,9 @@ namespace VoxelEngine
 		static void DrawCube(const glm::vec3& position, const std::vector<Ref<Texture>>& textures, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
 		static void DrawCube(const glm::mat4& transform, const std::vector<Ref<Texture>>& textures, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
 		// Render Entity
-		static void RenderEntity(const glm::vec2& position, EntityHandle entity);
-		static void RenderEntity(const glm::vec3& position, EntityHandle entity);
-		static void RenderEntity(const glm::mat4& transform, EntityHandle entity);
+		static void DrawEntity(const glm::vec2& position, const BlockComponent& bc);
+		static void DrawEntity(const glm::vec3& position, const BlockComponent& bc);
+		static void DrawEntity(const glm::mat4& transform, const BlockComponent& bc);
 
 		// Stats
 		struct Statistics

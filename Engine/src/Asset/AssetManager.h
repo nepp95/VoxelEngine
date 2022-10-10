@@ -81,15 +81,14 @@ namespace VoxelEngine
 			return GetAsset<T>(AssetMetadata().Handle);
 		}
 
-	private:
-		static AssetMetadata& GetMetadataInternal(AssetHandle handle);
 		static const AssetMetadata& GetMetadata(AssetHandle handle);
 		static const AssetMetadata& GetMetadata(const std::filesystem::path& filepath);
-
 		static bool TryLoadData(const AssetMetadata& metadata, Ref<Asset>& asset);
-
 		static void WriteRegistry();
-		
+	
+	private:
+		static AssetMetadata& GetMetadataInternal(AssetHandle handle);
+
 	private:
 		// Assets
 		static std::unordered_map<AssetHandle, Ref<Asset>> s_loadedAssets; // Assets which are loaded

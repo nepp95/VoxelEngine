@@ -17,16 +17,13 @@ namespace VoxelEngine
 
 		Renderer::BeginScene(*camera);
 
-		auto view = m_registry.view<TransformComponent, SpriteComponent>();
+		auto view = m_registry.view<TransformComponent, BlockComponent>();
 
 		for (auto entity : view)
 		{
-			auto [transform, sprite] = view.get<TransformComponent, SpriteComponent>(entity);
-			//Renderer::DrawSprite(transform.GetTransform(), sprite);
+			auto [transform, block] = view.get<TransformComponent, BlockComponent>(entity);
+			Renderer::DrawEntity(transform.GetTransform(), block);
 		}
-		
-		std::vector<Ref<Texture>> textures = { AssetManager::GetAsset<Texture>("assets/textures/grass.png") };
-		Renderer::DrawCube({ 0.0f, 1.0f, 0.0f }, textures);
 
 		Renderer::EndScene();
 	}

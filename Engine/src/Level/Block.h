@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Asset/Asset.h"
+
 namespace VoxelEngine
 {
 	enum class BlockType
@@ -20,7 +22,12 @@ namespace VoxelEngine
 
 	struct BlockData
 	{
+		AssetHandle TextureHandle{ 0 };
 		BlockType Type;
+
+		BlockData()
+			: Type(BlockType::Air)
+		{}
 
 		BlockData(BlockType type)
 			: Type(type)
