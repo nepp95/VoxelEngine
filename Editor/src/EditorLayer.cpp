@@ -6,7 +6,8 @@ void EditorLayer::OnAttach()
 {
 	m_level = Ref<Level>::Create();
 	auto cameraEntity = m_level->CreateEntity("Camera");
-	cameraEntity.AddComponent<CameraComponent>();
+	auto& cc = cameraEntity.AddComponent<CameraComponent>();
+	m_camera = &cc.Camera;
 
 	Ref<Asset> grassAsset = AssetManager::GetAsset<Asset>("assets/textures/grass.png");
 	m_grassTexture = grassAsset.As<Texture>();
@@ -44,7 +45,7 @@ void EditorLayer::OnUpdate(float ts)
 	}
 
 	// Update
-	m_camera.OnUpdate(ts);
+	m_camera->OnUpdate(ts);
 
 	// Prepare for render
 	m_framebuffer->Bind();
@@ -53,10 +54,6 @@ void EditorLayer::OnUpdate(float ts)
 
 	// Render scene
 	m_level->OnUpdate(ts);
-
-	Renderer::BeginScene(m_camera);
-	Renderer::DrawQuad({ 0.0f, 0.0f }, m_grassTexture);
-	Renderer::EndScene();
 
 	// Unbind framebuffer
 	m_framebuffer->Unbind();
@@ -134,10 +131,9 @@ void EditorLayer::OnImGuiRender()
 	ImGui::NewLine();
 	
 	ImGui::Text("Camera");
-	auto& cameraPosition = m_camera.GetPosition();
-	ImGui::Text("\tPosition: %.2f/%.2f/%.2f", cameraPosition.x, cameraPosition.y, cameraPosition.z);
-	ImGui::Text("\tYaw: %.2f", m_camera.GetYaw());
-	ImGui::Text("\tPitch: %.2f", m_camera.GetPitch());
+	ImGui::Text("\tPosition: %.2f/%.2f/%.2f", m_camera->GetPosition().x, m_camera->GetPosition().y, m_camera->GetPosition().z);
+	ImGui::Text("\tYaw: %.2f", m_camera->GetYaw());
+	ImGui::Text("\tPitch: %.2f", m_camera->GetPitch());
 
 	ImGui::End();
 
@@ -185,7 +181,7 @@ void EditorLayer::OnImGuiRender()
 
 void EditorLayer::OnEvent(VoxelEngine::Event& e)
 {
-	m_camera.OnEvent(e);
+	m_camera->OnEvent(e);
 
 	EventDispatcher dispatcher(e);
 
@@ -198,6 +194,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
 	if (e.IsRepeat())
 		return false;
 
+	bool alt = Input::IsKeyPressed(Key::LeftAlt) || Input::IsKeyPressed(Key::RightAlt);
 	bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
 	bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
 
@@ -207,6 +204,12 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
 		{
 			Application::Get().Close();
 			return true;
+		}
+
+		case Key::Z:
+		{
+			if (shift)
+				Application::Get().GetWindow().ToggleCursor();
 		}
 	}
 

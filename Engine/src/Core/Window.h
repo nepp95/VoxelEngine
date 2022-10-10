@@ -41,6 +41,8 @@ namespace VoxelEngine
 		void SetVSync(bool enabled);
 		bool IsVSync() const { return m_specification.VSync; }
 
+		void ToggleCursor();
+
 		void SetEventCallback(const EventCallbackFn& callback) { m_callback = callback; }
 
 		GLFWwindow& GetNativeWindow() const { return *m_window; }
@@ -50,5 +52,7 @@ namespace VoxelEngine
 		GLFWwindow* m_window;
 
 		EventCallbackFn m_callback;
+
+		bool m_showCursor{ true };
 	};
 }

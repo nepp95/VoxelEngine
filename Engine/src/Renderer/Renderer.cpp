@@ -15,7 +15,7 @@ namespace VoxelEngine
 	struct RendererData
 	{
 		// Batch limits
-		static const uint32_t MaxQuads{ 20000 };
+		static const uint32_t MaxQuads{ 30000 };
 		static const uint32_t MaxVertices{ MaxQuads * 4 };
 		static const uint32_t MaxIndices{ MaxQuads * 6 };
 		static const uint32_t MaxTextureSlots{ 32 };
@@ -69,7 +69,7 @@ namespace VoxelEngine
 		uint32_t* indices = new uint32_t[RendererData::MaxIndices];
 		uint32_t offset{ 0 };
 
-		for (uint32_t i = 0; i < s_data.MaxIndices; i += 24)
+		for (uint32_t i = 0; i < s_data.MaxIndices; i += 36)
 		{
 			// Front
 			indices[i + 0]	= offset + 0;
@@ -102,6 +102,22 @@ namespace VoxelEngine
 			indices[i + 21] = offset + 13;
 			indices[i + 22] = offset + 15;
 			indices[i + 23] = offset + 14;
+
+			// Bottom
+			indices[i + 24] = offset + 18;
+			indices[i + 25] = offset + 19;
+			indices[i + 26] = offset + 17;
+			indices[i + 27] = offset + 17;
+			indices[i + 28] = offset + 16;
+			indices[i + 29] = offset + 18;
+
+			// Top
+			indices[i + 30] = offset + 21;
+			indices[i + 31] = offset + 20;
+			indices[i + 32] = offset + 22;
+			indices[i + 33] = offset + 22;
+			indices[i + 34] = offset + 23;
+			indices[i + 35] = offset + 21;
 
 			offset += 8;
 		}
@@ -334,7 +350,12 @@ namespace VoxelEngine
 
 	void Renderer::DrawCube(const glm::vec3& position, const std::vector<Ref<Texture>>& textures, float tilingFactor, const glm::vec4& tintColor)
 	{
-
+		if (textures.size() == 1)
+			for (int i = 0; i < 6; i++)
+				DrawQuad(position, textures.at(0), tilingFactor, tintColor, (QuadSide) i);
+		else if (textures.size() == 6)
+			for (int i = 0; i < 6; i++)
+				DrawQuad(position, textures.at(i), tilingFactor, tintColor, (QuadSide) i);
 	}
 
 	void Renderer::RenderBlock(const glm::vec2& position, const Ref<Block>& block)

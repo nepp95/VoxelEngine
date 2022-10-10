@@ -29,7 +29,8 @@ private:
 	Ref<Texture> m_grassTexture;
 
 	// Camera
-	Camera m_camera{ { 0.0f, 0.0f, 3.0f } };
+	Camera* m_camera;
+	//Camera m_camera{ { 0.0f, 0.0f, 3.0f } };
 
 	// Level
 	Ref<Level> m_level;

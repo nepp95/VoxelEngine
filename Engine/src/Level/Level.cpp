@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Level.h"
 
+#include "Asset/AssetManager.h"
 #include "Level/Components.h"
 #include "Level/Entity.h"
 #include "Renderer/Renderer.h"
@@ -21,10 +22,11 @@ namespace VoxelEngine
 		for (auto entity : view)
 		{
 			auto [transform, sprite] = view.get<TransformComponent, SpriteComponent>(entity);
-			Renderer::DrawSprite(transform.GetTransform(), sprite);
+			//Renderer::DrawSprite(transform.GetTransform(), sprite);
 		}
 		
-		Renderer::DrawCube({ 0.0f, 1.0f, 0.0f });
+		std::vector<Ref<Texture>> textures = { AssetManager::GetAsset<Texture>("assets/textures/grass.png") };
+		Renderer::DrawCube({ 0.0f, 1.0f, 0.0f }, textures);
 
 		Renderer::EndScene();
 	}
