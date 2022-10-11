@@ -31,7 +31,7 @@ namespace VoxelEngine
 
 		data = stbi_load(m_filepath.c_str(), &width, &height, &channels, 0);
 
-		CORE_ASSERT(data, "Failed to load texture file!");
+		CORE_ASSERT(data, "Failed to load texture file: %", m_filepath);
 
 		m_isLoaded = true;
 		m_width = width;

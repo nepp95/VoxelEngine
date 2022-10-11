@@ -4,51 +4,46 @@
 
 namespace VoxelEngine
 {
-	namespace Log
+	enum class LogLevel
 	{
-		enum class LogLevel
-		{
-			Info,
-			Warn,
-			Error,
-			Critical
-		};
+		Info,
+		Warn,
+		Error,
+		Critical
+	};
 
-		inline void SetOutputColor(const LogLevel& level)
+	class Log
+	{
+	public:
+		static void Init();
+		static void Shutdown();
+
+		static void SetOutputColor(const LogLevel& level);
+		static void ResetOutputColor();
+		static void EndMessage();
+
+		template<typename T>
+		static void LogMessage(T t)
 		{
-			if (level == LogLevel::Info)
-				std::cout << "\033[36m";
-			if (level == LogLevel::Warn)
-				std::cout << "\033[33m";
-			if (level == LogLevel::Error)
-				std::cout << "\033[1;31m";
-			if (level == LogLevel::Critical)
-				std::cout << "\033[31m";
+			std::cout << t;
 		}
 
-		inline void ResetOutputColor()
+		template<typename T, typename... Args>
+		static void LogMessage(const char* chars, T t, Args... args)
 		{
-			std::cout << "\33[0m";
-		}
+			// Reference: https://en.cppreference.com/w/cpp/language/parameter_pack
 
-		template <typename T>
-		void LogMessage(T t)
-		{
-			// Nothing special, just log the parameter
-			std::cout << t << std::endl;
-		}
+			for (; *chars != '\0'; chars++)
+			{
+				if (*chars == '%')
+				{
+					LogMessage(t);
+					LogMessage(chars + 1, args...);
+					return;
+				}
 
-		template <typename T, typename... Args>
-		void LogMessage(T t, Args ... args)
-		{
-			// TODO: Attempt of parameter logging
-			//std::string tempStr{t};
-			//size_t pos = tempStr.find_first_of('{');
-			//
-
-			std::cout << t << std::endl;
-
-			LogMessage(args...);
+				LogMessage(*chars);
+			}
 		}
 	};
 }
@@ -57,25 +52,26 @@ namespace VoxelEngine
 #define LOG(...) { \
 	::VoxelEngine::Log::LogMessage(__VA_ARGS__); \
 	::VoxelEngine::Log::ResetOutputColor(); \
+	::VoxelEngine::Log::EndMessage(); \
 }
 
 #define CORE_INFO(...) { \
-	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::Log::LogLevel::Info); \
+	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Info); \
 	LOG(__VA_ARGS__); \
 }
 
 #define CORE_WARN(...) { \
-	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::Log::LogLevel::Warn); \
+	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Warn); \
 	LOG(__VA_ARGS__); \
 }
 
 #define CORE_ERROR(...) { \
-	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::Log::LogLevel::Error); \
+	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Error); \
 	LOG(__VA_ARGS__); \
 }
 
 // Only used in assertions! TODO: Make inaccessible global
 #define CORE_CRITICAL(...) { \
-	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::Log::LogLevel::Critical); \
+	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Critical); \
 	LOG(__VA_ARGS__); \
 }
