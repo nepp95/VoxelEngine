@@ -111,7 +111,7 @@ namespace VoxelEngine {
 			in.close();
 		} else
 		{
-			CORE_ERROR("Could not open shader file");
+			CORE_ERROR("Could not open shader file: %", filepath);
 		}
 
 		return result;
@@ -135,7 +135,7 @@ namespace VoxelEngine {
 			// Extract shader type
 			size_t begin = pos + typeTokenLength + 1;
 			std::string type = source.substr(begin, eol - begin);
-			CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type specified!");
+			CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type (%) specified!", type);
 
 			// If there is no other type token, take the string till eof. Otherwise take it till the next type token.
 			size_t nextLinePos = source.find_first_not_of("\r\n", eol);
@@ -180,7 +180,7 @@ namespace VoxelEngine {
 				// Shader is not needed anymore
 				glDeleteShader(shader);
 
-				CORE_ERROR("{0}", infoLog.data());
+				CORE_ERROR(infoLog.data());
 				CORE_ASSERT(false, "Vertex shader compilation failure!");
 
 				break;
@@ -214,7 +214,7 @@ namespace VoxelEngine {
 			for (auto id : glShaderIDs)
 				glDeleteShader(id);
 
-			CORE_ERROR("{0}", infoLog.data());
+			CORE_ERROR(infoLog.data());
 			CORE_ASSERT(false, "Shader link failure!");
 
 			return;

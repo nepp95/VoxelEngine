@@ -198,7 +198,7 @@ namespace VoxelEngine
 	{
 		if (width == 0 || height == 0 || width > s_maxFramebufferSize || height > s_maxFramebufferSize)
 		{
-			CORE_WARN("Attempted to resize framebuffer to {0}, {1}", width, height);
+			CORE_WARN("Attempted to resize framebuffer to %x%", width, height);
 			return;
 		}
 
@@ -210,7 +210,7 @@ namespace VoxelEngine
 
 	void Framebuffer::ClearAttachment(uint32_t attachmentIndex, int value)
 	{
-		CORE_ASSERT(attachmentIndex < m_colorAttachments.size(), "");
+		CORE_ASSERT(attachmentIndex < m_colorAttachments.size(), "Index is out of range!");
 
 		auto& spec = m_colorAttachmentSpecifications[attachmentIndex];
 		glClearTexImage(m_colorAttachments[attachmentIndex], 0, Utils::EngineFBTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
@@ -218,7 +218,7 @@ namespace VoxelEngine
 
 	uint32_t Framebuffer::GetColorAttachmentRendererID(uint32_t index) const
 	{
-		CORE_ASSERT(index < m_colorAttachments.size(), "");
+		CORE_ASSERT(index < m_colorAttachments.size(), "Index is out of range!");
 		return m_colorAttachments[index];
 	}
 }

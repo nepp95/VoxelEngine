@@ -12,17 +12,14 @@ namespace VoxelEngine
 {
 	static void GLFWErrorCallback(int error, const char* description)
 	{
-		// TODO: Refactor when logging fixed
-		std::stringstream ss;
-		ss << "GLFW Error: (" << error << ") " << description;
-		CORE_ERROR(ss.str());
+		CORE_ERROR("GLFW Error: (%) %", error, description);
 	}
 
 	Window::Window(const WindowSpecification& specification)
 		: m_specification(specification)
 	{
 		// TODO: Refactor when logging fixed
-		CORE_INFO("Creating window of size 1280/720");
+		CORE_INFO("Creating window of size %x%", m_specification.Width, m_specification.Height);
 
 		// Init GLFW
 		int success{glfwInit()};
@@ -45,16 +42,10 @@ namespace VoxelEngine
 		CORE_ASSERT(status, "Could not initialize Glad!");
 
 		// Log computer specs
-		// TODO: Refactor when logging fixed
-		std::stringstream ss1, ss2, ss3;
-
 		CORE_INFO("GPU Info:");
-		ss1 << "\tVendor: " << glGetString(GL_VENDOR);
-		CORE_INFO(ss1.str());
-		ss2 << "\tRenderer: " << glGetString(GL_RENDERER);
-		CORE_INFO(ss2.str());
-		ss3 << "\tVersion: " << glGetString(GL_VERSION);
-		CORE_INFO(ss3.str());
+		CORE_INFO("\tVendor: %", glGetString(GL_VENDOR));
+		CORE_INFO("\tRenderer: %", glGetString(GL_RENDERER));
+		CORE_INFO("\tVersion: %", glGetString(GL_VERSION));
 
 		CORE_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 6),
 		            "Engine requires at least OpenGL version 4.6!");
