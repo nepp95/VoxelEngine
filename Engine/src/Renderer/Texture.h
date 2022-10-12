@@ -1,10 +1,12 @@
 #pragma once
 
+#include "Asset/Asset.h"
+
 typedef unsigned int GLenum;
 
 namespace VoxelEngine
 {
-	class Texture
+	class Texture : public Asset
 	{
 	public:
 		Texture(uint32_t width, uint32_t height);
@@ -20,6 +22,9 @@ namespace VoxelEngine
 
 		bool IsLoaded() const { return m_isLoaded; }
 		bool operator==(const Texture& other) const { return m_rendererID == other.GetRendererID(); }
+
+		static AssetType GetStaticType() { return AssetType::Texture; }
+		AssetType GetAssetType() const override { return GetStaticType(); }
 
 	private:
 		uint32_t m_rendererID;

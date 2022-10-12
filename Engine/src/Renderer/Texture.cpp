@@ -76,7 +76,7 @@ namespace VoxelEngine
 		glTextureSubImage2D(m_rendererID, 0, 0, 0, m_width, m_height, m_dataFormat, GL_UNSIGNED_BYTE, data);
 	}
 
-	void Texture::Bind(uint32_t slot /*= 0*/) const
+	void Texture::Bind(uint32_t slot) const
 	{
 		glBindTextureUnit(slot, m_rendererID);
 	}

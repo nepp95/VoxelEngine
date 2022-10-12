@@ -4,7 +4,7 @@
 
 namespace VoxelEngine
 {
-	class VertexArray
+	class VertexArray : public RefCounted
 	{
 	public:
 		VertexArray();

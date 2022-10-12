@@ -172,4 +172,12 @@ namespace VoxelEngine
 
 		m_specification.VSync = enabled;
 	}
+
+	void Window::ToggleCursor()
+	{
+		if (m_showCursor)
+			glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		else
+			glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
 }

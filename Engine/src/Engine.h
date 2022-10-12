@@ -10,6 +10,13 @@
 #include "Core/Layer.h"
 #include "Core/Log.h"
 #include "Core/MouseCodes.h"
+#include "Core/UUID.h"
+
+// Assets
+#include "Asset/Asset.h"
+#include "Asset/AssetManager.h"
+#include "Asset/AssetMetadata.h"
+#include "Asset/AssetTypes.h"
 
 // Events
 #include "Events/ApplicationEvent.h"
@@ -18,6 +25,12 @@
 
 // Layers
 #include "Layers/ImGuiLayer.h"
+
+// Level
+#include "Level/Block.h"
+#include "Level/Components.h"
+#include "Level/Entity.h"
+#include "Level/Level.h"
 
 // Math
 #include "Math/Vector.h"

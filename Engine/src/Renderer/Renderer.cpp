@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "Renderer.h"
 
+#include "Asset/AssetManager.h"
 #include "Renderer/RenderCommand.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Vertex.h"
@@ -14,7 +15,7 @@ namespace VoxelEngine
 	struct RendererData
 	{
 		// Batch limits
-		static const uint32_t MaxQuads{ 20000 };
+		static const uint32_t MaxQuads{ 30000 };
 		static const uint32_t MaxVertices{ MaxQuads * 4 };
 		static const uint32_t MaxIndices{ MaxQuads * 6 };
 		static const uint32_t MaxTextureSlots{ 32 };
@@ -48,10 +49,11 @@ namespace VoxelEngine
 	void Renderer::Init()
 	{
 		RenderCommand::Init();
+		AssetManager::Init();
 
 		// Create vertex array and buffers
-		s_data.QuadVertexArray = CreateRef<VertexArray>();
-		s_data.QuadVertexBuffer = CreateRef<VertexBuffer>(RendererData::MaxVertices * sizeof(Vertex));
+		s_data.QuadVertexArray = Ref<VertexArray>::Create();
+		s_data.QuadVertexBuffer = Ref<VertexBuffer>::Create(RendererData::MaxVertices * sizeof(Vertex));
 
 		s_data.QuadVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3,	"aPosition"		},
@@ -68,7 +70,7 @@ namespace VoxelEngine
 		uint32_t* indices = new uint32_t[RendererData::MaxIndices];
 		uint32_t offset{ 0 };
 
-		for (uint32_t i = 0; i < s_data.MaxIndices; i += 24)
+		for (uint32_t i = 0; i < s_data.MaxIndices; i += 36)
 		{
 			// Front
 			indices[i + 0]	= offset + 0;
@@ -102,10 +104,26 @@ namespace VoxelEngine
 			indices[i + 22] = offset + 15;
 			indices[i + 23] = offset + 14;
 
-			offset += 8;
+			// Bottom
+			indices[i + 24] = offset + 18;
+			indices[i + 25] = offset + 19;
+			indices[i + 26] = offset + 17;
+			indices[i + 27] = offset + 17;
+			indices[i + 28] = offset + 16;
+			indices[i + 29] = offset + 18;
+
+			// Top
+			indices[i + 30] = offset + 21;
+			indices[i + 31] = offset + 20;
+			indices[i + 32] = offset + 22;
+			indices[i + 33] = offset + 22;
+			indices[i + 34] = offset + 23;
+			indices[i + 35] = offset + 21;
+
+			offset += 24;
 		}
 
-		Ref<IndexBuffer> indexBuffer = CreateRef<IndexBuffer>(indices, RendererData::MaxIndices);
+		Ref<IndexBuffer> indexBuffer = Ref<IndexBuffer>::Create(indices, RendererData::MaxIndices);
 		s_data.QuadVertexArray->SetIndexBuffer(indexBuffer);
 		delete[] indices;
 
@@ -176,10 +194,10 @@ namespace VoxelEngine
 		};
 
 		// Load shader
-		s_data.BaseShader = CreateRef<Shader>("assets/shaders/quad.glsl");
+		s_data.BaseShader = Ref<Shader>::Create("assets/shaders/quad.glsl");
 
 		// Set white texture slot (invalid texture)
-		s_data.WhiteTexture = CreateRef<Texture>(1, 1);
+		s_data.WhiteTexture = Ref<Texture>::Create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
 		s_data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
@@ -265,7 +283,7 @@ namespace VoxelEngine
 		// Check if texture is loaded into the GPU and set texture index to it if so
 		float textureIndex{ 0.0f };
 		for (uint32_t i = 0; i < s_data.TextureSlotIndex; i++)
-			if (*s_data.TextureSlots[i] == *texture)
+			if (*s_data.TextureSlots[i] == *texture.Raw())
 			{
 				textureIndex = (float) i;
 				break;
@@ -308,14 +326,62 @@ namespace VoxelEngine
 
 	void Renderer::DrawCube(const glm::vec3& position, const glm::vec4& color)
 	{
-		DrawQuad(position, color, QuadSide::Front);
-		DrawQuad(position, color, QuadSide::Right);
-		DrawQuad(position, color, QuadSide::Back);
-		DrawQuad(position, color, QuadSide::Left);
-		DrawQuad(position, color, QuadSide::Bottom);
-		DrawQuad(position, color, QuadSide::Top);
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+		DrawCube(transform, color);
+	}
+
+	void Renderer::DrawCube(const glm::mat4& transform, const glm::vec4& color)
+	{
+		DrawQuad(transform, color, QuadSide::Front);
+		DrawQuad(transform, color, QuadSide::Right);
+		DrawQuad(transform, color, QuadSide::Back);
+		DrawQuad(transform, color, QuadSide::Left);
+		DrawQuad(transform, color, QuadSide::Bottom);
+		DrawQuad(transform, color, QuadSide::Top);
 
 		s_data.Stats.CubeCount++;
+	}
+
+	void Renderer::DrawCube(const glm::vec2& position, const std::vector<Ref<Texture>>& textures, float tilingFactor, const glm::vec4& tintColor)
+	{
+		DrawCube({ position.x, position.y, 0.0f }, textures, tilingFactor, tintColor);
+	}
+
+	void Renderer::DrawCube(const glm::vec3& position, const std::vector<Ref<Texture>>& textures, float tilingFactor, const glm::vec4& tintColor)
+	{
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+		DrawCube(transform, textures, tilingFactor, tintColor);
+	}
+
+	void Renderer::DrawCube(const glm::mat4& transform, const std::vector<Ref<Texture>>& textures, float tilingFactor, const glm::vec4& tintColor)
+	{
+		if (textures.size() == 1)
+			for (int i = 0; i < 6; i++)
+				DrawQuad(transform, textures.at(0), tilingFactor, tintColor, (QuadSide)i);
+		else if (textures.size() == 6)
+			for (int i = 0; i < 6; i++)
+				DrawQuad(transform, textures.at(i), tilingFactor, tintColor, (QuadSide)i);
+
+		s_data.Stats.CubeCount++;
+	}
+
+	void Renderer::DrawEntity(const glm::vec2& position, const BlockComponent& bc)
+	{
+		DrawEntity({ position.x, position.y, 0.0f }, bc);
+	}
+
+	void Renderer::DrawEntity(const glm::vec3& position, const BlockComponent& bc)
+	{
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+		DrawEntity(transform, bc);
+	}
+
+	void Renderer::DrawEntity(const glm::mat4& transform, const BlockComponent& bc)
+	{
+		Ref<Texture> texture = AssetManager::GetAsset<Texture>(bc.Data.TextureHandle);
+
+		if (texture)
+			DrawCube(transform, std::vector<Ref<Texture>>({ texture }));
 	}
 
 	void Renderer::ResetStats()

@@ -4,7 +4,29 @@
 
 void EditorLayer::OnAttach()
 {
-	m_grassTexture = CreateRef<Texture>("assets/textures/grass.png");
+	m_level = Ref<Level>::Create();
+
+	// Camera
+	auto cameraEntity = m_level->CreateEntity("Camera");
+	auto& cc = cameraEntity.AddComponent<CameraComponent>();
+	cc.Camera.SetPitch(0.0f);
+	cc.Camera.SetYaw(0.0f);
+	m_camera = &cc.Camera;
+
+	for (int x = 0; x < 5; x++)
+	{
+		for (int z = 0; z < 5; z++)
+		{
+			auto testEntity = m_level->CreateEntity("TestEntity");
+			
+			auto& bc = testEntity.AddComponent<BlockComponent>();
+			bc.Data.Type = BlockType::Grass;
+			bc.Data.TextureHandle = AssetManager::GetMetadata("assets/textures/grass.png").Handle;
+
+			auto& tc = testEntity.GetComponent<TransformComponent>();
+			tc.Translation = { x * 2.0f, 0.0f, z * 2.0f };
+		}
+	}
 
 	// Set settings
 	auto& app = Application::Get();
@@ -15,7 +37,7 @@ void EditorLayer::OnAttach()
 	fbSpecification.Width = 1280;
 	fbSpecification.Height = 720;
 	fbSpecification.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
-	m_framebuffer = CreateRef<Framebuffer>(fbSpecification);
+	m_framebuffer = Ref<Framebuffer>::Create(fbSpecification);
 }
 
 void EditorLayer::OnDetach() {}
@@ -34,7 +56,7 @@ void EditorLayer::OnUpdate(float ts)
 	}
 
 	// Update
-	m_camera.OnUpdate(ts);
+	m_camera->OnUpdate(ts);
 
 	// Prepare for render
 	m_framebuffer->Bind();
@@ -42,9 +64,7 @@ void EditorLayer::OnUpdate(float ts)
 	RenderCommand::Clear();
 
 	// Render scene
-	Renderer::BeginScene(m_camera);
-	Renderer::DrawQuad({ 0.0f, 0.0f }, m_grassTexture);
-	Renderer::EndScene();
+	m_level->OnUpdate(ts);
 
 	// Unbind framebuffer
 	m_framebuffer->Unbind();
@@ -122,10 +142,9 @@ void EditorLayer::OnImGuiRender()
 	ImGui::NewLine();
 	
 	ImGui::Text("Camera");
-	auto& cameraPosition = m_camera.GetPosition();
-	ImGui::Text("\tPosition: %.2f/%.2f/%.2f", cameraPosition.x, cameraPosition.y, cameraPosition.z);
-	ImGui::Text("\tYaw: %.2f", m_camera.GetYaw());
-	ImGui::Text("\tPitch: %.2f", m_camera.GetPitch());
+	ImGui::Text("\tPosition: %.2f/%.2f/%.2f", m_camera->GetPosition().x, m_camera->GetPosition().y, m_camera->GetPosition().z);
+	ImGui::Text("\tYaw: %.2f", m_camera->GetYaw());
+	ImGui::Text("\tPitch: %.2f", m_camera->GetPitch());
 
 	ImGui::End();
 
@@ -173,7 +192,7 @@ void EditorLayer::OnImGuiRender()
 
 void EditorLayer::OnEvent(VoxelEngine::Event& e)
 {
-	m_camera.OnEvent(e);
+	m_camera->OnEvent(e);
 
 	EventDispatcher dispatcher(e);
 
@@ -186,6 +205,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
 	if (e.IsRepeat())
 		return false;
 
+	bool alt = Input::IsKeyPressed(Key::LeftAlt) || Input::IsKeyPressed(Key::RightAlt);
 	bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
 	bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
 
@@ -195,6 +215,12 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
 		{
 			Application::Get().Close();
 			return true;
+		}
+
+		case Key::Z:
+		{
+			if (shift)
+				Application::Get().GetWindow().ToggleCursor();
 		}
 	}
 

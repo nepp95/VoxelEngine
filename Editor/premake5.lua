@@ -15,6 +15,7 @@ project "Editor"
     includedirs {
         "%{wks.location}/Engine/src",
         "%{wks.location}/Engine/vendor",
+        "%{IncludeDir.entt}",
         "%{IncludeDir.glm}"
     }
 
