@@ -120,7 +120,7 @@ namespace VoxelEngine
 			indices[i + 34] = offset + 23;
 			indices[i + 35] = offset + 21;
 
-			offset += 8;
+			offset += 24;
 		}
 
 		Ref<IndexBuffer> indexBuffer = Ref<IndexBuffer>::Create(indices, RendererData::MaxIndices);
