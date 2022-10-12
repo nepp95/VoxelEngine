@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <iostream>
+#include <sstream>
 
 namespace VoxelEngine
 {
@@ -21,6 +22,15 @@ namespace VoxelEngine
 		static void SetOutputColor(const LogLevel& level);
 		static void ResetOutputColor();
 		static void EndMessage();
+
+		static void ParseLocation(std::string file, int line)
+		{
+			std::stringstream ss;
+
+			size_t pos = file.find("src");
+			ss << "[" << file.substr(pos) << "]:" << line << ": ";
+			LogMessage(ss.str());
+		}
 
 		template<typename T>
 		static void LogMessage(T t)
@@ -55,23 +65,28 @@ namespace VoxelEngine
 	::VoxelEngine::Log::EndMessage(); \
 }
 
+#define LOG_WITH_LOCATION(...) { \
+	::VoxelEngine::Log::ParseLocation(__FILE__, __LINE__); \
+	LOG(__VA_ARGS__); \
+}
+
 #define CORE_INFO(...) { \
 	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Info); \
-	LOG(__VA_ARGS__); \
+	LOG_WITH_LOCATION(__VA_ARGS__); \
 }
 
 #define CORE_WARN(...) { \
 	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Warn); \
-	LOG(__VA_ARGS__); \
+	LOG_WITH_LOCATION(__VA_ARGS__); \
 }
 
 #define CORE_ERROR(...) { \
 	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Error); \
-	LOG(__VA_ARGS__); \
+	LOG_WITH_LOCATION(__VA_ARGS__); \
 }
 
 // Only used in assertions! TODO: Make inaccessible global
 #define CORE_CRITICAL(...) { \
 	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Critical); \
-	LOG(__VA_ARGS__); \
+	LOG_WITH_LOCATION(__VA_ARGS__); \
 }
