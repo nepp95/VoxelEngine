@@ -2,10 +2,10 @@
 
 #include "Core/Log.h"
 
-#define CORE_ASSERT(condition, msg) { \
+#define VE_CORE_ASSERT(condition, msg) { \
 	if (!(condition)) \
 	{ \
-		CORE_CRITICAL(msg); \
+		VE_CORE_CRITICAL(msg); \
 		__debugbreak; \
 	} \
 }

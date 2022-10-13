@@ -87,7 +87,7 @@ namespace VoxelEngine
 					return GL_RED_INTEGER;
 			}
 
-			CORE_ASSERT(false, "Unknown FramebufferTextureFormat!");
+			VE_CORE_ASSERT(false, "Unknown FramebufferTextureFormat!");
 			return 0;
 		}
 	}
@@ -169,7 +169,7 @@ namespace VoxelEngine
 
 		if (m_colorAttachments.size() > 1)
 		{
-			CORE_ASSERT(m_colorAttachments.size() <= 4, "Too many color attachments!");
+			VE_CORE_ASSERT(m_colorAttachments.size() <= 4, "Too many color attachments!");
 			GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
 			glDrawBuffers(m_colorAttachments.size(), buffers);
 		} else if (m_colorAttachments.empty())
@@ -178,7 +178,7 @@ namespace VoxelEngine
 			glDrawBuffer(GL_NONE);
 		}
 
-		CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
+		VE_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
@@ -198,7 +198,7 @@ namespace VoxelEngine
 	{
 		if (width == 0 || height == 0 || width > s_maxFramebufferSize || height > s_maxFramebufferSize)
 		{
-			CORE_WARN("Attempted to resize framebuffer to %x%", width, height);
+			VE_CORE_WARN("Attempted to resize framebuffer to %x%", width, height);
 			return;
 		}
 
@@ -210,7 +210,7 @@ namespace VoxelEngine
 
 	void Framebuffer::ClearAttachment(uint32_t attachmentIndex, int value)
 	{
-		CORE_ASSERT(attachmentIndex < m_colorAttachments.size(), "Index is out of range!");
+		VE_CORE_ASSERT(attachmentIndex < m_colorAttachments.size(), "Index is out of range!");
 
 		auto& spec = m_colorAttachmentSpecifications[attachmentIndex];
 		glClearTexImage(m_colorAttachments[attachmentIndex], 0, Utils::EngineFBTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
@@ -218,7 +218,7 @@ namespace VoxelEngine
 
 	uint32_t Framebuffer::GetColorAttachmentRendererID(uint32_t index) const
 	{
-		CORE_ASSERT(index < m_colorAttachments.size(), "Index is out of range!");
+		VE_CORE_ASSERT(index < m_colorAttachments.size(), "Index is out of range!");
 		return m_colorAttachments[index];
 	}
 }

@@ -18,25 +18,25 @@ namespace VoxelEngine
 		{
 			case GL_DEBUG_SEVERITY_HIGH:
 			{
-				CORE_ERROR(message);
+				VE_CORE_ERROR(message);
 				return;
 			}
 
 			case GL_DEBUG_SEVERITY_MEDIUM:
 			{
-				CORE_ERROR(message);
+				VE_CORE_ERROR(message);
 				return;
 			}
 
 			case GL_DEBUG_SEVERITY_LOW:
 			{
-				CORE_WARN(message);
+				VE_CORE_WARN(message);
 				return;
 			}
 
 			case GL_DEBUG_SEVERITY_NOTIFICATION:
 			{
-				CORE_INFO(message);
+				VE_CORE_INFO(message);
 				return;
 			}
 		}

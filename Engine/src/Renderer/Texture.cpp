@@ -31,7 +31,7 @@ namespace VoxelEngine
 
 		data = stbi_load(m_filepath.c_str(), &width, &height, &channels, 0);
 
-		CORE_ASSERT(data, "Failed to load texture file: %", m_filepath);
+		VE_CORE_ASSERT(data, "Failed to load texture file: %", m_filepath);
 
 		m_isLoaded = true;
 		m_width = width;
@@ -48,7 +48,7 @@ namespace VoxelEngine
 			m_dataFormat = GL_RGB;
 		}
 
-		CORE_ASSERT(m_internalFormat & m_dataFormat, "Texture format is not supported!");
+		VE_CORE_ASSERT(m_internalFormat & m_dataFormat, "Texture format is not supported!");
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_rendererID);
 		glTextureStorage2D(m_rendererID, 1, m_internalFormat, m_width, m_height);
@@ -72,7 +72,7 @@ namespace VoxelEngine
 	void Texture::SetData(void* data, uint32_t size)
 	{
 		uint32_t bpp = m_dataFormat == GL_RGBA ? 4 : 3;
-		CORE_ASSERT(size == m_width * m_height * bpp, "Data must be entire texture!");
+		VE_CORE_ASSERT(size == m_width * m_height * bpp, "Data must be entire texture!");
 		glTextureSubImage2D(m_rendererID, 0, 0, 0, m_width, m_height, m_dataFormat, GL_UNSIGNED_BYTE, data);
 	}
 

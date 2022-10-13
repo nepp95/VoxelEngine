@@ -45,8 +45,8 @@ namespace VoxelEngine
 
 	void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 	{
-		CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "VertexBuffer has no layout!");
-		CORE_ASSERT(m_vertexBufferIndex < GL_MAX_VERTEX_ATTRIBS, "VertexBufferIndex > GL_MAX_VERTEX_ATTRIBS!");
+		VE_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "VertexBuffer has no layout!");
+		VE_CORE_ASSERT(m_vertexBufferIndex < GL_MAX_VERTEX_ATTRIBS, "VertexBufferIndex > GL_MAX_VERTEX_ATTRIBS!");
 
 		glBindVertexArray(m_rendererID);
 		vertexBuffer->Bind();
@@ -111,7 +111,7 @@ namespace VoxelEngine
 				}
 
 				default:
-					CORE_ASSERT(false, "Unknown ShaderDataType!");
+					VE_CORE_ASSERT(false, "Unknown ShaderDataType!");
 			}
 		}
 

@@ -23,7 +23,7 @@ namespace VoxelEngine {
 			case ShaderDataType::Bool:		return 1;
 		}
 
-		CORE_ASSERT(false, "Unknown ShaderDataType!");
+		VE_CORE_ASSERT(false, "Unknown ShaderDataType!");
 		return 0;
 	}
 
@@ -57,7 +57,7 @@ namespace VoxelEngine {
 				case ShaderDataType::Bool:		return 1;
 			}
 
-			CORE_ASSERT(false, "Unknown ShaderDataType!");
+			VE_CORE_ASSERT(false, "Unknown ShaderDataType!");
 			return 0;
 		}
 	};

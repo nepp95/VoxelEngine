@@ -20,7 +20,7 @@ namespace VoxelEngine
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)
 		{
-			CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
+			VE_CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
 			T& component = m_level->m_registry.emplace<T>(m_entityHandle, std::forward<Args>(args)...);
 			//m_level->OnComponentAdded<T>(*this, component);
 			return component;
@@ -37,7 +37,7 @@ namespace VoxelEngine
 		template<typename T>
 		T& GetComponent()
 		{
-			CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
+			VE_CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
 			return m_level->m_registry.get<T>(m_entityHandle);
 		}
 
@@ -50,7 +50,7 @@ namespace VoxelEngine
 		template<typename T>
 		void RemoveComponent()
 		{
-			CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
+			VE_CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
 			m_level->m_registry.remove<T>(m_entityHandle);
 		}
 		//

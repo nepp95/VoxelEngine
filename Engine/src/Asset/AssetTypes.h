@@ -17,7 +17,7 @@ namespace VoxelEngine
 			if (assetType == "None")			return AssetType::None;
 			if (assetType == "Texture")			return AssetType::Texture;
 
-			CORE_ASSERT(false, "Unknown AssetType!");
+			VE_CORE_ASSERT(false, "Unknown AssetType!");
 			return AssetType::None;
 		}
 
@@ -29,7 +29,7 @@ namespace VoxelEngine
 				case AssetType::Texture:		return "Texture";
 			}
 
-			CORE_ASSERT(false, "Unknown AssetType!");
+			VE_CORE_ASSERT(false, "Unknown AssetType!");
 			return "None";
 		}
 	}

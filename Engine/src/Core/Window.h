@@ -19,7 +19,7 @@ namespace VoxelEngine
 		bool VSync;
 
 		WindowSpecification(const std::string& title = "Voxel Engine", uint32_t width = 1280, uint32_t height = 720,
-		                    bool vsync = true)
+		                    bool vsync = false)
 			: Title(title), Width(width), Height(height), VSync(vsync) { }
 	};
 

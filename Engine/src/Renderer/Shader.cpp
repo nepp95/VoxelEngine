@@ -12,7 +12,7 @@ namespace VoxelEngine {
 		if (type == "fragment")
 			return GL_FRAGMENT_SHADER;
 
-		CORE_ASSERT(false, "Unknown shader type!");
+		VE_CORE_ASSERT(false, "Unknown shader type!");
 		return 0;
 	}
 
@@ -111,7 +111,7 @@ namespace VoxelEngine {
 			in.close();
 		} else
 		{
-			CORE_ERROR("Could not open shader file: %", filepath);
+			VE_CORE_ERROR("Could not open shader file: %", filepath);
 		}
 
 		return result;
@@ -130,12 +130,12 @@ namespace VoxelEngine {
 		while (pos != std::string::npos) {
 			// Make sure there is actual source after the type token
 			size_t eol = source.find_first_of("\r\n", pos);
-			CORE_ASSERT(eol != std::string::npos, "Syntax error");
+			VE_CORE_ASSERT(eol != std::string::npos, "Syntax error");
 
 			// Extract shader type
 			size_t begin = pos + typeTokenLength + 1;
 			std::string type = source.substr(begin, eol - begin);
-			CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type (%) specified!", type);
+			VE_CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type (%) specified!", type);
 
 			// If there is no other type token, take the string till eof. Otherwise take it till the next type token.
 			size_t nextLinePos = source.find_first_not_of("\r\n", eol);
@@ -149,7 +149,7 @@ namespace VoxelEngine {
 	void Shader::Compile(std::unordered_map<GLenum, std::string> shaderSources)
 	{
 		GLuint program = glCreateProgram();
-		CORE_ASSERT(shaderSources.size() <= 2, "We only support 2 shaders for now!");
+		VE_CORE_ASSERT(shaderSources.size() <= 2, "We only support 2 shaders for now!");
 		std::array<GLenum, 2> glShaderIDs;
 		int glShaderIDIndex{ 0 };
 
@@ -180,8 +180,8 @@ namespace VoxelEngine {
 				// Shader is not needed anymore
 				glDeleteShader(shader);
 
-				CORE_ERROR(infoLog.data());
-				CORE_ASSERT(false, "Vertex shader compilation failure!");
+				VE_CORE_ERROR(infoLog.data());
+				VE_CORE_ASSERT(false, "Vertex shader compilation failure!");
 
 				break;
 			}
@@ -214,8 +214,8 @@ namespace VoxelEngine {
 			for (auto id : glShaderIDs)
 				glDeleteShader(id);
 
-			CORE_ERROR(infoLog.data());
-			CORE_ASSERT(false, "Shader link failure!");
+			VE_CORE_ERROR(infoLog.data());
+			VE_CORE_ASSERT(false, "Shader link failure!");
 
 			return;
 		}

@@ -16,10 +16,10 @@ workspace "VoxelEngine"
 	}
 	
 	group "Dependencies"
-		include "Engine/vendor/glad"
-		include "Engine/vendor/glfw"
-		include "Engine/vendor/imgui"
-		include "Engine/vendor/yaml-cpp"
+		include "Engine/vendor/glad" -- OpenGL abstraction
+		include "Engine/vendor/glfw" -- Window management
+		include "Engine/vendor/imgui" -- Graphical user interface]
+		include "Engine/vendor/yaml-cpp" -- Writing/reading lua files for serialization
 	group ""
 
 	group "Core"

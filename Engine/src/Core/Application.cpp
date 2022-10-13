@@ -14,7 +14,7 @@ namespace VoxelEngine
 		: m_specification{specification}
 	{
 		// Set instance if not set. If it is, abort. We can only have one instance!
-		CORE_ASSERT(!s_instance, "Application instance already exists!");
+		VE_CORE_ASSERT(!s_instance, "Application instance already exists!");
 		s_instance = this;
 
 		// Set working directory
@@ -36,7 +36,7 @@ namespace VoxelEngine
 
 	Application::~Application()
 	{
-		CORE_INFO("Shutting down...");
+		VE_CORE_INFO("Shutting down...");
 
 		Renderer::Shutdown();
 	}

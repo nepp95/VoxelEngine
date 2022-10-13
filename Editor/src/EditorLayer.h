@@ -27,6 +27,7 @@ private:
 private:
 	// Test data
 	Ref<Texture> m_grassTexture;
+	float m_timestep{ 0.0f };
 
 	// Camera
 	Camera* m_camera;

@@ -46,6 +46,7 @@ void EditorLayer::OnUpdate(float ts)
 {
 	// Reset render stats
 	Renderer::ResetStats();
+	m_timestep = ts;
 
 	// Handle resize
 	if (FramebufferSpecification specification = m_framebuffer->GetSpecification();
@@ -138,6 +139,8 @@ void EditorLayer::OnImGuiRender()
 	ImGui::Text("\tQuads: %d", stats.QuadCount);
 	ImGui::Text("\tVertices: %d", stats.VertexCount);
 	ImGui::Text("\tIndices: %d", stats.IndexCount);
+	ImGui::NewLine();
+	ImGui::Text("Frame time: %.4f", m_timestep);
 	
 	ImGui::NewLine();
 	

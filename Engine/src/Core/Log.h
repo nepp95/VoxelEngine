@@ -70,23 +70,23 @@ namespace VoxelEngine
 	LOG(__VA_ARGS__); \
 }
 
-#define CORE_INFO(...) { \
+#define VE_CORE_INFO(...) { \
 	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Info); \
 	LOG_WITH_LOCATION(__VA_ARGS__); \
 }
 
-#define CORE_WARN(...) { \
+#define VE_CORE_WARN(...) { \
 	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Warn); \
 	LOG_WITH_LOCATION(__VA_ARGS__); \
 }
 
-#define CORE_ERROR(...) { \
+#define VE_CORE_ERROR(...) { \
 	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Error); \
 	LOG_WITH_LOCATION(__VA_ARGS__); \
 }
 
 // Only used in assertions! TODO: Make inaccessible global
-#define CORE_CRITICAL(...) { \
+#define VE_CORE_CRITICAL(...) { \
 	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Critical); \
 	LOG_WITH_LOCATION(__VA_ARGS__); \
 }

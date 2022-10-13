@@ -27,20 +27,20 @@ namespace VoxelEngine
 		
 			if (in.is_open())
 			{
-				CORE_INFO("Asset registry file found at: %", s_assetRegistryFilepath);
+				VE_CORE_INFO("Asset registry file found at: %", s_assetRegistryFilepath);
 			}
 
 			in.close();
 		}
 
-		CORE_WARN("Asset registry file not found or can't be opened");
+		VE_CORE_WARN("Asset registry file not found or can't be opened");
 
 		// Load assets to registry from recursive file dir search
-		CORE_INFO("Loading textures from: %", s_texturesDir.string());
+		VE_CORE_INFO("Loading textures from: %", s_texturesDir.string());
 
 		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(s_texturesDir))
 		{
-			CORE_INFO("Checking texture: %", dirEntry.path().string());
+			VE_CORE_INFO("Checking texture: %", dirEntry.path().string());
 
 			{
 				auto& metadata = GetMetadata(dirEntry.path());
