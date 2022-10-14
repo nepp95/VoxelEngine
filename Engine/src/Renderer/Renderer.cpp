@@ -378,10 +378,17 @@ namespace VoxelEngine
 
 	void Renderer::DrawEntity(const glm::mat4& transform, const BlockComponent& bc)
 	{
-		Ref<Texture> texture = AssetManager::GetAsset<Texture>(bc.Data.TextureHandle);
-
-		if (texture)
+		if (bc.Data.TextureHandle)
+		{
+			// Draw cube with texture
+			Ref<Texture> texture = AssetManager::GetAsset<Texture>(bc.Data.TextureHandle);
 			DrawCube(transform, std::vector<Ref<Texture>>({ texture }));
+		} else 
+		{
+			// Draw white cube (no texture)
+			DrawCube(transform);
+		}
+
 	}
 
 	void Renderer::ResetStats()

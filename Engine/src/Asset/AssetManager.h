@@ -19,12 +19,14 @@ namespace VoxelEngine
 		{
 			static_assert(std::is_base_of<Asset, T>::value, "CreateAsset only works for types derived from Asset!");
 
+			Ref<Asset> asset{ nullptr };
+
 			// Create metadata
 			AssetMetadata metadata;
 			metadata.Handle = AssetHandle();
 			metadata.FilePath = filepath;
-			metadata.IsDataLoaded = true;
 			metadata.Type = T::GetStaticType();
+			metadata.IsDataLoaded = TryLoadData(metadata, asset);
 
 			// Check if file exists
 			if (!std::filesystem::exists(filepath))
@@ -34,11 +36,10 @@ namespace VoxelEngine
 			
 			WriteRegistry();
 
-			Ref<T> asset = Ref<T>::Create(std::forward<Args>(args)...);
 			asset->Handle = metadata.Handle;
 			s_loadedAssets.insert_or_assign(asset->Handle, asset);
 
-			return asset;
+			return asset.As<T>();
 		}
 
 		template<typename T>
@@ -71,14 +72,7 @@ namespace VoxelEngine
 		static Ref<T> GetAsset(const std::string& filepath)
 		{
 			// todo: Relative paths conversion
-			
-			// Find handle in registry
-			for (auto& [handle, metadata] : s_assetRegistry)
-				if (metadata.FilePath == filepath)
-					return GetAsset<T>(metadata.Handle);
-
-			// Return invalid metadata
-			return GetAsset<T>(AssetMetadata().Handle);
+			return GetAsset<T>(GetMetadata(filepath).Handle);
 		}
 
 		static const AssetMetadata& GetMetadata(AssetHandle handle);

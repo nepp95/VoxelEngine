@@ -13,9 +13,9 @@ void EditorLayer::OnAttach()
 	cc.Camera.SetYaw(0.0f);
 	m_camera = &cc.Camera;
 
-	for (int x = 0; x < 5; x++)
+	for (int x = 0; x < 10; x++)
 	{
-		for (int z = 0; z < 5; z++)
+		for (int z = 0; z < 10; z++)
 		{
 			auto testEntity = m_level->CreateEntity("TestEntity");
 			
@@ -47,6 +47,15 @@ void EditorLayer::OnUpdate(float ts)
 	// Reset render stats
 	Renderer::ResetStats();
 	m_timestep = ts;
+	m_elapsedTimestep += ts;
+	m_frames++;
+
+	if (m_elapsedTimestep > 1000.0f)
+	{
+		m_avgTimestep = 1000.0f / m_frames;
+		m_frames = 0;
+		m_elapsedTimestep = 0.0f;
+	}
 
 	// Handle resize
 	if (FramebufferSpecification specification = m_framebuffer->GetSpecification();
@@ -140,7 +149,8 @@ void EditorLayer::OnImGuiRender()
 	ImGui::Text("\tVertices: %d", stats.VertexCount);
 	ImGui::Text("\tIndices: %d", stats.IndexCount);
 	ImGui::NewLine();
-	ImGui::Text("Frame time: %.4f", m_timestep);
+	ImGui::Text("Frame time: %.4fms", m_timestep * 1000.0f);
+	ImGui::Text("Frame time avg: %.4fms", m_avgTimestep * 1000.0f);
 	
 	ImGui::NewLine();
 	

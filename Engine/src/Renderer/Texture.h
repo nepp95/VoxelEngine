@@ -11,7 +11,10 @@ namespace VoxelEngine
 	public:
 		Texture(uint32_t width, uint32_t height);
 		Texture(const std::string& filepath);
+		Texture(const std::filesystem::path& filepath);
 		~Texture();
+
+		void LoadTexture();
 
 		uint32_t GetWidth() const { return m_width; }
 		uint32_t GetHeight() const { return m_height; }
@@ -31,7 +34,7 @@ namespace VoxelEngine
 		GLenum m_internalFormat, m_dataFormat;
 
 		uint32_t m_width{ 0 }, m_height{ 0 };
-		std::string m_filepath;
+		std::filesystem::path m_filepath;
 		bool m_isLoaded{ false };
 	};
 }

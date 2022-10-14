@@ -25,11 +25,27 @@ namespace VoxelEngine
 	Texture::Texture(const std::string& filepath)
 		: m_filepath(filepath)
 	{
+		LoadTexture();
+	}
+
+	Texture::Texture(const std::filesystem::path& filepath)
+		: m_filepath(filepath)
+	{
+		LoadTexture();
+	}
+
+	Texture::~Texture()
+	{
+		glDeleteTextures(1, &m_rendererID);
+	}
+
+	void Texture::LoadTexture()
+	{
 		int width, height, channels;
 		stbi_set_flip_vertically_on_load(1);
 		stbi_uc* data{ nullptr };
 
-		data = stbi_load(m_filepath.c_str(), &width, &height, &channels, 0);
+		data = stbi_load(m_filepath.string().c_str(), &width, &height, &channels, 0);
 
 		VE_CORE_ASSERT(data, "Failed to load texture file: %", m_filepath);
 
@@ -62,11 +78,6 @@ namespace VoxelEngine
 		glTextureSubImage2D(m_rendererID, 0, 0, 0, m_width, m_height, m_dataFormat, GL_UNSIGNED_BYTE, data);
 
 		stbi_image_free(data);
-	}
-
-	Texture::~Texture()
-	{
-		glDeleteTextures(1, &m_rendererID);
 	}
 
 	void Texture::SetData(void* data, uint32_t size)

@@ -42,25 +42,13 @@ namespace VoxelEngine
 		{
 			VE_CORE_INFO("Checking texture: %", dirEntry.path().string());
 
-			{
-				auto& metadata = GetMetadata(dirEntry.path());
-				if (metadata.IsValid())
-					continue;
-			}
+			Ref<Asset> asset = CreateAsset<Texture>(dirEntry.path());
 
 			// Create new metadata for file
-			AssetMetadata metadata;
-			metadata.Type = AssetType::Texture;
-			metadata.FilePath = dirEntry.path();
-			metadata.Handle = AssetHandle();
-
-			s_assetRegistry.insert({ metadata.Handle, metadata });
-		}
-
-		// Load assets
-		for (auto& [handle, metadata] : s_assetRegistry)
-		{
-			CreateAsset<Asset>(metadata.FilePath);
+			//AssetMetadata metadata;
+			//metadata.Type = AssetType::Texture;
+			//metadata.FilePath = dirEntry.path();
+			//metadata.Handle = AssetHandle();
 		}
 	}
 
@@ -94,6 +82,7 @@ namespace VoxelEngine
 	{
 		for (auto& [handle, metadata] : s_assetRegistry)
 		{
+			VE_CORE_INFO(filepath.parent_path());
 			if (metadata.FilePath == filepath)
 				return metadata;
 		}
