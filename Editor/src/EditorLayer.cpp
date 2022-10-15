@@ -17,14 +17,17 @@ void EditorLayer::OnAttach()
 	{
 		for (int z = 0; z < 10; z++)
 		{
-			auto testEntity = m_level->CreateEntity("TestEntity");
+			for (int y = 0; y < 5; y++)
+			{
+				auto testEntity = m_level->CreateEntity("TestEntity");
 			
-			auto& bc = testEntity.AddComponent<BlockComponent>();
-			bc.Data.Type = BlockType::Grass;
-			bc.Data.TextureHandle = AssetManager::GetMetadata("assets/textures/grass.png").Handle;
+				auto& bc = testEntity.AddComponent<BlockComponent>();
+				bc.Data.Type = BlockType::Grass;
+				bc.Data.TextureHandle = AssetManager::GetMetadata("assets/textures/grass.png").Handle;
 
-			auto& tc = testEntity.GetComponent<TransformComponent>();
-			tc.Translation = { x * 2.0f, 0.0f, z * 2.0f };
+				auto& tc = testEntity.GetComponent<TransformComponent>();
+				tc.Translation = { x * 1.0f, y * 1.0f, z * 1.0f };
+			}
 		}
 	}
 
@@ -50,7 +53,7 @@ void EditorLayer::OnUpdate(float ts)
 	m_elapsedTimestep += ts;
 	m_frames++;
 
-	if (m_elapsedTimestep > 1000.0f)
+	if (m_elapsedTimestep > 1.0f)
 	{
 		m_avgTimestep = 1000.0f / m_frames;
 		m_frames = 0;
@@ -150,7 +153,7 @@ void EditorLayer::OnImGuiRender()
 	ImGui::Text("\tIndices: %d", stats.IndexCount);
 	ImGui::NewLine();
 	ImGui::Text("Frame time: %.4fms", m_timestep * 1000.0f);
-	ImGui::Text("Frame time avg: %.4fms", m_avgTimestep * 1000.0f);
+	ImGui::Text("Frame time avg: %.4fms", m_avgTimestep);
 	
 	ImGui::NewLine();
 	

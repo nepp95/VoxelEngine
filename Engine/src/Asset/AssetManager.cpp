@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "AssetManager.h"
 
+#include "Asset/AssetSerializer.h"
 #include "Renderer/Texture.h"
+
+#include <yaml-cpp/yaml.h>
 
 namespace VoxelEngine
 {
@@ -41,14 +44,7 @@ namespace VoxelEngine
 		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(s_texturesDir))
 		{
 			VE_CORE_INFO("Checking texture: %", dirEntry.path().string());
-
-			Ref<Asset> asset = CreateAsset<Texture>(dirEntry.path());
-
-			// Create new metadata for file
-			//AssetMetadata metadata;
-			//metadata.Type = AssetType::Texture;
-			//metadata.FilePath = dirEntry.path();
-			//metadata.Handle = AssetHandle();
+			CreateAsset<Texture>(dirEntry.path());
 		}
 	}
 
@@ -82,7 +78,6 @@ namespace VoxelEngine
 	{
 		for (auto& [handle, metadata] : s_assetRegistry)
 		{
-			VE_CORE_INFO(filepath.parent_path());
 			if (metadata.FilePath == filepath)
 				return metadata;
 		}
@@ -114,6 +109,27 @@ namespace VoxelEngine
 
 	void AssetManager::WriteRegistry()
 	{
+		std::ofstream outFile(s_assetRegistryFilepath, std::ios::binary | std::ios::out);
 
+		if (outFile.is_open())
+		{
+			VE_CORE_INFO("Writing asset registry to file %", s_assetRegistryFilepath);
+
+			YAML::Emitter out;
+			out << YAML::BeginMap;
+			out << YAML::Key << "Assets" << YAML::Value << YAML::BeginSeq;
+
+			for (auto& asset : s_assetRegistry)
+				AssetSerializer::SerializeAsset(out, asset.second);
+
+			out << YAML::EndSeq;
+			out << YAML::EndMap;
+
+			outFile << out.c_str();
+			outFile.close();
+		} else
+		{
+			VE_CORE_ERROR("Something went wrong writing the asset registry!");
+		}
 	}
 }

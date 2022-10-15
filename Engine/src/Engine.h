@@ -16,6 +16,7 @@
 #include "Asset/Asset.h"
 #include "Asset/AssetManager.h"
 #include "Asset/AssetMetadata.h"
+#include "Asset/AssetSerializer.h"
 #include "Asset/AssetTypes.h"
 
 // Events
@@ -28,6 +29,7 @@
 
 // Level
 #include "Level/Block.h"
+#include "Level/Blocks.h"
 #include "Level/Components.h"
 #include "Level/Entity.h"
 #include "Level/Level.h"

@@ -93,6 +93,7 @@ namespace VoxelEngine
 		static std::filesystem::path s_texturesDir;
 
 		// Serialization
+		// Inherit from AssetSerializer
 		//std::unordered_map<AssetType, AssetSerializer> m_serializers;
 	};
 }

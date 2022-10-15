@@ -19,7 +19,12 @@ project "Engine"
         "src/**.h",
         "src/**.cpp",
         "vendor/stb/*.h",
-        "vendor/stb/*.cpp"
+        "vendor/stb/*.cpp",
+
+        -- Yaml is a pain in the ass to compile and link, so we compile it directly into this library
+        "vendor/yaml-cpp/src/**.cpp",
+        "vendor/yaml-cpp/src/**.h",
+        "vendor/yaml-cpp/include/**.h"
     }
 
     includedirs {
@@ -37,9 +42,11 @@ project "Engine"
         "glad",
         "glfw",
         "imgui",
-        "opengl32.lib",
-        "yaml-cpp"
+        "opengl32.lib"
     }
+
+    filter "files:vendor/yaml-cpp/src/**.cpp"
+        flags { "NoPCH" }
 
     filter "system:windows"
 		systemversion "latest"
