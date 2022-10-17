@@ -9,27 +9,10 @@ void EditorLayer::OnAttach()
 	// Camera
 	auto cameraEntity = m_level->CreateEntity("Camera");
 	auto& cc = cameraEntity.AddComponent<CameraComponent>();
-	cc.Camera.SetPitch(0.0f);
-	cc.Camera.SetYaw(0.0f);
+	cc.Camera.SetPitch(-15.0f);
+	cc.Camera.SetYaw(20.0f);
+	cc.Camera.SetPosition({ -15.0f, 10.0f, 0.0f });
 	m_camera = &cc.Camera;
-
-	for (int x = 0; x < 10; x++)
-	{
-		for (int z = 0; z < 10; z++)
-		{
-			for (int y = 0; y < 5; y++)
-			{
-				auto testEntity = m_level->CreateEntity("TestEntity");
-			
-				auto& bc = testEntity.AddComponent<BlockComponent>();
-				bc.Data.Type = BlockType::Grass;
-				bc.Data.TextureHandle = AssetManager::GetMetadata("assets/textures/grass.png").Handle;
-
-				auto& tc = testEntity.GetComponent<TransformComponent>();
-				tc.Translation = { x * 1.0f, y * 1.0f, z * 1.0f };
-			}
-		}
-	}
 
 	// Set settings
 	auto& app = Application::Get();
@@ -43,10 +26,15 @@ void EditorLayer::OnAttach()
 	m_framebuffer = Ref<Framebuffer>::Create(fbSpecification);
 }
 
-void EditorLayer::OnDetach() {}
+void EditorLayer::OnDetach()
+{
+	m_camera = nullptr;
+}
 
 void EditorLayer::OnUpdate(float ts)
 {
+	// TODO: Split update and render
+
 	// Reset render stats
 	Renderer::ResetStats();
 	m_timestep = ts;

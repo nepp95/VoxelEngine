@@ -17,6 +17,14 @@ namespace VoxelEngine
 		IDComponent() = default;
 		IDComponent(const IDComponent& other) = default;
 	};
+
+	struct TagComponent
+	{
+		std::string Tag;
+
+		TagComponent() = default;
+		TagComponent(const TagComponent& other) = default;
+	};
 	
 	struct TransformComponent
 	{

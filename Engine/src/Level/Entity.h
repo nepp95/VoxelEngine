@@ -16,13 +16,15 @@ namespace VoxelEngine
 		Entity(EntityHandle handle, Level* level);
 		Entity(const Entity& other) = default;
 
+		const std::string& GetName() { return GetComponent<TagComponent>().Tag; }
+
 		// Component logic
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)
 		{
 			VE_CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
 			T& component = m_level->m_registry.emplace<T>(m_entityHandle, std::forward<Args>(args)...);
-			//m_level->OnComponentAdded<T>(*this, component);
+			m_level->OnComponentAdded<T>(*this, component);
 			return component;
 		}
 
@@ -30,7 +32,7 @@ namespace VoxelEngine
 		T& AddOrReplaceComponent(Args&&... args)
 		{
 			T& component = m_level->m_registry.emplace_or_replace<T>(m_entityHandle, std::forward<Args>(args)...);
-			//m_level->OnComponentAdded<T>(*this, component);
+			m_level->OnComponentAdded<T>(*this, component);
 			return component;
 		}
 
@@ -55,6 +57,7 @@ namespace VoxelEngine
 		}
 		//
 
+		// Operators
 		operator bool() const { return m_entityHandle != entt::null; }
 		operator EntityHandle() const { return m_entityHandle; }
 

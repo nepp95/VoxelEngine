@@ -362,24 +362,31 @@ namespace VoxelEngine
 		s_data.Stats.CubeCount++;
 	}
 
-	void Renderer::DrawEntity(const glm::vec2& position, const BlockComponent& bc)
+	void Renderer::DrawEntity(const glm::vec2& position, const BlockComponent& bc, bool sides[])
 	{
-		DrawEntity({ position.x, position.y, 0.0f }, bc);
+		DrawEntity({ position.x, position.y, 0.0f }, bc, sides);
 	}
 
-	void Renderer::DrawEntity(const glm::vec3& position, const BlockComponent& bc)
+	void Renderer::DrawEntity(const glm::vec3& position, const BlockComponent& bc, bool sides[])
 	{
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
-		DrawEntity(transform, bc);
+		DrawEntity(transform, bc, sides);
 	}
 
-	void Renderer::DrawEntity(const glm::mat4& transform, const BlockComponent& bc)
+	void Renderer::DrawEntity(const glm::mat4& transform, const BlockComponent& bc, bool sides[])
 	{
 		if (bc.Data.TextureHandle)
 		{
 			// Draw cube with texture
 			Ref<Texture> texture = AssetManager::GetAsset<Texture>(bc.Data.TextureHandle);
-			DrawCube(transform, std::vector<Ref<Texture>>({ texture }));
+
+			for (uint32_t i = 0; i < 6; i++)
+			{
+				if (sides[i])
+					DrawQuad(transform, texture, glm::vec4(1.0f), (QuadSide) i);
+			}
+
+			//DrawCube(transform, std::vector<Ref<Texture>>({ texture }));
 		} else 
 		{
 			// Draw white cube (no texture)
