@@ -59,8 +59,7 @@ namespace VoxelEngine
 			{ ShaderDataType::Float3,	"aPosition"		},
 			{ ShaderDataType::Float4,	"aColor"		},
 			{ ShaderDataType::Float2,	"aTexCoord"		},
-			{ ShaderDataType::Float,	"aTexIndex"		},
-			{ ShaderDataType::Float,	"aTilingFactor" },
+			{ ShaderDataType::Float,	"aTexIndex"		}
 		});
 
 		s_data.QuadVertexArray->AddVertexBuffer(s_data.QuadVertexBuffer);
@@ -253,7 +252,6 @@ namespace VoxelEngine
 			s_data.QuadVertexBufferPtr->Color = color;
 			s_data.QuadVertexBufferPtr->TexCoord = vertexTextureCoord;
 			s_data.QuadVertexBufferPtr->TexIndex = 0.0f;
-			s_data.QuadVertexBufferPtr->TilingFactor = 1.0f;
 			s_data.QuadVertexBufferPtr++;
 		}
 
@@ -261,18 +259,18 @@ namespace VoxelEngine
 		s_data.Stats.AddQuad();
 	}
 
-	void Renderer::DrawQuad(const glm::vec2& position, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& tintColor, QuadSide side)
+	void Renderer::DrawQuad(const glm::vec2& position, const Ref<Texture>& texture, const glm::vec4& tintColor, QuadSide side)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, texture, tilingFactor, tintColor, side);
+		DrawQuad({ position.x, position.y, 0.0f }, texture, tintColor, side);
 	}
 
-	void Renderer::DrawQuad(const glm::vec3& position, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& tintColor, QuadSide side)
+	void Renderer::DrawQuad(const glm::vec3& position, const Ref<Texture>& texture, const glm::vec4& tintColor, QuadSide side)
 	{
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
-		DrawQuad(transform, texture, tilingFactor, tintColor, side);
+		DrawQuad(transform, texture, tintColor, side);
 	}
 
-	void Renderer::DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& tintColor, QuadSide side)
+	void Renderer::DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec4& tintColor, QuadSide side)
 	{
 		// If batch is full (max indices)
 		if (s_data.QuadIndexCount >= RendererData::MaxIndices)
@@ -311,7 +309,6 @@ namespace VoxelEngine
 			s_data.QuadVertexBufferPtr->Color = tintColor;
 			s_data.QuadVertexBufferPtr->TexCoord = vertexTextureCoord;
 			s_data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
 			s_data.QuadVertexBufferPtr++;
 		}
 
@@ -342,25 +339,25 @@ namespace VoxelEngine
 		s_data.Stats.CubeCount++;
 	}
 
-	void Renderer::DrawCube(const glm::vec2& position, const std::vector<Ref<Texture>>& textures, float tilingFactor, const glm::vec4& tintColor)
+	void Renderer::DrawCube(const glm::vec2& position, const std::vector<Ref<Texture>>& textures, const glm::vec4& tintColor)
 	{
-		DrawCube({ position.x, position.y, 0.0f }, textures, tilingFactor, tintColor);
+		DrawCube({ position.x, position.y, 0.0f }, textures, tintColor);
 	}
 
-	void Renderer::DrawCube(const glm::vec3& position, const std::vector<Ref<Texture>>& textures, float tilingFactor, const glm::vec4& tintColor)
+	void Renderer::DrawCube(const glm::vec3& position, const std::vector<Ref<Texture>>& textures, const glm::vec4& tintColor)
 	{
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
-		DrawCube(transform, textures, tilingFactor, tintColor);
+		DrawCube(transform, textures, tintColor);
 	}
 
-	void Renderer::DrawCube(const glm::mat4& transform, const std::vector<Ref<Texture>>& textures, float tilingFactor, const glm::vec4& tintColor)
+	void Renderer::DrawCube(const glm::mat4& transform, const std::vector<Ref<Texture>>& textures, const glm::vec4& tintColor)
 	{
 		if (textures.size() == 1)
 			for (int i = 0; i < 6; i++)
-				DrawQuad(transform, textures.at(0), tilingFactor, tintColor, (QuadSide)i);
+				DrawQuad(transform, textures.at(0), tintColor, (QuadSide)i);
 		else if (textures.size() == 6)
 			for (int i = 0; i < 6; i++)
-				DrawQuad(transform, textures.at(i), tilingFactor, tintColor, (QuadSide)i);
+				DrawQuad(transform, textures.at(i), tintColor, (QuadSide)i);
 
 		s_data.Stats.CubeCount++;
 	}
