@@ -13,10 +13,12 @@ project "Editor"
     }
 
     includedirs {
+        "src",
         "%{wks.location}/Engine/src",
         "%{wks.location}/Engine/vendor",
         "%{IncludeDir.entt}",
-        "%{IncludeDir.glm}"
+        "%{IncludeDir.glm}",
+        "%{IncludeDir.yaml_cpp}"
     }
 
     links {

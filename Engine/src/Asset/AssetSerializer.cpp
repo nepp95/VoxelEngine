@@ -10,9 +10,9 @@ namespace VoxelEngine
 		VE_CORE_ASSERT(metadata.IsValid(), "Trying to serialize invalid asset!");
 
 		out << YAML::BeginMap;
-		out << YAML::Key << "Asset" << YAML::Value << metadata.Handle;
 
-		out << YAML::Key << "Type" << YAML::Value << (uint32_t) metadata.Type;
+		out << YAML::Key << "Handle" << YAML::Value << metadata.Handle;
+		out << YAML::Key << "Type" << YAML::Value << Utils::AssetTypeToString(metadata.Type);
 		out << YAML::Key << "Filepath" << YAML::Value << metadata.FilePath.string();
 		out << YAML::Key << "IsDataLoaded" << YAML::Value << metadata.IsDataLoaded;
 

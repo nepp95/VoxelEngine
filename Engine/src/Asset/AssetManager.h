@@ -78,10 +78,11 @@ namespace VoxelEngine
 		static const AssetMetadata& GetMetadata(AssetHandle handle);
 		static const AssetMetadata& GetMetadata(const std::filesystem::path& filepath);
 		static bool TryLoadData(const AssetMetadata& metadata, Ref<Asset>& asset);
-		static void WriteRegistry();
 	
 	private:
 		static AssetMetadata& GetMetadataInternal(AssetHandle handle);
+		static void WriteRegistry();
+		static void LoadRegistry();
 
 	private:
 		// Assets

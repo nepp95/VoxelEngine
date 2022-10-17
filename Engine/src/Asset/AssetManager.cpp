@@ -26,17 +26,12 @@ namespace VoxelEngine
 		// Load assets from registry file
 		if (std::filesystem::exists(s_assetRegistryFilepath))
 		{
-			std::ifstream in(s_assetRegistryFilepath.string());
-		
-			if (in.is_open())
-			{
-				VE_CORE_INFO("Asset registry file found at: %", s_assetRegistryFilepath);
-			}
-
-			in.close();
+			VE_CORE_INFO("Asset registry file found at: %", s_assetRegistryFilepath);
+			LoadRegistry();
+		} else
+		{
+			VE_CORE_WARN("Asset registry file not found or can't be opened");
 		}
-
-		VE_CORE_WARN("Asset registry file not found or can't be opened");
 
 		// Load assets to registry from recursive file dir search
 		VE_CORE_INFO("Loading textures from: %", s_texturesDir.string());
@@ -44,8 +39,15 @@ namespace VoxelEngine
 		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(s_texturesDir))
 		{
 			VE_CORE_INFO("Checking texture: %", dirEntry.path().string());
-			CreateAsset<Texture>(dirEntry.path());
+			AssetMetadata metadata = GetMetadata(dirEntry.path());
+			if (!metadata.IsValid())
+				CreateAsset<Texture>(dirEntry.path());
+			else
+				GetAsset<Texture>(metadata.Handle);
+
 		}
+
+		WriteRegistry();
 	}
 
 	void AssetManager::Shutdown()
@@ -113,8 +115,6 @@ namespace VoxelEngine
 
 		if (outFile.is_open())
 		{
-			VE_CORE_INFO("Writing asset registry to file %", s_assetRegistryFilepath);
-
 			YAML::Emitter out;
 			out << YAML::BeginMap;
 			out << YAML::Key << "Assets" << YAML::Value << YAML::BeginSeq;
@@ -130,6 +130,59 @@ namespace VoxelEngine
 		} else
 		{
 			VE_CORE_ERROR("Something went wrong writing the asset registry!");
+		}
+	}
+
+	void AssetManager::LoadRegistry()
+	{
+		std::ifstream inFile(s_assetRegistryFilepath);
+
+		if (inFile.is_open())
+		{
+			std::stringstream ss;
+			ss << inFile.rdbuf();
+
+			YAML::Node data = YAML::Load(ss.str());
+			VE_CORE_ASSERT(data["Assets"], "Invalid assets registry file!");
+
+			VE_CORE_INFO("Deserializing asset registry file.");
+
+			YAML::Node assets = data["Assets"];
+			if (assets)
+			{
+				// Loop through asset entries from asset registry
+				for (auto asset : assets)
+				{
+					// Create metadata from asset registry entry
+					AssetMetadata metadata;
+					metadata.Handle = asset["Handle"].as<uint64_t>();
+					metadata.FilePath = asset["Filepath"].as<std::string>();
+					metadata.Type = Utils::AssetTypeFromString(asset["Type"].as<std::string>());
+
+					// Invalid asset
+					if (metadata.Type == AssetType::None)
+						continue;
+
+					if (!std::filesystem::exists(metadata.FilePath))
+					{
+						VE_CORE_WARN("Missing asset '%' found in registry file.", metadata.FilePath);
+						continue;
+					}
+
+					if (!metadata.IsValid())
+					{
+						VE_CORE_WARN("Trying to load an invalid asset: %", metadata.FilePath);
+						continue;
+					}
+
+					s_assetRegistry.insert_or_assign(metadata.Handle, metadata);
+				}
+			}
+
+			VE_CORE_INFO("Loaded % assets from asset registry file.", s_assetRegistry.size());
+		} else
+		{
+			VE_CORE_WARN("Asset registry file not found or can't be opened");
 		}
 	}
 }
