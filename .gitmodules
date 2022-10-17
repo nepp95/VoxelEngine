@@ -7,3 +7,6 @@
 [submodule "Engine/vendor/imgui"]
 	path = Engine/vendor/imgui
 	url = https://github.com/nepp95/imgui.git
+[submodule "Engine/vendor/entt"]
+	path = Engine/vendor/entt
+	url = https://github.com/nepp95/entt.git

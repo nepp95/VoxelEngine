@@ -1,15 +1,12 @@
-// VoxelEngine - Engine
-// Application.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 25-08-2022 15:21
-// Last update: 26-08-2022 23:10
-
 #pragma once
 
 #include <string>
+
+#include "Core/LayerStack.h"
+#include "Core/Window.h"
+#include "Events/ApplicationEvent.h"
+#include "Events/Event.h"
+#include "Layers/ImGuiLayer.h"
 
 int main(int argc, char** argv);
 
@@ -32,6 +29,9 @@ namespace VoxelEngine
 		std::string Name{"Application"};
 		std::string WorkingDirectory;
 
+		uint32_t WindowWidth = 1280;
+		uint32_t WindowHeight = 720;
+
 		ApplicationCommandLineArgs CommandLineArgs;
 	};
 
@@ -41,15 +41,31 @@ namespace VoxelEngine
 		Application(const ApplicationSpecification& specification);
 		~Application();
 
-		const ApplicationSpecification& GetSpecification() const { return m_specification; }
+		void Close();
+		void Run();
+		void OnEvent(Event& e);
 
+		void PushLayer(Layer* layer);
+		void PushOverlay(Layer* layer);
+
+		bool OnWindowClose(WindowCloseEvent& e);
+		bool OnWindowResize(WindowResizeEvent& e);
+
+		ImGuiLayer* GetImGuiLayer() { return m_imGuiLayer; }
+		Window& GetWindow() { return *m_window; }
+
+		const ApplicationSpecification& GetSpecification() const { return m_specification; }
 		static Application& Get() { return *s_instance; }
 
 	private:
-		void Run();
-
-	private:
+		Scope<Window> m_window;
 		ApplicationSpecification m_specification;
+		LayerStack m_layerStack;
+		ImGuiLayer* m_imGuiLayer;
+
+		bool m_isRunning{true};
+		bool m_isMinimized{false};
+		float m_lastFrameTime{0.0f};
 
 		static Application* s_instance;
 		friend int ::main(int argc, char** argv);

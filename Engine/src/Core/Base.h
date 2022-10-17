@@ -1,18 +1,10 @@
-﻿// VoxelEngine - Engine
-// Base.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 26-08-2022 22:41
-// Last update: 27-08-2022 11:22
-
-#pragma once
+﻿#pragma once
 
 #include <memory>
 
 #include "Core/Log.h"
 #include "Core/Assert.h"
+#include "Core/Ref.h"
 
 namespace VoxelEngine
 {
@@ -20,6 +12,12 @@ namespace VoxelEngine
 	template <typename T>
 	using Scope = std::unique_ptr<T>;
 
-	template <typename T>
-	using Ref = std::shared_ptr<T>;
+	template <typename T, typename ... Args>
+	constexpr Scope<T> CreateScope(Args&& ... args)
+	{
+		return std::make_unique<T>(std::forward<Args>(args)...);
+	}
 }
+
+#define BIT(x) (1 << x)
+#define BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }

@@ -9,3 +9,4 @@ __pycache__
 # Binaries
 bin
 bin-int
+Editor/assets/registry.yaml

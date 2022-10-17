@@ -1,57 +1,59 @@
-﻿// VoxelEngine - Engine
-// Log.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 26-08-2022 21:45
-// Last update: 27-08-2022 11:27
-
-#pragma once
+﻿#pragma once
 
 #include <iostream>
+#include <sstream>
 
 namespace VoxelEngine
 {
-	namespace Log
+	enum class LogLevel
 	{
-		enum class LogLevel
-		{
-			Info,
-			Warn,
-			Error,
-			Critical
-		};
+		Info,
+		Warn,
+		Error,
+		Critical
+	};
 
-		inline void SetOutputColor(const LogLevel& level)
+	class Log
+	{
+	public:
+		static void Init();
+		static void Shutdown();
+
+		static void SetOutputColor(const LogLevel& level);
+		static void ResetOutputColor();
+		static void EndMessage();
+
+		static void ParseLocation(std::string file, int line)
 		{
-			if (level == LogLevel::Info)
-				std::cout << "\033[36m";
-			if (level == LogLevel::Warn)
-				std::cout << "\033[33m";
-			if (level == LogLevel::Error)
-				std::cout << "\033[1;31m";
-			if (level == LogLevel::Critical)
-				std::cout << "\033[31m";
+			std::stringstream ss;
+
+			size_t pos = file.find("src");
+			ss << "[" << file.substr(pos) << "]:" << line << ": ";
+			LogMessage(ss.str());
 		}
 
-		inline void ResetOutputColor()
+		template<typename T>
+		static void LogMessage(T t)
 		{
-			std::cout << "\33[0m";
+			std::cout << t;
 		}
 
-		template <typename T>
-		void LogMessage(T t)
+		template<typename T, typename... Args>
+		static void LogMessage(const char* chars, T t, Args... args)
 		{
-			std::cout << t << std::endl;
-		}
+			// Reference: https://en.cppreference.com/w/cpp/language/parameter_pack
 
-		template <typename T, typename... Args>
-		void LogMessage(T t, Args ... args)
-		{
-			std::cout << t << std::endl;
+			for (; *chars != '\0'; chars++)
+			{
+				if (*chars == '%')
+				{
+					LogMessage(t);
+					LogMessage(chars + 1, args...);
+					return;
+				}
 
-			LogMessage(args...);
+				LogMessage(*chars);
+			}
 		}
 	};
 }
@@ -60,25 +62,31 @@ namespace VoxelEngine
 #define LOG(...) { \
 	::VoxelEngine::Log::LogMessage(__VA_ARGS__); \
 	::VoxelEngine::Log::ResetOutputColor(); \
+	::VoxelEngine::Log::EndMessage(); \
 }
 
-#define CORE_INFO(...) { \
-	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::Log::LogLevel::Info); \
+#define LOG_WITH_LOCATION(...) { \
+	::VoxelEngine::Log::ParseLocation(__FILE__, __LINE__); \
 	LOG(__VA_ARGS__); \
 }
 
-#define CORE_WARN(...) { \
-	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::Log::LogLevel::Warn); \
-	LOG(__VA_ARGS__); \
+#define VE_CORE_INFO(...) { \
+	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Info); \
+	LOG_WITH_LOCATION(__VA_ARGS__); \
 }
 
-#define CORE_ERROR(...) { \
-	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::Log::LogLevel::Error); \
-	LOG(__VA_ARGS__); \
+#define VE_CORE_WARN(...) { \
+	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Warn); \
+	LOG_WITH_LOCATION(__VA_ARGS__); \
+}
+
+#define VE_CORE_ERROR(...) { \
+	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Error); \
+	LOG_WITH_LOCATION(__VA_ARGS__); \
 }
 
 // Only used in assertions! TODO: Make inaccessible global
-#define CORE_CRITICAL(...) { \
-	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::Log::LogLevel::Critical); \
-	LOG(__VA_ARGS__); \
+#define VE_CORE_CRITICAL(...) { \
+	::VoxelEngine::Log::SetOutputColor(::VoxelEngine::LogLevel::Critical); \
+	LOG_WITH_LOCATION(__VA_ARGS__); \
 }

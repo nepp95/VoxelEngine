@@ -1,15 +1,48 @@
-﻿// VoxelEngine - Engine
-// Engine.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 25-08-2022 15:21
-// Last update: 27-08-2022 11:18
-
-#pragma once
+﻿#pragma once
 
 // Core
 #include "Core/Base.h"
 
 #include "Core/Application.h"
+#include "Core/Assert.h"
+#include "Core/Input.h"
+#include "Core/KeyCodes.h"
+#include "Core/Layer.h"
+#include "Core/Log.h"
+#include "Core/MouseCodes.h"
+#include "Core/UUID.h"
+
+// Assets
+#include "Asset/Asset.h"
+#include "Asset/AssetManager.h"
+#include "Asset/AssetMetadata.h"
+#include "Asset/AssetSerializer.h"
+#include "Asset/AssetTypes.h"
+
+// Events
+#include "Events/ApplicationEvent.h"
+#include "Events/KeyEvent.h"
+#include "Events/MouseEvent.h"
+
+// Layers
+#include "Layers/ImGuiLayer.h"
+
+// Level
+#include "Level/Block.h"
+#include "Level/Blocks.h"
+#include "Level/Components.h"
+#include "Level/Entity.h"
+#include "Level/Level.h"
+
+// Math
+#include "Math/Vector.h"
+
+// Renderer
+#include "Renderer/Buffer.h"
+#include "Renderer/Camera.h"
+#include "Renderer/Framebuffer.h"
+#include "Renderer/RenderCommand.h"
+#include "Renderer/Renderer.h"
+#include "Renderer/Shader.h"
+#include "Renderer/Texture.h"
+#include "Renderer/VertexArray.h"

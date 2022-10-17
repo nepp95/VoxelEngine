@@ -1,20 +1,17 @@
-﻿// VoxelEngine - Engine
-// pch.h
-// 
-// Niels Eppenhof
-// https://github.com/nepp95
-// 
-// Created on: 25-08-2022 15:21
-// Last update: 26-08-2022 23:09
+﻿#pragma once
 
-#pragma once
-
+#include <array>
 #include <chrono>
+#include <cstring>
+#include <filesystem>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <memory>
+#include <random>
 #include <string>
+#include <sstream>
 #include <unordered_map>
 #include <vector>
 

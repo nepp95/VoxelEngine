@@ -4,20 +4,21 @@ workspace "VoxelEngine"
 	architecture "x86_64"
 	startproject "Editor"
 	
-	configurations
-	{
+	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+	
+	configurations {
 		"Debug",
 		"Release"
 	}
 
-	flags
-	{
+	flags {
 		"MultiProcessorCompile"
 	}
-
-	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 	
 	group "Dependencies"
+		include "Engine/vendor/glad" -- OpenGL abstraction
+		include "Engine/vendor/glfw" -- Window management
+		include "Engine/vendor/imgui" -- Graphical user interface]
 	group ""
 
 	group "Core"
