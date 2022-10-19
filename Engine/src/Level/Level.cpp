@@ -76,6 +76,7 @@ namespace VoxelEngine
 			if (m_blocks.find(glm::vec3( t.x, t.y + 1.0f, t.z )) != m_blocks.end())
 				drawSides[(int) QuadSide::Top] = false;
 
+			bool drawSides2[6] = { true, true, true, true, true, true };
 			Renderer::DrawEntity(transform.GetTransform(), block, drawSides);
 		}
 
