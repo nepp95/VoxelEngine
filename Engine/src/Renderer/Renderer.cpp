@@ -385,12 +385,14 @@ namespace VoxelEngine
 				if (sides[i])
 					DrawQuad(transform, texture, glm::vec4(1.0f), (QuadSide) i);
 			}
-
-			//DrawCube(transform, std::vector<Ref<Texture>>({ texture }));
 		} else 
 		{
 			// Draw white cube (no texture)
-			DrawCube(transform);
+			for (uint32_t i = 0; i < 6; i++)
+			{
+				if (sides[i])
+					DrawQuad(transform, glm::vec4(1.0f), (QuadSide) i);
+			}
 		}
 
 	}

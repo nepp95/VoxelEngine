@@ -15,7 +15,7 @@ struct VertexOutput
 };
 
 layout(location = 0) out VertexOutput vOutput;
-layout(location = 3) out flat float vTexIndex;
+layout(location = 2) out flat float vTexIndex;
 
 uniform mat4 uViewProjection;
 
@@ -40,7 +40,7 @@ struct VertexOutput
 };
 
 layout(location = 0) in VertexOutput Input;
-layout(location = 3) in flat float vTexIndex;
+layout(location = 2) in flat float vTexIndex;
 
 layout(binding = 0) uniform sampler2D uTextures[32];
 
