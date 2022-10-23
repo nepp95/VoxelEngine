@@ -215,6 +215,8 @@ namespace VoxelEngine
 
 	void Renderer::BeginScene(const Camera& camera)
 	{
+		VE_PROFILE_SCOPE("Renderer::BeginScene");
+
 		s_data.ViewProjection = camera.GetViewProjectionMatrix();
 
 		StartBatch();
@@ -222,6 +224,8 @@ namespace VoxelEngine
 
 	void Renderer::EndScene()
 	{
+		VE_PROFILE_SCOPE("Renderer::EndScene");
+
 		Flush();
 	}
 
@@ -335,7 +339,7 @@ namespace VoxelEngine
 		DrawQuad(transform, color, QuadSide::Left);
 		DrawQuad(transform, color, QuadSide::Bottom);
 		DrawQuad(transform, color, QuadSide::Top);
-
+	
 		s_data.Stats.CubeCount++;
 	}
 
@@ -358,43 +362,44 @@ namespace VoxelEngine
 		else if (textures.size() == 6)
 			for (int i = 0; i < 6; i++)
 				DrawQuad(transform, textures.at(i), tintColor, (QuadSide)i);
-
+	
 		s_data.Stats.CubeCount++;
 	}
 
-	void Renderer::DrawEntity(const glm::vec2& position, const BlockComponent& bc, bool sides[])
+	void Renderer::DrawEntity(const glm::vec2& position, const BlockComponent& bc, const std::vector<bool>& sides)
 	{
 		DrawEntity({ position.x, position.y, 0.0f }, bc, sides);
 	}
 
-	void Renderer::DrawEntity(const glm::vec3& position, const BlockComponent& bc, bool sides[])
+	void Renderer::DrawEntity(const glm::vec3& position, const BlockComponent& bc, const std::vector<bool>& sides)
 	{
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
 		DrawEntity(transform, bc, sides);
 	}
 
-	void Renderer::DrawEntity(const glm::mat4& transform, const BlockComponent& bc, bool sides[])
+	void Renderer::DrawEntity(const glm::mat4& transform, const BlockComponent& bc, const std::vector<bool>& sides)
 	{
 		if (bc.Data.TextureHandle)
 		{
 			// Draw cube with texture
 			Ref<Texture> texture = AssetManager::GetAsset<Texture>(bc.Data.TextureHandle);
 
-			for (uint32_t i = 0; i < 6; i++)
-			{
-				if (sides[i])
-					DrawQuad(transform, texture, glm::vec4(1.0f), (QuadSide) i);
-			}
+			if (sides.empty())
+				DrawCube(transform, std::vector<Ref<Texture>>{ texture });
+			else
+				for (uint32_t i = 0; i < 6; i++)
+					if (sides[i])
+						DrawQuad(transform, texture, glm::vec4(1.0f), (QuadSide) i);
 		} else 
 		{
 			// Draw white cube (no texture)
-			for (uint32_t i = 0; i < 6; i++)
-			{
-				if (sides[i])
-					DrawQuad(transform, glm::vec4(1.0f), (QuadSide) i);
-			}
+			if (sides.empty())
+				DrawCube(transform);
+			else
+				for (uint32_t i = 0; i < 6; i++)
+					if (sides[i])
+						DrawQuad(transform, glm::vec4(1.0f), (QuadSide) i);
 		}
-
 	}
 
 	void Renderer::ResetStats()

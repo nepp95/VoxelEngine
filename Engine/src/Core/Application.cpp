@@ -21,6 +21,9 @@ namespace VoxelEngine
 		if (!m_specification.WorkingDirectory.empty())
 			std::filesystem::current_path(m_specification.WorkingDirectory);
 
+		// Profiler
+		m_profiler = new Profiler();
+
 		// Create window
 		WindowSpecification spec{m_specification.Name, m_specification.WindowWidth, m_specification.WindowHeight};
 		m_window = CreateScope<Window>(spec);
@@ -50,19 +53,22 @@ namespace VoxelEngine
 	{
 		while (m_isRunning)
 		{
+			m_profiler->Clear();
+
 			auto time = static_cast<float>(glfwGetTime());
 			float ts = time - m_lastFrameTime;
 			m_lastFrameTime = time;
 
 			if (!m_isMinimized)
+			{
+				VE_PROFILE_SCOPE("Application Layer::OnUpdate");
+
 				for (Layer* layer : m_layerStack)
 					layer->OnUpdate(ts);
+			}
 
 			// Render gui
-			m_imGuiLayer->Begin();
-			for (Layer* layer : m_layerStack)
-				layer->OnImGuiRender();
-			m_imGuiLayer->End();
+			RenderImGui();
 
 			// Update window
 			m_window->OnUpdate();
@@ -92,6 +98,19 @@ namespace VoxelEngine
 	void Application::PushOverlay(Layer* layer)
 	{
 		m_layerStack.PushOverlay(layer);
+	}
+
+	void Application::RenderImGui()
+	{
+		// TODO: Fix profiler
+		VE_PROFILE_SCOPE("Application::RenderImGui");
+
+		m_imGuiLayer->Begin();
+
+		for (Layer* layer : m_layerStack)
+			layer->OnImGuiRender();
+
+		m_imGuiLayer->End();
 	}
 
 	bool Application::OnWindowClose(WindowCloseEvent& e)

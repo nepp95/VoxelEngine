@@ -4,6 +4,7 @@
 
 #include "Core/LayerStack.h"
 #include "Core/Window.h"
+#include "Debug/Profiler.h"
 #include "Events/ApplicationEvent.h"
 #include "Events/Event.h"
 #include "Layers/ImGuiLayer.h"
@@ -48,14 +49,17 @@ namespace VoxelEngine
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 
+		void RenderImGui();
+
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
 
-		ImGuiLayer* GetImGuiLayer() { return m_imGuiLayer; }
-		Window& GetWindow() { return *m_window; }
-
 		const ApplicationSpecification& GetSpecification() const { return m_specification; }
 		static Application& Get() { return *s_instance; }
+
+		ImGuiLayer* GetImGuiLayer() { return m_imGuiLayer; }
+		Window& GetWindow() { return *m_window; }
+		Profiler* GetProfiler() { return m_profiler; }
 
 	private:
 		Scope<Window> m_window;
@@ -63,9 +67,11 @@ namespace VoxelEngine
 		LayerStack m_layerStack;
 		ImGuiLayer* m_imGuiLayer;
 
-		bool m_isRunning{true};
-		bool m_isMinimized{false};
-		float m_lastFrameTime{0.0f};
+		bool m_isRunning{ true };
+		bool m_isMinimized{ false };
+		float m_lastFrameTime{ 0.0f };
+
+		Profiler* m_profiler{ nullptr };
 
 		static Application* s_instance;
 		friend int ::main(int argc, char** argv);

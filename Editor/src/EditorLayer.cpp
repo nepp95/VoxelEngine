@@ -132,23 +132,32 @@ void EditorLayer::OnImGuiRender()
 	// -----------------------------------------
 	ImGui::Begin("Statistics");
 
+	// Render
 	auto stats = Renderer::GetStats();
+
 	ImGui::Text("Renderer Statistics");
 	ImGui::Text("\tDraw calls: %d", stats.DrawCalls);
 	ImGui::Text("\tCubes: %d", stats.CubeCount);
 	ImGui::Text("\tQuads: %d", stats.QuadCount);
 	ImGui::Text("\tVertices: %d", stats.VertexCount);
 	ImGui::Text("\tIndices: %d", stats.IndexCount);
-	ImGui::NewLine();
-	ImGui::Text("Frame time: %.4fms", m_timestep * 1000.0f);
-	ImGui::Text("Frame time avg: %.4fms", m_avgTimestep);
 	
+	// Camera
 	ImGui::NewLine();
-	
 	ImGui::Text("Camera");
 	ImGui::Text("\tPosition: %.2f/%.2f/%.2f", m_camera->GetPosition().x, m_camera->GetPosition().y, m_camera->GetPosition().z);
 	ImGui::Text("\tYaw: %.2f", m_camera->GetYaw());
 	ImGui::Text("\tPitch: %.2f", m_camera->GetPitch());
+
+	// Performance
+	const auto& profileData = Application::Get().GetProfiler()->GetProfileTimerData();
+
+	ImGui::NewLine();
+	ImGui::Text("Performance");
+	ImGui::Text("\tFrame time: %.2fms", m_timestep * 1000.0f);
+
+	for (auto&& [name, time] : profileData)
+		ImGui::Text("\t%s: %.3fms", name, time.count() / 1000.0f);
 
 	ImGui::End();
 
