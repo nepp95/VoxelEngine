@@ -5,6 +5,7 @@
 #include "Core/Log.h"
 #include "Core/Assert.h"
 #include "Core/Ref.h"
+#include "Debug/Profiler.h"
 
 namespace VoxelEngine
 {

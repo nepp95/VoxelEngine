@@ -19,6 +19,9 @@
 #include "Asset/AssetSerializer.h"
 #include "Asset/AssetTypes.h"
 
+// Debug
+#include "Debug/Profiler.h"
+
 // Events
 #include "Events/ApplicationEvent.h"
 #include "Events/KeyEvent.h"

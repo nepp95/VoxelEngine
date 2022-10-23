@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/Application.h"
 #include "Level/Block.h"
 #include "Level/Components.h"
 #include "Level/Entity.h"
@@ -48,9 +49,9 @@ namespace VoxelEngine
 		static void DrawCube(const glm::vec3& position, const std::vector<Ref<Texture>>& textures, const glm::vec4& tintColor = glm::vec4(1.0f));
 		static void DrawCube(const glm::mat4& transform, const std::vector<Ref<Texture>>& textures, const glm::vec4& tintColor = glm::vec4(1.0f));
 		// Render Entity
-		static void DrawEntity(const glm::vec2& position, const BlockComponent& bc, bool sides[]);
-		static void DrawEntity(const glm::vec3& position, const BlockComponent& bc, bool sides[]);
-		static void DrawEntity(const glm::mat4& transform, const BlockComponent& bc, bool sides[]);
+		static void DrawEntity(const glm::vec2& position, const BlockComponent& bc, const std::vector<bool>& sides = {});
+		static void DrawEntity(const glm::vec3& position, const BlockComponent& bc, const std::vector<bool>& sides = {});
+		static void DrawEntity(const glm::mat4& transform, const BlockComponent& bc, const std::vector<bool>& sides = {});
 
 		// Stats
 		struct Statistics

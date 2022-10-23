@@ -23,11 +23,15 @@ namespace VoxelEngine
 
 	void Level::GenerateLevel(uint64_t seed)
 	{
-		for (int x = 0; x < 25; x++)
+		const int xSize = 25;
+		const int ySize = 5;
+		const int zSize = 25;
+
+		for (int x = 0; x < xSize; x++)
 		{
-			for (int z = 0; z < 25; z++)
+			for (int z = 0; z < zSize; z++)
 			{
-				for (int y = 0; y < 5; y++)
+				for (int y = 0; y < ySize; y++)
 				{
 					auto entity = CreateEntity("TestEntity");
 
@@ -45,6 +49,8 @@ namespace VoxelEngine
 
 	void Level::OnUpdate(float ts)
 	{
+		VE_PROFILE_SCOPE("Level::OnUpdate");
+
 		// Get camera entity
 		Entity cameraEntity = GetCameraEntity();
 		Camera* camera = &cameraEntity.GetComponent<CameraComponent>().Camera;
@@ -55,13 +61,15 @@ namespace VoxelEngine
 		// Get all components with both a transform component and a block component
 		auto view = m_registry.view<TransformComponent, BlockComponent>();
 
+
 		for (auto entity : view)
 		{
 			auto [transform, block] = view.get<TransformComponent, BlockComponent>(entity);
 
 			// Neighbour check
 			auto t = transform.Translation;
-			bool drawSides[6] { true, true, true, true, true, true };
+			// Face drawing
+			/*std::vector<bool> drawSides{ true, true, true, true, true, true };
 
 			if (m_blocks.find(glm::vec3( t.x, t.y, t.z - 1.0f )) != m_blocks.end())
 				drawSides[(int) QuadSide::Front] = false;
@@ -77,7 +85,26 @@ namespace VoxelEngine
 				drawSides[(int) QuadSide::Top] = false;
 
 			bool drawSides2[6] = { true, true, true, true, true, true };
-			Renderer::DrawEntity(transform.GetTransform(), block, drawSides);
+			Renderer::DrawEntity(transform.GetTransform(), block, drawSides);*/
+
+			// todo: Cube drawing, replace with face drawing
+			bool drawCube{ false };
+
+			if (m_blocks.find(glm::vec3(t.x, t.y, t.z - 1.0f)) == m_blocks.end())
+				drawCube = true;
+			if (m_blocks.find(glm::vec3(t.x + 1.0f, t.y, t.z)) == m_blocks.end())
+				drawCube = true;
+			if (m_blocks.find(glm::vec3(t.x, t.y, t.z + 1.0f)) == m_blocks.end())
+				drawCube = true;
+			if (m_blocks.find(glm::vec3(t.x - 1.0f, t.y, t.z)) == m_blocks.end())
+				drawCube = true;
+			if (m_blocks.find(glm::vec3(t.x, t.y - 1.0f, t.z)) == m_blocks.end())
+				drawCube = true;
+			if (m_blocks.find(glm::vec3(t.x, t.y + 1.0f, t.z)) == m_blocks.end())
+				drawCube = true;
+
+			if (drawCube)
+				Renderer::DrawEntity(transform.GetTransform(), block);
 		}
 
 		// End render
