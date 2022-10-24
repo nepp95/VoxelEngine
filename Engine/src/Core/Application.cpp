@@ -61,7 +61,7 @@ namespace VoxelEngine
 
 			if (!m_isMinimized)
 			{
-				VE_PROFILE_SCOPE("Application Layer::OnUpdate");
+				VE_PROFILE_SCOPE_CAT("Application", "Layer::OnUpdate");
 
 				for (Layer* layer : m_layerStack)
 					layer->OnUpdate(ts);
