@@ -150,14 +150,21 @@ void EditorLayer::OnImGuiRender()
 	ImGui::Text("\tPitch: %.2f", m_camera->GetPitch());
 
 	// Performance
-	const auto& profileData = Application::Get().GetProfiler()->GetProfileTimerData();
+	const auto& categorizedProfileData = Application::Get().GetProfiler()->GetCategorizedProfileTimerData();
 
 	ImGui::NewLine();
 	ImGui::Text("Performance");
 	ImGui::Text("\tFrame time: %.2fms", m_timestep * 1000.0f);
 
-	for (auto&& [name, time] : profileData)
-		ImGui::Text("\t%s: %.3fms", name, time.count() / 1000.0f);
+	for (auto const& category : categorizedProfileData)
+	{
+		ImGui::Text("\t%s", category.first.c_str());
+
+		for (auto& categoryData : category.second)
+		{
+			ImGui::Text("\t\t%s: %.3fms", categoryData.first, categoryData.second.count() / 1000.0f);
+		}
+	}
 
 	ImGui::End();
 
