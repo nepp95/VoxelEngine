@@ -4,7 +4,6 @@
 #include <fstream>
 #include <map>
 #include <mutex>
-#include <thread>
 #include <unordered_map>
 
 namespace VoxelEngine
