@@ -29,7 +29,7 @@ namespace VoxelEngine
 		UpdateCameraVectors();
 	}
 
-	void Camera::OnUpdate(float ts)
+	void Camera::Update(float ts)
 	{
 		float velocity{ m_movementSpeed * ts };
 

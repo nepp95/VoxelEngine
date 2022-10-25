@@ -31,22 +31,11 @@ void EditorLayer::OnDetach()
 	m_camera = nullptr;
 }
 
-void EditorLayer::OnUpdate(float ts)
+void EditorLayer::Update(float ts)
 {
-	// TODO: Split update and render
-
 	// Reset render stats
 	Renderer::ResetStats();
 	m_timestep = ts;
-	m_elapsedTimestep += ts;
-	m_frames++;
-
-	if (m_elapsedTimestep > 1.0f)
-	{
-		m_avgTimestep = 1000.0f / m_frames;
-		m_frames = 0;
-		m_elapsedTimestep = 0.0f;
-	}
 
 	// Handle resize
 	if (FramebufferSpecification specification = m_framebuffer->GetSpecification();
@@ -57,21 +46,26 @@ void EditorLayer::OnUpdate(float ts)
 	}
 
 	// Update
-	m_camera->OnUpdate(ts);
+	m_camera->Update(ts);	
+	m_level->Update(ts);
+}
 
+void EditorLayer::Render()
+{
 	// Prepare for render
 	m_framebuffer->Bind();
 	RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 	RenderCommand::Clear();
 
-	// Render scene
-	m_level->OnUpdate(ts);
+	// Render level
+	m_level->Render();
+	m_frames++;
 
 	// Unbind framebuffer
 	m_framebuffer->Unbind();
 }
 
-void EditorLayer::OnImGuiRender()
+void EditorLayer::ImGuiRender()
 {
 	// Check ImGui examples for more information
 
@@ -154,7 +148,7 @@ void EditorLayer::OnImGuiRender()
 
 	ImGui::NewLine();
 	ImGui::Text("Performance");
-	ImGui::Text("\tFrame time: %.2fms", m_timestep * 1000.0f);
+	ImGui::Text("\tFrames rendered: %d", m_frames);
 
 	for (auto const& category : categorizedProfileData)
 	{

@@ -24,6 +24,8 @@ namespace VoxelEngine
 
 	std::map<std::string, std::unordered_map<const char*, std::chrono::microseconds>> Profiler::GetCategorizedProfileTimerData() const
 	{
+		// TODO: Currently if the name of the profile is the same, but in a different category, only the last one is shown.
+
 		// We use an ordered map with std::string, because const char* comparison is done by memory address instead of the actual string form.
 		// This does require us to convert forth and back from/to const char* and std::string
 		std::map<std::string, std::unordered_map<const char*, std::chrono::microseconds>> categorizedData;

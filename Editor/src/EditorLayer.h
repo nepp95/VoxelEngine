@@ -16,8 +16,10 @@ public:
 	void OnAttach() override;
 	void OnDetach() override;
 
-	void OnUpdate(float ts) override;
-	void OnImGuiRender() override;
+	void Update(float ts) override;
+	void Render() override;
+	void ImGuiRender() override;
+
 	void OnEvent(Event& e) override;
 
 private:
@@ -28,9 +30,7 @@ private:
 	// Test data
 	Ref<Texture> m_grassTexture;
 	float m_timestep{ 0.0f };
-	float m_avgTimestep{ 0.0f };
-	float m_elapsedTimestep{ 0.0f };
-	int m_frames{ 0 };
+	uint32_t m_frames{ 0 };
 
 	// Camera
 	Camera* m_camera;

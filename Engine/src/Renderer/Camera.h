@@ -16,7 +16,7 @@ namespace VoxelEngine
 		Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
 		void Init();
-		void OnUpdate(float ts);
+		void Update(float ts);
 		void OnEvent(Event& e);
 
 		glm::mat4 GetViewMatrix() const { return m_viewMatrix; }

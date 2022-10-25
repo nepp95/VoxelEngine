@@ -215,8 +215,6 @@ namespace VoxelEngine
 
 	void Renderer::BeginScene(const Camera& camera)
 	{
-		VE_PROFILE_SCOPE_CAT("Renderer", "BeginScene");
-
 		s_data.ViewProjection = camera.GetViewProjectionMatrix();
 
 		StartBatch();
@@ -224,8 +222,6 @@ namespace VoxelEngine
 
 	void Renderer::EndScene()
 	{
-		VE_PROFILE_SCOPE_CAT("Renderer", "EndScene");
-
 		Flush();
 	}
 

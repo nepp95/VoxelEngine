@@ -33,7 +33,7 @@ namespace VoxelEngine
 
 		void Shutdown();
 
-		void OnUpdate();
+		void Update();
 
 		uint32_t GetWidth() const { return m_specification.Width; }
 		uint32_t GetHeight() const { return m_specification.Height; }

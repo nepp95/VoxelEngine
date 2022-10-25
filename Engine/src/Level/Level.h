@@ -38,7 +38,8 @@ namespace VoxelEngine
 		~Level();
 
 		void GenerateLevel(uint64_t seed = Utility::GenerateRandomUInt64());
-		void OnUpdate(float ts);
+		void Update(float ts);
+		void Render();
 
 		Entity CreateEntity(const std::string& name = std::string());
 		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
