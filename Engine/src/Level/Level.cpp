@@ -23,9 +23,9 @@ namespace VoxelEngine
 
 	void Level::GenerateLevel(uint64_t seed)
 	{
-		const int xSize = 25;
-		const int ySize = 5;
-		const int zSize = 25;
+		const int xSize = 250;
+		const int ySize = 10;
+		const int zSize = 250;
 
 		for (int x = 0; x < xSize; x++)
 		{
@@ -41,7 +41,6 @@ namespace VoxelEngine
 					auto& bc = entity.AddComponent<BlockComponent>();
 					bc.Data.Type = BlockType::Grass;
 					bc.Data.TextureHandle = AssetManager::GetMetadata("assets/textures/grass.png").Handle;
-
 				}
 			}
 		}
@@ -65,7 +64,6 @@ namespace VoxelEngine
 
 		// Get all components with both a transform component and a block component
 		auto view = m_registry.view<TransformComponent, BlockComponent>();
-
 
 		for (auto entity : view)
 		{
@@ -97,15 +95,15 @@ namespace VoxelEngine
 
 			if (m_blocks.find(glm::vec3(t.x, t.y, t.z - 1.0f)) == m_blocks.end())
 				drawCube = true;
-			if (m_blocks.find(glm::vec3(t.x + 1.0f, t.y, t.z)) == m_blocks.end())
+			else if (m_blocks.find(glm::vec3(t.x + 1.0f, t.y, t.z)) == m_blocks.end())
 				drawCube = true;
-			if (m_blocks.find(glm::vec3(t.x, t.y, t.z + 1.0f)) == m_blocks.end())
+			else if (m_blocks.find(glm::vec3(t.x, t.y, t.z + 1.0f)) == m_blocks.end())
 				drawCube = true;
-			if (m_blocks.find(glm::vec3(t.x - 1.0f, t.y, t.z)) == m_blocks.end())
+			else if (m_blocks.find(glm::vec3(t.x - 1.0f, t.y, t.z)) == m_blocks.end())
 				drawCube = true;
-			if (m_blocks.find(glm::vec3(t.x, t.y - 1.0f, t.z)) == m_blocks.end())
+			else if (m_blocks.find(glm::vec3(t.x, t.y - 1.0f, t.z)) == m_blocks.end())
 				drawCube = true;
-			if (m_blocks.find(glm::vec3(t.x, t.y + 1.0f, t.z)) == m_blocks.end())
+			else if (m_blocks.find(glm::vec3(t.x, t.y + 1.0f, t.z)) == m_blocks.end())
 				drawCube = true;
 
 			if (drawCube)
