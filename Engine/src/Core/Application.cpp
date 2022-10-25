@@ -58,20 +58,42 @@ namespace VoxelEngine
 			auto time = static_cast<float>(glfwGetTime());
 			float ts = time - m_lastFrameTime;
 			m_lastFrameTime = time;
+			m_accumulatedTs += ts;
 
 			if (!m_isMinimized)
 			{
-				VE_PROFILE_SCOPE_CAT("Application", "Layer::OnUpdate");
+				{
+					VE_PROFILE_SCOPE_CAT("Application", "Update");
 
-				for (Layer* layer : m_layerStack)
-					layer->OnUpdate(ts);
+					for (Layer* layer : m_layerStack)
+						layer->Update(ts);
+				}
+
+				{
+					VE_PROFILE_SCOPE_CAT("Application", "Render")
+
+					if (m_window->IsVSync())
+					{
+						if (m_accumulatedTs > 1.0f / m_targetFps)
+						{
+							for (Layer* layer : m_layerStack)
+								layer->Render();
+
+							m_accumulatedTs = 0.0f;
+						}
+					} else
+					{
+						for (Layer* layer : m_layerStack)
+							layer->Render();
+					}
+				}
+
+				// Render gui
+				RenderImGui();
+
+				// Update window
+				m_window->Update();
 			}
-
-			// Render gui
-			RenderImGui();
-
-			// Update window
-			m_window->OnUpdate();
 		}
 	}
 
@@ -108,7 +130,7 @@ namespace VoxelEngine
 		m_imGuiLayer->Begin();
 
 		for (Layer* layer : m_layerStack)
-			layer->OnImGuiRender();
+			layer->ImGuiRender();
 
 		m_imGuiLayer->End();
 	}

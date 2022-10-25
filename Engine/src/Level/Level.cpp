@@ -47,9 +47,14 @@ namespace VoxelEngine
 		}
 	}
 
-	void Level::OnUpdate(float ts)
+	void Level::Update(float ts)
 	{
-		VE_PROFILE_SCOPE("Level::OnUpdate");
+		//VE_PROFILE_SCOPE_CAT("Level", "Update");
+	}
+
+	void Level::Render()
+	{
+		//VE_PROFILE_SCOPE_CAT("Level", "Render");
 
 		// Get camera entity
 		Entity cameraEntity = GetCameraEntity();

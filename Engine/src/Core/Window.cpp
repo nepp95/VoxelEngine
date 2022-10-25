@@ -158,7 +158,7 @@ namespace VoxelEngine
 		glfwTerminate();
 	}
 
-	void Window::OnUpdate()
+	void Window::Update()
 	{
 		glfwPollEvents();
 		glfwSwapBuffers(m_window);

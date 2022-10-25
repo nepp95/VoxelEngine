@@ -69,7 +69,10 @@ namespace VoxelEngine
 
 		bool m_isRunning{ true };
 		bool m_isMinimized{ false };
+		bool m_needRender{ false };
 		float m_lastFrameTime{ 0.0f };
+		float m_accumulatedTs{ 0.0f };
+		float m_targetFps{ 60.0f };
 
 		Profiler* m_profiler{ nullptr };
 
