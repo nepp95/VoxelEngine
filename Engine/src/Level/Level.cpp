@@ -39,7 +39,7 @@ namespace VoxelEngine
 			{
 				for (int y = 0; y < ySize; y++)
 				{
-					auto entity = CreateEntity("TestEntity");
+					auto entity = CreateEntity();
 
 					auto& tc = entity.GetComponent<TransformComponent>();
 					tc.Translation = { x * 1.0f, y * 1.0f, z * 1.0f };

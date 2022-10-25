@@ -38,6 +38,7 @@ namespace VoxelEngine
 		~Level();
 
 		void GenerateLevel(uint64_t seed = Utility::GenerateRandomUInt64());
+
 		void Update(float ts);
 		void Render();
 
