@@ -15,7 +15,7 @@ namespace VoxelEngine
 	struct RendererData
 	{
 		// Batch limits
-		static const uint32_t MaxQuads{ 30000 };
+		static const uint32_t MaxQuads{ 960000 };
 		static const uint32_t MaxVertices{ MaxQuads * 4 };
 		static const uint32_t MaxIndices{ MaxQuads * 6 };
 		static const uint32_t MaxTextureSlots{ 32 };
@@ -48,6 +48,8 @@ namespace VoxelEngine
 
 	void Renderer::Init()
 	{
+		VE_PROFILE_FUNCTION();
+
 		RenderCommand::Init();
 		AssetManager::Init();
 
@@ -210,11 +212,15 @@ namespace VoxelEngine
 
 	void Renderer::Shutdown()
 	{ 
+		VE_PROFILE_FUNCTION();
+
 		delete[] s_data.QuadVertexBufferBase;
 	}
 
 	void Renderer::BeginScene(const Camera& camera)
 	{
+		VE_PROFILE_FUNCTION();
+
 		s_data.ViewProjection = camera.GetViewProjectionMatrix();
 
 		StartBatch();
@@ -222,6 +228,8 @@ namespace VoxelEngine
 
 	void Renderer::EndScene()
 	{
+		VE_PROFILE_FUNCTION();
+
 		Flush();
 	}
 
@@ -411,6 +419,8 @@ namespace VoxelEngine
 
 	void Renderer::Flush()
 	{
+		VE_PROFILE_FUNCTION();
+
 		if (s_data.QuadIndexCount)
 		{
 			// Calculate data size

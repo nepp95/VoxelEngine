@@ -2,6 +2,7 @@
 #include "AssetManager.h"
 
 #include "Asset/AssetSerializer.h"
+#include "Core/Application.h" // For some reason we need this for the profiler? But debug/profiler.h does not work?
 #include "Renderer/Texture.h"
 
 #include <yaml-cpp/yaml.h>
@@ -17,6 +18,8 @@ namespace VoxelEngine
 
 	void AssetManager::Init()
 	{
+		VE_PROFILE_FUNCTION();
+
 		// Load all files in assets dir into registry
 		// todo: ONLY IF NOT IN REGISTRY FILE
 		s_assetsDir = "assets";
@@ -52,6 +55,8 @@ namespace VoxelEngine
 
 	void AssetManager::Shutdown()
 	{
+		VE_PROFILE_FUNCTION();
+
 		// Write registry to file
 		WriteRegistry();
 
@@ -111,6 +116,8 @@ namespace VoxelEngine
 
 	void AssetManager::WriteRegistry()
 	{
+		VE_PROFILE_FUNCTION();
+
 		std::ofstream outFile(s_assetRegistryFilepath, std::ios::binary | std::ios::out);
 
 		if (outFile.is_open())
@@ -135,6 +142,8 @@ namespace VoxelEngine
 
 	void AssetManager::LoadRegistry()
 	{
+		VE_PROFILE_FUNCTION();
+
 		std::ifstream inFile(s_assetRegistryFilepath);
 
 		if (inFile.is_open())

@@ -35,6 +35,9 @@ namespace VoxelEngine
 		// Add ImGui layer
 		m_imGuiLayer = new ImGuiLayer();
 		PushOverlay(m_imGuiLayer);
+
+		// Profiler
+		m_profiler->BeginSession("Profile.json");
 	}
 
 	Application::~Application()
@@ -42,6 +45,8 @@ namespace VoxelEngine
 		VE_CORE_INFO("Shutting down...");
 
 		Renderer::Shutdown();
+
+		m_profiler->EndSession();
 	}
 
 	void Application::Close()

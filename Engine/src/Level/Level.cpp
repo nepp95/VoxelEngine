@@ -12,17 +12,23 @@ namespace VoxelEngine
 {
 	Level::Level()
 	{
+		VE_PROFILE_FUNCTION();
+
 		GenerateLevel();
 	}
 
 	Level::~Level()
 	{
+		VE_PROFILE_FUNCTION();
+
 		// Clear raw pointers
 		m_blocks.clear();
 	}
 
 	void Level::GenerateLevel(uint64_t seed)
 	{
+		VE_PROFILE_FUNCTION();
+
 		const int xSize = 250;
 		const int ySize = 10;
 		const int zSize = 250;
@@ -48,12 +54,12 @@ namespace VoxelEngine
 
 	void Level::Update(float ts)
 	{
-		//VE_PROFILE_SCOPE_CAT("Level", "Update");
+		VE_PROFILE_FUNCTION();
 	}
 
 	void Level::Render()
 	{
-		//VE_PROFILE_SCOPE_CAT("Level", "Render");
+		VE_PROFILE_FUNCTION();
 
 		// Get camera entity
 		Entity cameraEntity = GetCameraEntity();

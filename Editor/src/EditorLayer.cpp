@@ -4,6 +4,8 @@
 
 void EditorLayer::OnAttach()
 {
+	VE_PROFILE_FUNCTION();
+
 	m_level = Ref<Level>::Create();
 
 	// Camera
@@ -28,11 +30,15 @@ void EditorLayer::OnAttach()
 
 void EditorLayer::OnDetach()
 {
+	VE_PROFILE_FUNCTION();
+
 	m_camera = nullptr;
 }
 
 void EditorLayer::Update(float ts)
 {
+	VE_PROFILE_FUNCTION();
+
 	// Reset render stats
 	Renderer::ResetStats();
 	m_timestep = ts;
@@ -52,6 +58,8 @@ void EditorLayer::Update(float ts)
 
 void EditorLayer::Render()
 {
+	VE_PROFILE_FUNCTION();
+
 	// Prepare for render
 	m_framebuffer->Bind();
 	RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
@@ -67,6 +75,8 @@ void EditorLayer::Render()
 
 void EditorLayer::ImGuiRender()
 {
+	VE_PROFILE_FUNCTION();
+
 	// Check ImGui examples for more information
 
 	static bool dockspaceOpen{ true };

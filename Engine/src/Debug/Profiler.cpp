@@ -3,12 +3,81 @@
 
 namespace VoxelEngine
 {
-	void Profiler::SetProfileTimerData(const char* name, std::chrono::microseconds time)
+	Profiler::~Profiler()
 	{
-		if (m_profileData.find(name) == m_profileData.end())
-			m_profileData[name] = std::chrono::microseconds(0);
+		EndSession();
+	}
 
-		m_profileData[name] += time;
+	void Profiler::BeginSession(const std::string& filepath)
+	{
+		std::lock_guard lock(m_mutex);
+
+		m_outputStream.open(filepath);
+
+		if (m_outputStream.is_open())
+		{
+			WriteHeader();
+		}
+	}
+
+	void Profiler::EndSession()
+	{
+		std::lock_guard lock(m_mutex);
+
+		WriteFooter();
+		m_outputStream.close();
+	}
+
+	Profiler& Profiler::Get()
+	{
+		static Profiler instance;
+		return instance;
+	}
+
+	void Profiler::WriteProfile(const ProfileResult& result)
+	{
+		std::stringstream json;
+
+		json << std::setprecision(3) << std::fixed;
+		json << ",{";
+		json << "\"cat\":\"function\",";
+		json << "\"dur\":" << (result.ElapsedTime.count()) << ',';
+		json << "\"name\":\"" << result.Name << "\",";
+		json << "\"ph\":\"X\",";
+		json << "\"pid\":0,";
+		json << "\"tid\":" << result.ThreadID << ",";
+		json << "\"ts\":" << result.Start.count();
+		json << "}";
+
+		std::lock_guard lock(m_mutex);
+
+		m_outputStream << json.str();
+		m_outputStream.flush();
+	}
+
+	void Profiler::WriteHeader()
+	{
+		m_outputStream << "{\"otherData\": {},\"traceEvents\":[{}";
+		m_outputStream.flush();
+	}
+
+	void Profiler::WriteFooter()
+	{
+		m_outputStream << "]}";
+		m_outputStream.flush();
+	}
+
+	void Profiler::SetProfileTimerData(const char* name, floatingPointMicroseconds startTime, std::chrono::microseconds elapsedTime)
+	{
+		if (m_profileData.find(name) != m_profileData.end())
+		{
+			auto category = m_categoryData.at(name);
+			Clear();
+			SetProfileTimerCategory(name, category);
+		}
+
+		m_profileData[name].first = startTime;
+		m_profileData[name].second = elapsedTime;
 	}
 
 	void Profiler::SetProfileTimerCategory(const char* timer, const char* category)
@@ -18,6 +87,9 @@ namespace VoxelEngine
 
 	void Profiler::Clear()
 	{
+		for (auto& profileData : m_profileData)
+			WriteProfile({ profileData.first, profileData.second.first, profileData.second.second, std::this_thread::get_id() });
+
 		m_categoryData.clear();
 		m_profileData.clear();
 	}
@@ -50,21 +122,25 @@ namespace VoxelEngine
 
 		for (auto& category : categories)
 		{
-			std::unordered_map<const char*, std::chrono::microseconds> categoryData;
-
-			for (auto& timerData : m_profileData)
+			if (category != "")
 			{
-				if (m_categoryData.find(timerData.first) != m_categoryData.end())
-				{
-					if (m_categoryData.at(timerData.first) == category)
-						categoryData.insert({ timerData.first, timerData.second });
-				} else
-				{
-					uncategorizedData.insert({ timerData.first, timerData.second });
-				}
-			}
+				std::unordered_map<const char*, std::chrono::microseconds> categoryData;
 
-			categorizedData.insert({ category, categoryData });
+				for (auto& timerData : m_profileData)
+				{
+					if (m_categoryData.find(timerData.first) != m_categoryData.end())
+					{
+						if (m_categoryData.at(timerData.first) == category)
+							categoryData.insert({ timerData.first, timerData.second.second });
+					}
+					else
+					{
+						uncategorizedData.insert({ timerData.first, timerData.second.second });
+					}
+				}
+
+				categorizedData.insert({ category, categoryData });
+			}
 		}
 
 		if (!uncategorizedData.empty())
@@ -76,20 +152,19 @@ namespace VoxelEngine
 	ProfileTimer::ProfileTimer(const char* name, Profiler* profiler, const char* category)
 		: m_name(name), m_profiler(profiler)
 	{
-		if (category != "")
-			m_profiler->SetProfileTimerCategory(name, category);
-		m_startTimePoint = std::chrono::high_resolution_clock::now();
+		m_profiler->SetProfileTimerCategory(name, category);
+		m_startTimePoint = std::chrono::steady_clock::now();
 	}
 
 	ProfileTimer::~ProfileTimer()
 	{
 		using namespace std::chrono;
 
-		auto endTimePoint = high_resolution_clock::now();
+		auto endTimePoint = steady_clock::now();
 
 		auto highResStart = duration<double, std::micro>{ m_startTimePoint.time_since_epoch() };
 		auto elapsedTime = time_point_cast<microseconds>(endTimePoint).time_since_epoch() - time_point_cast<microseconds>(m_startTimePoint).time_since_epoch();
 
-		m_profiler->SetProfileTimerData(m_name, elapsedTime);
+		m_profiler->SetProfileTimerData(m_name, highResStart, elapsedTime);
 	}
 }
