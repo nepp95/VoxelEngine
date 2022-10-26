@@ -9,9 +9,21 @@
 
 #include <xhash>
 
-// Comparison for std::map and glm::vec3
+// Comparison for std::unordered_map and glm::vec2/3
 namespace std
 {
+	// https://stackoverflow.com/questions/9047612/glmivec2-as-key-in-unordered-map
+	template<>
+	struct hash<glm::vec2>
+	{
+		std::size_t operator()(const glm::vec2& v) const
+		{
+			using std::hash;
+
+			return hash<float>()(v.x) ^ hash<float>()(v.y);
+		}
+	};
+
 	// https://stackoverflow.com/questions/17016175/c-unordered-map-using-a-custom-class-type-as-the-key
 	template<>
 	struct hash<glm::vec3>
@@ -30,6 +42,7 @@ namespace std
 namespace VoxelEngine
 {
 	class Entity;
+	class Chunk;
 
 	class Level : public RefCounted
 	{
@@ -42,10 +55,10 @@ namespace VoxelEngine
 		void Update(float ts);
 		void Render();
 
-		Entity CreateEntity(const std::string& name = std::string());
+		Entity CreateEntity(const std::string& name = std::string(), Chunk* chunk = nullptr);
 		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
-		void DestroyEntity(Entity entity);
-		void DuplicateEntity(Entity entity);
+		void DestroyEntity(Entity entity, Chunk* chunk = nullptr);
+		void DuplicateEntity(Entity entity, Chunk* chunk = nullptr);
 
 		Entity GetCameraEntity();
 
@@ -54,10 +67,11 @@ namespace VoxelEngine
 		void OnComponentAdded(Entity entity, T& component);
 
 	private:
-		// Every entity component is stored in the registry
+		// Every chunk is stored in a map
+		std::unordered_map<glm::vec3, Ref<Chunk>> m_chunks;
+
+		// Level wide registry for things like the camera. Will probably change this later
 		entt::registry m_registry;
-		// Lookup map for block types at a specific. Commonly used for neighbour checks
-		std::unordered_map<glm::vec3, BlockType*> m_blocks; // TODO: What if position changes?
 
 		friend class Entity;
 	};

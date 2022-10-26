@@ -2,6 +2,7 @@
 #include "Level.h"
 
 #include "Asset/AssetManager.h"
+#include "LEvel/Chunk.h"
 #include "Level/Components.h"
 #include "Level/Entity.h"
 #include "Renderer/Renderer.h"
@@ -20,34 +21,26 @@ namespace VoxelEngine
 	Level::~Level()
 	{
 		VE_PROFILE_FUNCTION();
-
-		// Clear raw pointers
-		m_blocks.clear();
+		
+		m_chunks.clear();
 	}
 
 	void Level::GenerateLevel(uint64_t seed)
 	{
 		VE_PROFILE_FUNCTION();
 
-		const int xSize = 250;
-		const int ySize = 10;
-		const int zSize = 250;
+		// Amount of chunks!
+		const int xSize = 8;
+		const int zSize = 8;
 
-		for (int x = 0; x < xSize; x++)
+		for (int x = -xSize / 2; x < xSize / 2; x++)
 		{
-			for (int z = 0; z < zSize; z++)
+			for (int z = -zSize / 2; z < zSize / 2; z++)
 			{
-				for (int y = 0; y < ySize; y++)
-				{
-					auto entity = CreateEntity();
+				glm::vec3 position = { x, 1.0f, z };
 
-					auto& tc = entity.GetComponent<TransformComponent>();
-					tc.Translation = { x * 1.0f, y * 1.0f, z * 1.0f };
-
-					auto& bc = entity.AddComponent<BlockComponent>();
-					bc.Data.Type = BlockType::Grass;
-					bc.Data.TextureHandle = AssetManager::GetMetadata("assets/textures/grass.png").Handle;
-				}
+				Ref<Chunk> chunk = Ref<Chunk>::Create(this, position);
+				m_chunks[position] = chunk;
 			}
 		}
 	}
@@ -68,61 +61,26 @@ namespace VoxelEngine
 		// Begin render
 		Renderer::BeginScene(*camera);
 
-		// Get all components with both a transform component and a block component
-		auto view = m_registry.view<TransformComponent, BlockComponent>();
+		// Get all chunks within range
+		auto cameraPosition = camera->GetPosition();
 
-		for (auto entity : view)
+		for (auto& chunk : m_chunks)
 		{
-			auto [transform, block] = view.get<TransformComponent, BlockComponent>(entity);
-
-			// Neighbour check
-			auto t = transform.Translation;
-			// Face drawing
-			/*std::vector<bool> drawSides{ true, true, true, true, true, true };
-
-			if (m_blocks.find(glm::vec3( t.x, t.y, t.z - 1.0f )) != m_blocks.end())
-				drawSides[(int) QuadSide::Front] = false;
-			if (m_blocks.find(glm::vec3( t.x + 1.0f, t.y, t.z )) != m_blocks.end())
-				drawSides[(int) QuadSide::Right] = false;
-			if (m_blocks.find(glm::vec3( t.x, t.y, t.z + 1.0f )) != m_blocks.end())
-				drawSides[(int) QuadSide::Back] = false;
-			if (m_blocks.find(glm::vec3( t.x - 1.0f, t.y, t.z )) != m_blocks.end())
-				drawSides[(int) QuadSide::Left] = false;
-			if (m_blocks.find(glm::vec3( t.x, t.y - 1.0f, t.z )) != m_blocks.end())
-				drawSides[(int) QuadSide::Bottom] = false;
-			if (m_blocks.find(glm::vec3( t.x, t.y + 1.0f, t.z )) != m_blocks.end())
-				drawSides[(int) QuadSide::Top] = false;
-
-			bool drawSides2[6] = { true, true, true, true, true, true };
-			Renderer::DrawEntity(transform.GetTransform(), block, drawSides);*/
-
-			// todo: Cube drawing, replace with face drawing
-			bool drawCube{ false };
-
-			if (m_blocks.find(glm::vec3(t.x, t.y, t.z - 1.0f)) == m_blocks.end())
-				drawCube = true;
-			else if (m_blocks.find(glm::vec3(t.x + 1.0f, t.y, t.z)) == m_blocks.end())
-				drawCube = true;
-			else if (m_blocks.find(glm::vec3(t.x, t.y, t.z + 1.0f)) == m_blocks.end())
-				drawCube = true;
-			else if (m_blocks.find(glm::vec3(t.x - 1.0f, t.y, t.z)) == m_blocks.end())
-				drawCube = true;
-			else if (m_blocks.find(glm::vec3(t.x, t.y - 1.0f, t.z)) == m_blocks.end())
-				drawCube = true;
-			else if (m_blocks.find(glm::vec3(t.x, t.y + 1.0f, t.z)) == m_blocks.end())
-				drawCube = true;
-
-			if (drawCube)
-				Renderer::DrawEntity(transform.GetTransform(), block);
+			auto chunkPosition = chunk.first * 16.0f;
+			if (glm::length(chunkPosition - cameraPosition) < 64.0f)
+				chunk.second->Render();
 		}
 
 		// End render
 		Renderer::EndScene();
 	}
 
-	Entity Level::CreateEntity(const std::string& name)
+	Entity Level::CreateEntity(const std::string& name, Chunk* chunk)
 	{
-		return CreateEntityWithUUID(UUID(), name);
+		if (chunk)
+			return chunk->CreateEntity(name);
+		else
+			return CreateEntityWithUUID(UUID(), name);
 	}
 
 	Entity Level::CreateEntityWithUUID(UUID uuid, const std::string& name)
@@ -142,23 +100,31 @@ namespace VoxelEngine
 		return entity;
 	}
 
-	void Level::DestroyEntity(Entity entity)
+	void Level::DestroyEntity(Entity entity, Chunk* chunk)
 	{
 		// Remove entity and all its components from registry
-		m_registry.destroy(entity);
+		if (chunk)
+			chunk->DestroyEntity(entity);
+		else
+			m_registry.destroy(entity);
 	}
 
-	void Level::DuplicateEntity(Entity entity)
+	void Level::DuplicateEntity(Entity entity, Chunk* chunk)
 	{
-		std::string name = entity.GetName();
-		Entity newEntity = CreateEntity(name);
+		if (chunk)
+			chunk->DuplicateEntity(entity);
+		else
+		{
+			std::string name = entity.GetName();
+			Entity newEntity = CreateEntity(name);
 
-		if (entity.HasComponent<TransformComponent>())
-			newEntity.AddOrReplaceComponent<TransformComponent>(entity.GetComponent<TransformComponent>());
-		if (entity.HasComponent<BlockComponent>())
-			newEntity.AddOrReplaceComponent<BlockComponent>(entity.GetComponent<BlockComponent>());
-		if (entity.HasComponent<CameraComponent>())
-			newEntity.AddOrReplaceComponent<CameraComponent>(entity.GetComponent<CameraComponent>());
+			if (entity.HasComponent<TransformComponent>())
+				newEntity.AddOrReplaceComponent<TransformComponent>(entity.GetComponent<TransformComponent>());
+			if (entity.HasComponent<BlockComponent>())
+				newEntity.AddOrReplaceComponent<BlockComponent>(entity.GetComponent<BlockComponent>());
+			if (entity.HasComponent<CameraComponent>())
+				newEntity.AddOrReplaceComponent<CameraComponent>(entity.GetComponent<CameraComponent>());
+		}
 	}
 
 	Entity Level::GetCameraEntity()
@@ -195,12 +161,7 @@ namespace VoxelEngine
 
 	template<>
 	void Level::OnComponentAdded<BlockComponent>(Entity entity, BlockComponent& component)
-	{
-		VE_CORE_ASSERT(entity.HasComponent<TransformComponent>(), "Block needs a transform!");
-		
-		auto& tc = entity.GetComponent<TransformComponent>();
-		m_blocks[tc.Translation] = &component.Data.Type;
-	}
+	{}
 
 	template<>
 	void Level::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
