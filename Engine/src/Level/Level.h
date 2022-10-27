@@ -44,6 +44,11 @@ namespace VoxelEngine
 	class Entity;
 	class Chunk;
 
+	struct LevelData
+	{
+		uint32_t Seed;
+	};
+
 	class Level : public RefCounted
 	{
 	public:
@@ -68,6 +73,8 @@ namespace VoxelEngine
 		void OnComponentAdded(Entity entity, T& component);
 
 	private:
+		LevelData m_levelData;
+
 		// Every chunk is stored in a map
 		std::unordered_map<glm::vec3, Ref<Chunk>> m_chunks;
 
