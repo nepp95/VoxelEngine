@@ -13,6 +13,7 @@ namespace VoxelEngine
 	struct ProfileResult
 	{
 		std::string Name;
+		std::string Category;
 		floatingPointMicroseconds Start;
 		std::chrono::microseconds ElapsedTime;
 		std::thread::id ThreadID;
@@ -35,16 +36,20 @@ namespace VoxelEngine
 		void WriteHeader();
 		void WriteFooter();
 
-		void SetProfileTimerData(const char* name, floatingPointMicroseconds startTime, std::chrono::microseconds elapsedTime);
-		void SetProfileTimerCategory(const char* timer, const char* category);
+		void SetProfileTimerData(const ProfileResult& result);
+		//void SetProfileTimerData(const char* name, floatingPointMicroseconds startTime, std::chrono::microseconds elapsedTime);
+		//void SetProfileTimerCategory(const char* timer, const char* category);
 		void Clear();
 
-		const std::unordered_map<const char*, std::pair<floatingPointMicroseconds, std::chrono::microseconds>>& GetProfileTimerData() const { return m_profileData; }
-		std::map<std::string, std::unordered_map<const char*, std::chrono::microseconds>> GetCategorizedProfileTimerData() const;
+		const std::vector<ProfileResult>& GetProfileTimerData() const { return m_profileData; }
+		std::unordered_map<std::string, std::vector<ProfileResult>> GetCategorizedProfileTimerData();
+		//const std::unordered_map<const char*, std::pair<floatingPointMicroseconds, std::chrono::microseconds>>& GetProfileTimerData() const { return m_profileData; }
+		//std::map<std::string, std::unordered_map<const char*, std::chrono::microseconds>> GetCategorizedProfileTimerData() const;
 
 	private:
-		std::unordered_map<const char*, std::pair<std::chrono::duration<double, std::micro>, std::chrono::microseconds>> m_profileData;
-		std::unordered_map<const char*, const char*> m_categoryData;
+		std::vector<ProfileResult> m_profileData;
+		//std::unordered_map<const char*, std::pair<std::chrono::duration<double, std::micro>, std::chrono::microseconds>> m_profileData;
+		//std::unordered_map<const char*, const char*> m_categoryData;
 
 		std::mutex m_mutex;
 		std::ofstream m_outputStream;
@@ -53,12 +58,12 @@ namespace VoxelEngine
 	class ProfileTimer
 	{
 	public:
-		ProfileTimer(const char* name, Profiler* profiler, const char* category = "");
+		ProfileTimer(const char* name, Profiler* profiler, const std::string& category = std::string());
 		~ProfileTimer();
 
 	private:
-		bool m_jsonOnly;
 		const char* m_name;
+		std::string m_category;
 		Profiler* m_profiler;
 
 		std::chrono::time_point<std::chrono::steady_clock> m_startTimePoint;

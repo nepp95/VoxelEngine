@@ -34,11 +34,23 @@ namespace VoxelEngine
 				}
 			}
 		}
+
+		m_isGenerated = true;
 	}
 
 	Chunk::~Chunk()
 	{
 		m_blocks.clear();
+	}
+
+	bool Chunk::IsBlockAtPosition(const glm::vec3& position) const
+	{
+		if (m_blocks.empty())
+			return false;
+
+		if (m_blocks.find(position) != m_blocks.end())
+			return true;
+		return false;
 	}
 
 	Entity Chunk::CreateEntity(const std::string& name)
@@ -104,16 +116,63 @@ namespace VoxelEngine
 			bool drawCube{ false };
 
 			if (m_blocks.find(glm::vec3(t.x, t.y, t.z - 1.0f)) == m_blocks.end())
+			{
+				if (t.z == 0.0f)
+				{
+					// If at border of chunk, check neighbouring chunk
+					const auto& chunk = m_level->GetChunk({ m_position.x, m_position.y, m_position.z - 1.0f });
+					if (chunk)
+						if (!chunk->IsBlockAtPosition({ t.x, t.y, 15.0f }))
+							drawCube = true;
+				} else
+					drawCube = true;
+			}
+
+			if (m_blocks.find(glm::vec3(t.x + 1.0f, t.y, t.z)) == m_blocks.end())
+			{
+				if (t.x == 15.0f)
+				{
+					// If at border of chunk, check neighbouring chunk
+					const auto& chunk = m_level->GetChunk({ m_position.x + 1.0f, m_position.y, m_position.z });
+					if (chunk)
+						if (!chunk->IsBlockAtPosition({ 0.0f, t.y, t.z }))
+							drawCube = true;
+				}
+				else
+					drawCube = true;
+			}
+
+			if (m_blocks.find(glm::vec3(t.x, t.y, t.z + 1.0f)) == m_blocks.end())
+			{
+				if (t.z == 15.0f)
+				{
+					// If at border of chunk, check neighbouring chunk
+					const auto& chunk = m_level->GetChunk({ m_position.x, m_position.y, m_position.z + 1.0f });
+					if (chunk)
+						if (!chunk->IsBlockAtPosition({ t.x, t.y, 0.0f }))
+							drawCube = true;
+				}
+				else
+					drawCube = true;
+			}
+
+			if (m_blocks.find(glm::vec3(t.x - 1.0f, t.y, t.z)) == m_blocks.end())
+			{
+				if (t.x == 0.0f)
+				{
+					// If at border of chunk, check neighbouring chunk
+					const auto& chunk = m_level->GetChunk({ m_position.x - 1.0f, m_position.y, m_position.z });
+					if (chunk)
+						if (!chunk->IsBlockAtPosition({ 15.0f, t.y, t.z }))
+							drawCube = true;
+				}
+				else
+					drawCube = true;
+			}
+
+			if (m_blocks.find(glm::vec3(t.x, t.y - 1.0f, t.z)) == m_blocks.end())
 				drawCube = true;
-			else if (m_blocks.find(glm::vec3(t.x + 1.0f, t.y, t.z)) == m_blocks.end())
-				drawCube = true;
-			else if (m_blocks.find(glm::vec3(t.x, t.y, t.z + 1.0f)) == m_blocks.end())
-				drawCube = true;
-			else if (m_blocks.find(glm::vec3(t.x - 1.0f, t.y, t.z)) == m_blocks.end())
-				drawCube = true;
-			else if (m_blocks.find(glm::vec3(t.x, t.y - 1.0f, t.z)) == m_blocks.end())
-				drawCube = true;
-			else if (m_blocks.find(glm::vec3(t.x, t.y + 1.0f, t.z)) == m_blocks.end())
+			if (m_blocks.find(glm::vec3(t.x, t.y + 1.0f, t.z)) == m_blocks.end())
 				drawCube = true;
 
 			if (drawCube)

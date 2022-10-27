@@ -18,6 +18,8 @@ namespace VoxelEngine
 		~Chunk();
 
 		Level* GetLevel() const { return m_level; }
+		bool IsBlockAtPosition(const glm::vec3& position) const;
+		bool IsGenerated() const { return m_isGenerated; }
 
 		Entity CreateEntity(const std::string& name = std::string());
 		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
@@ -34,6 +36,7 @@ namespace VoxelEngine
 	private:
 		Level* m_level;
 		glm::vec3 m_position;
+		bool m_isGenerated{ false };
 
 		// Every entity component is stored in the registry
 		entt::registry m_registry;

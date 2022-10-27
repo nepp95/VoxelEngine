@@ -13,7 +13,7 @@ void EditorLayer::OnAttach()
 	auto& cc = cameraEntity.AddComponent<CameraComponent>();
 	cc.Camera.SetPitch(-15.0f);
 	cc.Camera.SetYaw(20.0f);
-	cc.Camera.SetPosition({ -15.0f, 10.0f, 0.0f });
+	cc.Camera.SetPosition({ 0.0f, 40.0f, 0.0f });
 	m_camera = &cc.Camera;
 
 	// Set settings
@@ -154,19 +154,19 @@ void EditorLayer::ImGuiRender()
 	ImGui::Text("\tPitch: %.2f", m_camera->GetPitch());
 
 	// Performance
-	const auto& categorizedProfileData = Application::Get().GetProfiler()->GetCategorizedProfileTimerData();
+	auto categorizedProfileData = Application::Get().GetProfiler()->GetCategorizedProfileTimerData();
 
 	ImGui::NewLine();
 	ImGui::Text("Performance");
 	ImGui::Text("\tFrames rendered: %d", m_frames);
 
-	for (auto const& category : categorizedProfileData)
+	for (auto& category : categorizedProfileData)
 	{
-		ImGui::Text("\t%s", category.first.c_str());
+		ImGui::Text("\t%s", category.first);
 
 		for (auto& categoryData : category.second)
 		{
-			ImGui::Text("\t\t%s: %.3fms", categoryData.first, categoryData.second.count() / 1000.0f);
+			ImGui::Text("\t\t%s: %.3fms", categoryData.Name, categoryData.ElapsedTime.count() / 1000.0f);
 		}
 	}
 

@@ -60,6 +60,7 @@ namespace VoxelEngine
 		void DestroyEntity(Entity entity, Chunk* chunk = nullptr);
 		void DuplicateEntity(Entity entity, Chunk* chunk = nullptr);
 
+		const Ref<Chunk>& GetChunk(const glm::vec3& position) const;
 		Entity GetCameraEntity();
 
 	private:
