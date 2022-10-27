@@ -29,9 +29,11 @@ namespace VoxelEngine
 	{
 		VE_PROFILE_FUNCTION();
 
+		m_levelData.Seed = seed;
+
 		// Amount of chunks!
-		const int xSize = 8;
-		const int zSize = 8;
+		const int xSize = 16;
+		const int zSize = 16;
 
 		for (int x = -xSize / 2; x < xSize / 2; x++)
 		{
