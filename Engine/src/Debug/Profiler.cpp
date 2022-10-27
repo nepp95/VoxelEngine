@@ -67,92 +67,138 @@ namespace VoxelEngine
 		m_outputStream.flush();
 	}
 
-	void Profiler::SetProfileTimerData(const char* name, floatingPointMicroseconds startTime, std::chrono::microseconds elapsedTime)
-	{
-		if (m_profileData.find(name) != m_profileData.end())
-		{
-			auto category = m_categoryData.at(name);
-			Clear();
-			SetProfileTimerCategory(name, category);
-		}
+	//void Profiler::SetProfileTimerData(const char* name, floatingPointMicroseconds startTime, std::chrono::microseconds elapsedTime)
+	//{
+	//	/*	if (m_profileData.find(name) != m_profileData.end())
+	//		{
+	//			auto category = m_categoryData.at(name);
+	//			Clear();
+	//			SetProfileTimerCategory(name, category);
+	//		}*/
 
-		m_profileData[name].first = startTime;
-		m_profileData[name].second = elapsedTime;
+	//	
+	//	m_profileData[name].first = startTime;
+	//	m_profileData[name].second = elapsedTime;
+	//}
+
+	void Profiler::SetProfileTimerData(const ProfileResult& result)
+	{
+		m_profileData.push_back(result);
 	}
 
-	void Profiler::SetProfileTimerCategory(const char* timer, const char* category)
-	{
-		m_categoryData[timer] = category;
-	}
+	//void Profiler::SetProfileTimerCategory(const char* timer, const char* category)
+	//{
+	//	m_categoryData[timer] = category;
+	//}
 
 	void Profiler::Clear()
 	{
 		for (auto& profileData : m_profileData)
-			WriteProfile({ profileData.first, profileData.second.first, profileData.second.second, std::this_thread::get_id() });
+			WriteProfile(profileData);
 
-		m_categoryData.clear();
+		//m_categoryData.clear();
 		m_profileData.clear();
 	}
 
-	std::map<std::string, std::unordered_map<const char*, std::chrono::microseconds>> Profiler::GetCategorizedProfileTimerData() const
+	std::unordered_map<std::string, std::vector<ProfileResult>> Profiler::GetCategorizedProfileTimerData()
 	{
-		// TODO: Currently if the name of the profile is the same, but in a different category, only the last one is shown.
+		// Put all categories into a vector
+		std::vector<std::string> categories;
 
-		// We use an ordered map with std::string, because const char* comparison is done by memory address instead of the actual string form.
-		// This does require us to convert forth and back from/to const char* and std::string
-		std::map<std::string, std::unordered_map<const char*, std::chrono::microseconds>> categorizedData;
-
-		// Get categories
-		std::vector<const char*> categories;
-		for (auto& entry : m_categoryData)
+		for (auto& result : m_profileData)
 		{
 			bool isPresent{ false };
 			for (auto category : categories)
 			{
-				if (entry.second == category)
+				if (category == result.Category)
 					isPresent = true;
 			}
 
 			if (!isPresent)
-				categories.push_back(entry.second);
+				categories.push_back(result.Category);
 		}
 
-		// Loop through categories and create a map with data per category
-		std::unordered_map<const char*, std::chrono::microseconds> uncategorizedData;
+		// Fill a vector with profile results for each category
+		std::unordered_map<std::string, std::vector<ProfileResult>> categorizedData;
 
-		for (auto& category : categories)
+		for (auto category : categories)
 		{
-			if (category != "")
+			if (category.empty())
+				continue;
+			
+			std::vector<ProfileResult> results;
+
+			for (auto& result : m_profileData)
 			{
-				std::unordered_map<const char*, std::chrono::microseconds> categoryData;
-
-				for (auto& timerData : m_profileData)
-				{
-					if (m_categoryData.find(timerData.first) != m_categoryData.end())
-					{
-						if (m_categoryData.at(timerData.first) == category)
-							categoryData.insert({ timerData.first, timerData.second.second });
-					}
-					else
-					{
-						uncategorizedData.insert({ timerData.first, timerData.second.second });
-					}
-				}
-
-				categorizedData.insert({ category, categoryData });
+				if (result.Category == category)
+					results.push_back(result);
 			}
-		}
 
-		if (!uncategorizedData.empty())
-			categorizedData.insert({ "Uncategorized", uncategorizedData });
+			categorizedData.insert({ category, results });
+		}
 
 		return categorizedData;
 	}
 
-	ProfileTimer::ProfileTimer(const char* name, Profiler* profiler, const char* category)
-		: m_name(name), m_profiler(profiler)
+	//std::map<std::string, std::unordered_map<const char*, std::chrono::microseconds>> Profiler::GetCategorizedProfileTimerData() const
+	//{
+	//	// TODO: Currently if the name of the profile is the same, but in a different category, only the last one is shown.
+
+	//	// We use an ordered map with std::string, because const char* comparison is done by memory address instead of the actual string form.
+	//	// This does require us to convert forth and back from/to const char* and std::string
+	//	std::map<std::string, std::unordered_map<const char*, std::chrono::microseconds>> categorizedData;
+
+	//	// Get categories
+	//	std::vector<const char*> categories;
+	//	for (auto& entry : m_categoryData)
+	//	{
+	//		bool isPresent{ false };
+	//		for (auto category : categories)
+	//		{
+	//			if (entry.second == category)
+	//				isPresent = true;
+	//		}
+
+	//		if (!isPresent)
+	//			categories.push_back(entry.second);
+	//	}
+
+	//	// Loop through categories and create a map with data per category
+	//	std::unordered_map<const char*, std::chrono::microseconds> uncategorizedData;
+
+	//	for (auto& category : categories)
+	//	{
+	//		if (category != "")
+	//		{
+	//			std::unordered_map<const char*, std::chrono::microseconds> categoryData;
+
+	//			for (auto& timerData : m_profileData)
+	//			{
+	//				if (m_categoryData.find(timerData.first) != m_categoryData.end())
+	//				{
+	//					if (m_categoryData.at(timerData.first) == category)
+	//						categoryData.insert({ timerData.first, timerData.second.second });
+	//				}
+	//				else
+	//				{
+	//					uncategorizedData.insert({ timerData.first, timerData.second.second });
+	//				}
+	//			}
+
+	//			categorizedData.insert({ category, categoryData });
+	//		}
+	//	}
+
+	//	if (!uncategorizedData.empty())
+	//		categorizedData.insert({ "Uncategorized", uncategorizedData });
+
+	//	return categorizedData;
+	//}
+
+	ProfileTimer::ProfileTimer(const char* name, Profiler* profiler, const std::string& category)
+		: m_name(name), m_profiler(profiler), m_category(category)
 	{
-		m_profiler->SetProfileTimerCategory(name, category);
+		//m_profiler->SetProfileTimerCategory(name, category);
 		m_startTimePoint = std::chrono::steady_clock::now();
 	}
 
@@ -165,6 +211,8 @@ namespace VoxelEngine
 		auto highResStart = duration<double, std::micro>{ m_startTimePoint.time_since_epoch() };
 		auto elapsedTime = time_point_cast<microseconds>(endTimePoint).time_since_epoch() - time_point_cast<microseconds>(m_startTimePoint).time_since_epoch();
 
-		m_profiler->SetProfileTimerData(m_name, highResStart, elapsedTime);
+		ProfileResult result{ m_name, m_category, highResStart, elapsedTime, std::this_thread::get_id() };
+
+		m_profiler->SetProfileTimerData(result);
 	}
 }

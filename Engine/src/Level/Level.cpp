@@ -37,7 +37,7 @@ namespace VoxelEngine
 		{
 			for (int z = -zSize / 2; z < zSize / 2; z++)
 			{
-				glm::vec3 position = { x, 1.0f, z };
+				glm::vec3 position = { x, 0.0f, z };
 
 				Ref<Chunk> chunk = Ref<Chunk>::Create(this, position);
 				m_chunks[position] = chunk;
@@ -125,6 +125,18 @@ namespace VoxelEngine
 			if (entity.HasComponent<CameraComponent>())
 				newEntity.AddOrReplaceComponent<CameraComponent>(entity.GetComponent<CameraComponent>());
 		}
+	}
+
+	const Ref<Chunk>& Level::GetChunk(const glm::vec3& position) const
+	{
+		if (m_chunks.find(position) != m_chunks.end())
+		{
+			const auto& chunk = m_chunks.at(position);
+			if (chunk->IsGenerated())
+				return chunk;
+		}
+
+		return nullptr;
 	}
 
 	Entity Level::GetCameraEntity()
