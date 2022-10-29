@@ -5,20 +5,6 @@
 
 namespace VoxelEngine
 {
-	// Heavily inspired by: https://www.reddit.com/r/VoxelGameDev/comments/wh1vqg/frustum_culling_saved_near_12_chunk_render_calls/
-	static const glm::vec3 s_aabb[2]{ { -0.5f, -0.5f, 0.0f }, { 0.5f, 0.5f, 1.0f } };
-	static const glm::vec4 s_vertices[8]{
-		{ -0.5f, -0.5f, 0.0f, 1.0f },
-		{  0.5f, -0.5f, 0.0f, 1.0f },
-		{  0.5f,  0.5f, 0.0f, 1.0f },
-		{ -0.5f,  0.5f, 0.0f, 1.0f },
-
-		{ -0.5f, -0.5f, 1.0f, 1.0f },
-		{  0.5f, -0.5f, 1.0f, 1.0f },
-		{  0.5f,  0.5f, 1.0f, 1.0f },
-		{ -0.5f,  0.5f, 1.0f, 1.0f }
-	};
-
 	static glm::vec4 s_planes[6];
 	
 	bool Frustrum::Intersects(AABB aabb)
