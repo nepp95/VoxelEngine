@@ -49,6 +49,13 @@ namespace VoxelEngine
 		uint32_t Seed;
 	};
 
+	struct LevelRenderStats
+	{
+		uint32_t chunksCulledByViewDistance{ 0 };
+		uint32_t chunksCulledByFrustrum{ 0 };
+		uint32_t chunksRendered{ 0 };
+	};
+
 	class Level : public RefCounted
 	{
 	public:
@@ -69,11 +76,14 @@ namespace VoxelEngine
 		Entity GetCameraEntity();
 
 	private:
+		void ResetLevelRenderStats();
+
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
 
 	private:
 		LevelData m_levelData;
+		LevelRenderStats m_levelRenderStats;
 
 		// Every chunk is stored in a map
 		std::unordered_map<glm::vec3, Ref<Chunk>> m_chunks;
