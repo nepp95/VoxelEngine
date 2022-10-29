@@ -2,9 +2,10 @@
 #include "Level.h"
 
 #include "Asset/AssetManager.h"
-#include "LEvel/Chunk.h"
+#include "Level/Chunk.h"
 #include "Level/Components.h"
 #include "Level/Entity.h"
+#include "Renderer/Culling/Frustrum.h"
 #include "Renderer/Renderer.h"
 
 #include <glm/glm.hpp>
@@ -65,13 +66,17 @@ namespace VoxelEngine
 
 		// Get all chunks within range
 		auto cameraPosition = camera->GetPosition();
+		uint32_t chunksRendered{ 0 };
 
 		for (auto& chunk : m_chunks)
 		{
 			auto chunkPosition = chunk.first * 16.0f;
-			if (glm::length(chunkPosition - cameraPosition) < 64.0f)
-				chunk.second->Render();
+
+			if (glm::length(chunkPosition - cameraPosition) < 64.0f && Frustrum::Intersects(chunk.second->GetAABB()))
+				chunk.second->Render(), chunksRendered++;
 		}
+
+		VE_CORE_INFO("Chunks rendered: %/%. Culled: %", chunksRendered, m_chunks.size(), m_chunks.size() - chunksRendered);
 
 		// End render
 		Renderer::EndScene();
