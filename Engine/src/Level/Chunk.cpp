@@ -13,6 +13,7 @@ namespace VoxelEngine
 	{
 		VE_PROFILE_FUNCTION();
 
+		// Generate chunk
 		const int xSize = 16;
 		const int ySize = 32;
 		const int zSize = 16;
@@ -34,6 +35,12 @@ namespace VoxelEngine
 				}
 			}
 		}
+
+		// Set AABB
+		m_aabb = {
+			{ m_position.x * 16.0f, 0.0f, m_position.z * 16.0f },
+			{ m_position.x * 16.0f + xSize, (float)ySize, m_position.z * 16.0f + zSize }
+		};
 
 		m_isGenerated = true;
 	}

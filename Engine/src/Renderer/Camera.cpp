@@ -3,6 +3,7 @@
 
 #include "Core/Application.h"
 #include "Core/Input.h"
+#include "Renderer/Culling/Frustrum.h"
 
 #include <glm/ext/matrix_transform.hpp>
 
@@ -98,6 +99,8 @@ namespace VoxelEngine
 		auto& app = Application::Get();
 		m_viewMatrix = glm::lookAt(m_position, m_position + m_front, m_up);
 		m_projectionMatrix = glm::perspective(glm::radians(m_zoom), static_cast<float>(app.GetWindow().GetWidth()) / static_cast<float>(app.GetWindow().GetHeight()), 0.1f, 100.0f);
+
+		Frustrum::SetPlanes(GetViewProjectionMatrix());
 	}
 
 	bool Camera::OnMouseMoved(MouseMovedEvent& e)

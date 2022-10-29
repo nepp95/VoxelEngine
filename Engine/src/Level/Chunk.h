@@ -2,6 +2,7 @@
 
 #include "Level/Block.h"
 #include "Level/Level.h"
+#include "Renderer/AABB.h"
 
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
@@ -21,6 +22,8 @@ namespace VoxelEngine
 		bool IsBlockAtPosition(const glm::vec3& position) const;
 		bool IsGenerated() const { return m_isGenerated; }
 
+		AABB GetAABB() const { return m_aabb; }
+
 		Entity CreateEntity(const std::string& name = std::string());
 		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
@@ -36,6 +39,7 @@ namespace VoxelEngine
 	private:
 		Level* m_level;
 		glm::vec3 m_position;
+		AABB m_aabb;
 		bool m_isGenerated{ false };
 
 		// Every entity component is stored in the registry
