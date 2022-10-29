@@ -10,3 +10,4 @@ __pycache__
 bin
 bin-int
 Editor/assets/registry.yaml
+Editor/Profile.json

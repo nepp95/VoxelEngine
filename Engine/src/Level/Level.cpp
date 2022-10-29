@@ -2,9 +2,10 @@
 #include "Level.h"
 
 #include "Asset/AssetManager.h"
-#include "LEvel/Chunk.h"
+#include "Level/Chunk.h"
 #include "Level/Components.h"
 #include "Level/Entity.h"
+#include "Renderer/Culling/Frustrum.h"
 #include "Renderer/Renderer.h"
 
 #include <glm/glm.hpp>
@@ -56,6 +57,8 @@ namespace VoxelEngine
 	{
 		VE_PROFILE_FUNCTION();
 
+		ResetLevelRenderStats();
+
 		// Get camera entity
 		Entity cameraEntity = GetCameraEntity();
 		Camera* camera = &cameraEntity.GetComponent<CameraComponent>().Camera;
@@ -64,14 +67,42 @@ namespace VoxelEngine
 		Renderer::BeginScene(*camera);
 
 		// Get all chunks within range
+		const float viewDistance{ 64.0f };
 		auto cameraPosition = camera->GetPosition();
-
+		
 		for (auto& chunk : m_chunks)
 		{
 			auto chunkPosition = chunk.first * 16.0f;
-			if (glm::length(chunkPosition - cameraPosition) < 64.0f)
+			bool renderChunk{ true };
+
+			// View distance
+			if (glm::length(chunkPosition - cameraPosition) > viewDistance)
+			{
+				m_levelRenderStats.chunksCulledByViewDistance++;
+				renderChunk = false;
+			}
+
+			// Frustrum culling
+			else if (!Frustrum::Intersects(chunk.second->GetAABB()))
+			{
+				m_levelRenderStats.chunksCulledByFrustrum++;
+				renderChunk = false;
+			}
+
+			if (renderChunk)
+			{
+				m_levelRenderStats.chunksRendered++;
 				chunk.second->Render();
+			}
 		}
+
+		VE_CORE_INFO("Chunks rendered: %/%. Culled total: %. Culled by view distance: %. Culled by frustrum: %",
+			m_levelRenderStats.chunksRendered,
+			m_chunks.size(),
+			m_chunks.size() - m_levelRenderStats.chunksRendered,
+			m_levelRenderStats.chunksCulledByViewDistance,
+			m_levelRenderStats.chunksCulledByFrustrum
+		);
 
 		// End render
 		Renderer::EndScene();
@@ -152,6 +183,11 @@ namespace VoxelEngine
 
 		// Return empty entity when no entities with a camera component are found
 		return {};
+	}
+
+	void Level::ResetLevelRenderStats()
+	{
+		memset(&m_levelRenderStats, 0, sizeof(LevelRenderStats));
 	}
 
 	template<typename T>
