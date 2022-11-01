@@ -1,9 +1,5 @@
 #pragma once
 
-#include "Core/Base.h"
-
-#include <xhash>
-
 namespace VoxelEngine
 {
 	class UUID

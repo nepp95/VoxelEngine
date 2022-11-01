@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Renderer/AABB.h"
-#include "Renderer/Camera.h"
 
 #include <glm/glm.hpp>
 

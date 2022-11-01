@@ -2,7 +2,6 @@
 
 #include <chrono>
 #include <fstream>
-#include <map>
 #include <mutex>
 #include <unordered_map>
 
@@ -37,19 +36,13 @@ namespace VoxelEngine
 		void WriteFooter();
 
 		void SetProfileTimerData(const ProfileResult& result);
-		//void SetProfileTimerData(const char* name, floatingPointMicroseconds startTime, std::chrono::microseconds elapsedTime);
-		//void SetProfileTimerCategory(const char* timer, const char* category);
 		void Clear();
 
 		const std::vector<ProfileResult>& GetProfileTimerData() const { return m_profileData; }
 		std::unordered_map<std::string, std::vector<ProfileResult>> GetCategorizedProfileTimerData();
-		//const std::unordered_map<const char*, std::pair<floatingPointMicroseconds, std::chrono::microseconds>>& GetProfileTimerData() const { return m_profileData; }
-		//std::map<std::string, std::unordered_map<const char*, std::chrono::microseconds>> GetCategorizedProfileTimerData() const;
 
 	private:
 		std::vector<ProfileResult> m_profileData;
-		//std::unordered_map<const char*, std::pair<std::chrono::duration<double, std::micro>, std::chrono::microseconds>> m_profileData;
-		//std::unordered_map<const char*, const char*> m_categoryData;
 
 		std::mutex m_mutex;
 		std::ofstream m_outputStream;

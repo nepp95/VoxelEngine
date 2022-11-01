@@ -8,17 +8,21 @@ void EditorLayer::OnAttach()
 
 	m_scene = Ref<Scene>::Create();
 
+	auto entity = m_scene->CreateEntity();
+	auto& sc = entity.AddComponent<SpriteComponent>();
+	sc.TextureHandle = AssetManager::GetMetadata("assets/textures/grass.png").Handle;
+
 	// Camera
 	auto cameraEntity = m_scene->CreateEntity("Camera");
 	auto& cc = cameraEntity.AddComponent<CameraComponent>();
-	cc.Camera.SetPitch(-15.0f);
-	cc.Camera.SetYaw(20.0f);
-	cc.Camera.SetPosition({ 0.0f, 40.0f, 0.0f });
+	cc.Camera.SetPitch(0.0f);
+	cc.Camera.SetYaw(-90.0f);
+	cc.Camera.SetPosition({ 0.0f, 0.0f, 2.0f });
 	m_camera = &cc.Camera;
 
 	// Set settings
 	auto& app = Application::Get();
-	m_enableVSync = app.GetWindow().IsVSync();
+	m_enableVSync = app.GetWindow().IsVSync(); // TODO: Make this work?!
 
 	// Create framebuffer
 	FramebufferSpecification fbSpecification;
@@ -67,7 +71,6 @@ void EditorLayer::Render()
 
 	// Render scene
 	m_scene->Render();
-	m_frames++;
 
 	// Unbind framebuffer
 	m_framebuffer->Unbind();
@@ -154,11 +157,10 @@ void EditorLayer::ImGuiRender()
 	ImGui::Text("\tPitch: %.2f", m_camera->GetPitch());
 
 	// Performance
-	auto categorizedProfileData = Application::Get().GetProfiler()->GetCategorizedProfileTimerData();
+	const auto categorizedProfileData = Application::Get().GetProfiler()->GetCategorizedProfileTimerData();
 
 	ImGui::NewLine();
 	ImGui::Text("Performance");
-	ImGui::Text("\tFrames rendered: %d", m_frames);
 
 	for (auto& category : categorizedProfileData)
 	{

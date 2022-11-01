@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Asset/Asset.h"
-#include "Asset/AssetTypes.h"
 #include "Asset/AssetMetadata.h"
 
 #include <unordered_map>

@@ -2,7 +2,6 @@
 
 #include "Asset/Asset.h"
 #include "Core/UUID.h"
-#include "Scene/Block.h"
 #include "Renderer/Camera.h"
 
 #include <glm/glm.hpp>
@@ -44,19 +43,19 @@ namespace VoxelEngine
 		}
 	};
 
-	struct BlockComponent
-	{
-		BlockData Data{ BlockType::Air };
-
-		BlockComponent() = default;
-		BlockComponent(const BlockComponent&) = default;
-	};
-
 	struct CameraComponent
 	{
 		Camera Camera{ { 0.0f, 0.0f, 3.0f } };
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
+	};
+
+	struct SpriteComponent
+	{
+		AssetHandle TextureHandle;
+
+		SpriteComponent() = default;
+		SpriteComponent(const SpriteComponent&) = default;
 	};
 }

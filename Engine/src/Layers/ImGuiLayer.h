@@ -2,8 +2,6 @@
 
 #include "Core/Layer.h"
 #include "Events/ApplicationEvent.h"
-//#include "Events/KeyEvent.h"
-//#include "Events/MouseEvent.h"
 
 namespace VoxelEngine
 {
@@ -11,7 +9,7 @@ namespace VoxelEngine
 	{
 	public:
 		ImGuiLayer();
-		~ImGuiLayer();
+		~ImGuiLayer() override = default;
 
 		void OnAttach() override;
 		void OnDetach() override;
