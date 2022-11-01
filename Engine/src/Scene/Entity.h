@@ -16,7 +16,7 @@ namespace VoxelEngine
 		Entity(EntityHandle handle, Scene* scene);
 		Entity(const Entity& other) = default;
 
-		const std::string& GetName() { return GetComponent<TagComponent>().Tag; }
+		const std::string& GetName() { return GetComponent<TagComponent>(); }
 
 		// Component logic
 		template<typename T, typename... Args>
