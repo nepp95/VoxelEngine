@@ -26,6 +26,8 @@ private:
 	bool OnKeyPressed(KeyPressedEvent& e);
 	bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
+	void UI_Toolbar();
+
 private:
 	// Test data
 	Ref<Texture> m_grassTexture;

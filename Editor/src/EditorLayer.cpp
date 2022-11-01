@@ -111,10 +111,10 @@ void EditorLayer::ImGuiRender()
 	// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 	ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
-	ImGui::PopStyleVar();
+	ImGui::PopStyleVar(); // ImGuiStyleVar_WindowPadding
 
 	if (optFullscreen)
-		ImGui::PopStyleVar(2);
+		ImGui::PopStyleVar(2); // ImGuiStyleVar_WindowBorderSize, ImGuiStyleVar_WindowRounding
 
 	// Submit the DockSpace
 	ImGuiIO& io = ImGui::GetIO();
@@ -170,7 +170,7 @@ void EditorLayer::ImGuiRender()
 		}
 	}
 
-	ImGui::End();
+	ImGui::End(); // Statistics
 
 	// -----------------------------------------
 	//
@@ -182,7 +182,7 @@ void EditorLayer::ImGuiRender()
 	if (ImGui::Checkbox("VSync", &m_enableVSync))
 		Application::Get().GetWindow().SetVSync(m_enableVSync);
 
-	ImGui::End();
+	ImGui::End(); // Settings
 
 	// -----------------------------------------
 	//
@@ -207,11 +207,12 @@ void EditorLayer::ImGuiRender()
 	uint64_t textureID = m_framebuffer->GetColorAttachmentRendererID();
 	ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ m_viewportSize.x, m_viewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
-	ImGui::End();
+	ImGui::End(); // Viewport
+	ImGui::PopStyleVar(); // ImGuiStyleVar_WindowPadding
 
-	ImGui::PopStyleVar();
+	UI_Toolbar();
 
-	ImGui::End();
+	ImGui::End(); // DockSpace Demo
 }
 
 void EditorLayer::OnEvent(VoxelEngine::Event& e)
@@ -259,4 +260,9 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 	}
 
 	return false;
+}
+
+void EditorLayer::UI_Toolbar()
+{
+
 }
