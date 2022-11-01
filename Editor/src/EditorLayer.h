@@ -26,6 +26,8 @@ private:
 	bool OnKeyPressed(KeyPressedEvent& e);
 	bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
+	void UI_Toolbar();
+
 private:
 	// Test data
 	Ref<Texture> m_grassTexture;
@@ -35,8 +37,8 @@ private:
 	// Camera
 	Camera* m_camera;
 
-	// Level
-	Ref<Level> m_level;
+	// Scene
+	Ref<Scene> m_scene;
 
 	// Viewport
 	bool m_viewportFocused{false}, m_viewportHovered{false};

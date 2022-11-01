@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/UUID.h"
-#include "Level/Block.h"
+#include "Scene/Block.h"
 #include "Utility/Random.h"
 
 #include <entt/entt.hpp>
@@ -44,25 +44,25 @@ namespace VoxelEngine
 	class Entity;
 	class Chunk;
 
-	struct LevelData
+	struct SceneData
 	{
 		uint32_t Seed;
 	};
 
-	struct LevelRenderStats
+	struct SceneRenderStats
 	{
 		uint32_t chunksCulledByViewDistance{ 0 };
 		uint32_t chunksCulledByFrustrum{ 0 };
 		uint32_t chunksRendered{ 0 };
 	};
 
-	class Level : public RefCounted
+	class Scene : public RefCounted
 	{
 	public:
-		Level();
-		~Level();
+		Scene();
+		~Scene();
 
-		void GenerateLevel(uint64_t seed = Utility::GenerateRandomUInt64());
+		void GenerateScene(uint64_t seed = Utility::GenerateRandomUInt64());
 
 		void Update(float ts);
 		void Render();
@@ -76,19 +76,19 @@ namespace VoxelEngine
 		Entity GetCameraEntity();
 
 	private:
-		void ResetLevelRenderStats();
+		void ResetSceneRenderStats();
 
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
 
 	private:
-		LevelData m_levelData;
-		LevelRenderStats m_levelRenderStats;
+		SceneData m_sceneData;
+		SceneRenderStats m_sceneRenderStats;
 
 		// Every chunk is stored in a map
 		std::unordered_map<glm::vec3, Ref<Chunk>> m_chunks;
 
-		// Level wide registry for things like the camera. Will probably change this later
+		// Scene wide registry for things like the camera. Will probably change this later
 		entt::registry m_registry;
 
 		friend class Entity;

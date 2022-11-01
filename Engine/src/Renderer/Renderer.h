@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Core/Application.h"
-#include "Level/Block.h"
-#include "Level/Components.h"
-#include "Level/Entity.h"
+#include "Scene/Block.h"
+#include "Scene/Components.h"
+#include "Scene/Entity.h"
 #include "Renderer/Camera.h"
 #include "Renderer/Texture.h"
 

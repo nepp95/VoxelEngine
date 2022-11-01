@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Level/Block.h"
-#include "Level/Level.h"
+#include "Scene/Block.h"
+#include "Scene/Scene.h"
 #include "Renderer/AABB.h"
 
 #include <entt/entt.hpp>
@@ -10,15 +10,15 @@
 namespace VoxelEngine
 {
 	class Entity;
-	class Level;
+	class Scene;
 
 	class Chunk : public RefCounted
 	{
 	public:
-		Chunk(Level* level, const glm::vec3& position);
+		Chunk(Scene* scene, const glm::vec3& position);
 		~Chunk();
 
-		Level* GetLevel() const { return m_level; }
+		Scene* GetScene() const { return m_scene; }
 		bool IsBlockAtPosition(const glm::vec3& position) const;
 		bool IsGenerated() const { return m_isGenerated; }
 
@@ -37,7 +37,7 @@ namespace VoxelEngine
 		void OnComponentAdded(Entity entity, T& component);
 
 	private:
-		Level* m_level;
+		Scene* m_scene;
 		glm::vec3 m_position;
 		AABB m_aabb;
 		bool m_isGenerated{ false };

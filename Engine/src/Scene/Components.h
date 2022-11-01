@@ -2,7 +2,7 @@
 
 #include "Asset/Asset.h"
 #include "Core/UUID.h"
-#include "Level/Block.h"
+#include "Scene/Block.h"
 #include "Renderer/Camera.h"
 
 #include <glm/glm.hpp>
