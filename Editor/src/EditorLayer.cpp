@@ -6,10 +6,10 @@ void EditorLayer::OnAttach()
 {
 	VE_PROFILE_FUNCTION();
 
-	m_level = Ref<Level>::Create();
+	m_scene = Ref<Scene>::Create();
 
 	// Camera
-	auto cameraEntity = m_level->CreateEntity("Camera");
+	auto cameraEntity = m_scene->CreateEntity("Camera");
 	auto& cc = cameraEntity.AddComponent<CameraComponent>();
 	cc.Camera.SetPitch(-15.0f);
 	cc.Camera.SetYaw(20.0f);
@@ -53,7 +53,7 @@ void EditorLayer::Update(float ts)
 
 	// Update
 	m_camera->Update(ts);	
-	m_level->Update(ts);
+	m_scene->Update(ts);
 }
 
 void EditorLayer::Render()
@@ -65,8 +65,8 @@ void EditorLayer::Render()
 	RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 	RenderCommand::Clear();
 
-	// Render level
-	m_level->Render();
+	// Render scene
+	m_scene->Render();
 	m_frames++;
 
 	// Unbind framebuffer

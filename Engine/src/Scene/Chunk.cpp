@@ -2,14 +2,14 @@
 #include "Chunk.h"
 
 #include "Asset/AssetManager.h"
-#include "Level/Entity.h"
-#include "Level/Level.h"
+#include "Scene/Entity.h"
+#include "Scene/Scene.h"
 #include "Renderer/Renderer.h"
 
 namespace VoxelEngine
 {
-	Chunk::Chunk(Level* level, const glm::vec3& position)
-		: m_level(level), m_position(position)
+	Chunk::Chunk(Scene* scene, const glm::vec3& position)
+		: m_scene(scene), m_position(position)
 	{
 		VE_PROFILE_FUNCTION();
 
@@ -68,7 +68,7 @@ namespace VoxelEngine
 	Entity Chunk::CreateEntityWithUUID(UUID uuid, const std::string& name)
 	{
 		// Create new entity
-		Entity entity{ m_registry.create(), m_level, this };
+		Entity entity{ m_registry.create(), m_scene, this };
 
 		// Add mandatory components
 		entity.AddComponent<IDComponent>(uuid);
@@ -127,7 +127,7 @@ namespace VoxelEngine
 				if (t.z == 0.0f)
 				{
 					// If at border of chunk, check neighbouring chunk
-					const auto& chunk = m_level->GetChunk({ m_position.x, m_position.y, m_position.z - 1.0f });
+					const auto& chunk = m_scene->GetChunk({ m_position.x, m_position.y, m_position.z - 1.0f });
 					if (chunk)
 						if (!chunk->IsBlockAtPosition({ t.x, t.y, 15.0f }))
 							drawCube = true;
@@ -140,7 +140,7 @@ namespace VoxelEngine
 				if (t.x == 15.0f)
 				{
 					// If at border of chunk, check neighbouring chunk
-					const auto& chunk = m_level->GetChunk({ m_position.x + 1.0f, m_position.y, m_position.z });
+					const auto& chunk = m_scene->GetChunk({ m_position.x + 1.0f, m_position.y, m_position.z });
 					if (chunk)
 						if (!chunk->IsBlockAtPosition({ 0.0f, t.y, t.z }))
 							drawCube = true;
@@ -154,7 +154,7 @@ namespace VoxelEngine
 				if (t.z == 15.0f)
 				{
 					// If at border of chunk, check neighbouring chunk
-					const auto& chunk = m_level->GetChunk({ m_position.x, m_position.y, m_position.z + 1.0f });
+					const auto& chunk = m_scene->GetChunk({ m_position.x, m_position.y, m_position.z + 1.0f });
 					if (chunk)
 						if (!chunk->IsBlockAtPosition({ t.x, t.y, 0.0f }))
 							drawCube = true;
@@ -168,7 +168,7 @@ namespace VoxelEngine
 				if (t.x == 0.0f)
 				{
 					// If at border of chunk, check neighbouring chunk
-					const auto& chunk = m_level->GetChunk({ m_position.x - 1.0f, m_position.y, m_position.z });
+					const auto& chunk = m_scene->GetChunk({ m_position.x - 1.0f, m_position.y, m_position.z });
 					if (chunk)
 						if (!chunk->IsBlockAtPosition({ 15.0f, t.y, t.z }))
 							drawCube = true;

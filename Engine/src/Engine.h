@@ -30,12 +30,12 @@
 // Layers
 #include "Layers/ImGuiLayer.h"
 
-// Level
-#include "Level/Block.h"
-#include "Level/Chunk.h"
-#include "Level/Components.h"
-#include "Level/Entity.h"
-#include "Level/Level.h"
+// Scene
+#include "Scene/Block.h"
+#include "Scene/Chunk.h"
+#include "Scene/Components.h"
+#include "Scene/Entity.h"
+#include "Scene/Scene.h"
 
 // Math
 #include "Math/Vector.h"

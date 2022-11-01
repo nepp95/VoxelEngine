@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Level/Components.h"
-#include "Level/Chunk.h"
-#include "Level/Level.h"
+#include "Scene/Components.h"
+#include "Scene/Chunk.h"
+#include "Scene/Scene.h"
 
 #include <entt/entt.hpp>
 
@@ -14,8 +14,8 @@ namespace VoxelEngine
 	{
 	public:
 		Entity() = default;
-		Entity(EntityHandle handle, Level* level);
-		Entity(EntityHandle handle, Level* level, Chunk* chunk);
+		Entity(EntityHandle handle, Scene* scene);
+		Entity(EntityHandle handle, Scene* scene, Chunk* chunk);
 		Entity(const Entity& other) = default;
 
 		const bool IsChunkEntity() const { return m_chunk != nullptr; }
@@ -34,8 +34,8 @@ namespace VoxelEngine
 				return component;
 			} else
 			{
-				T& component = m_level->m_registry.emplace<T>(m_entityHandle, std::forward<Args>(args)...);
-				m_level->OnComponentAdded<T>(*this, component);
+				T& component = m_scene->m_registry.emplace<T>(m_entityHandle, std::forward<Args>(args)...);
+				m_scene->OnComponentAdded<T>(*this, component);
 				return component;
 			}
 		}
@@ -50,8 +50,8 @@ namespace VoxelEngine
 				return component;
 			} else
 			{
-				T& component = m_level->m_registry.emplace_or_replace<T>(m_entityHandle, std::forward<Args>(args)...);
-				m_level->OnComponentAdded<T>(*this, component);
+				T& component = m_scene->m_registry.emplace_or_replace<T>(m_entityHandle, std::forward<Args>(args)...);
+				m_scene->OnComponentAdded<T>(*this, component);
 				return component;
 			}
 		}
@@ -64,7 +64,7 @@ namespace VoxelEngine
 			if (IsChunkEntity())
 				return m_chunk->m_registry.get<T>(m_entityHandle);
 			else
-				return m_level->m_registry.get<T>(m_entityHandle);
+				return m_scene->m_registry.get<T>(m_entityHandle);
 		}
 
 		template<typename T>
@@ -73,7 +73,7 @@ namespace VoxelEngine
 			if (IsChunkEntity())
 				return m_chunk->m_registry.all_of<T>(m_entityHandle);
 			else
-				return m_level->m_registry.all_of<T>(m_entityHandle);
+				return m_scene->m_registry.all_of<T>(m_entityHandle);
 		}
 
 		template<typename T>
@@ -84,7 +84,7 @@ namespace VoxelEngine
 			if (IsChunkEntity())
 				m_chunk->m_registry.remove<T>(m_entityHandle);
 			else
-				m_level->m_registry.remove<T>(m_entityHandle);
+				m_scene->m_registry.remove<T>(m_entityHandle);
 		}
 		//
 
@@ -94,7 +94,7 @@ namespace VoxelEngine
 
 		bool operator==(const Entity& other) const
 		{
-			return m_entityHandle == other.m_entityHandle && m_chunk == other.m_chunk && m_level == other.m_level;
+			return m_entityHandle == other.m_entityHandle && m_chunk == other.m_chunk && m_scene == other.m_scene;
 		}
 
 		bool operator!=(const Entity& other) const
@@ -105,6 +105,6 @@ namespace VoxelEngine
 	private:
 		EntityHandle m_entityHandle{ entt::null };
 		Chunk* m_chunk{ nullptr };
-		Level* m_level{ nullptr };
+		Scene* m_scene{ nullptr };
 	};
 }

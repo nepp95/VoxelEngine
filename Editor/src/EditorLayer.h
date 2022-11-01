@@ -35,8 +35,8 @@ private:
 	// Camera
 	Camera* m_camera;
 
-	// Level
-	Ref<Level> m_level;
+	// Scene
+	Ref<Scene> m_scene;
 
 	// Viewport
 	bool m_viewportFocused{false}, m_viewportHovered{false};
