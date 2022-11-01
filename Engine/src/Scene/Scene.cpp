@@ -1,10 +1,10 @@
 #include "pch.h"
-#include "Level.h"
+#include "Scene.h"
 
 #include "Asset/AssetManager.h"
-#include "Level/Chunk.h"
-#include "Level/Components.h"
-#include "Level/Entity.h"
+#include "Scene/Chunk.h"
+#include "Scene/Components.h"
+#include "Scene/Entity.h"
 #include "Renderer/Culling/Frustrum.h"
 #include "Renderer/Renderer.h"
 
@@ -12,25 +12,25 @@
 
 namespace VoxelEngine
 {
-	Level::Level()
+	Scene::Scene()
 	{
 		VE_PROFILE_FUNCTION();
 
-		GenerateLevel();
+		GenerateScene();
 	}
 
-	Level::~Level()
+	Scene::~Scene()
 	{
 		VE_PROFILE_FUNCTION();
 		
 		m_chunks.clear();
 	}
 
-	void Level::GenerateLevel(uint64_t seed)
+	void Scene::GenerateScene(uint64_t seed)
 	{
 		VE_PROFILE_FUNCTION();
 
-		m_levelData.Seed = seed;
+		m_sceneData.Seed = seed;
 
 		// Amount of chunks!
 		const int xSize = 16;
@@ -48,16 +48,16 @@ namespace VoxelEngine
 		}
 	}
 
-	void Level::Update(float ts)
+	void Scene::Update(float ts)
 	{
 		VE_PROFILE_FUNCTION();
 	}
 
-	void Level::Render()
+	void Scene::Render()
 	{
 		VE_PROFILE_FUNCTION();
 
-		ResetLevelRenderStats();
+		ResetSceneRenderStats();
 
 		// Get camera entity
 		Entity cameraEntity = GetCameraEntity();
@@ -78,37 +78,39 @@ namespace VoxelEngine
 			// View distance
 			if (glm::length(chunkPosition - cameraPosition) > viewDistance)
 			{
-				m_levelRenderStats.chunksCulledByViewDistance++;
+				m_sceneRenderStats.chunksCulledByViewDistance++;
 				renderChunk = false;
 			}
 
 			// Frustrum culling
 			else if (!Frustrum::Intersects(chunk.second->GetAABB()))
 			{
-				m_levelRenderStats.chunksCulledByFrustrum++;
+				m_sceneRenderStats.chunksCulledByFrustrum++;
 				renderChunk = false;
 			}
 
 			if (renderChunk)
 			{
-				m_levelRenderStats.chunksRendered++;
+				m_sceneRenderStats.chunksRendered++;
 				chunk.second->Render();
 			}
 		}
 
+#if 0
 		VE_CORE_INFO("Chunks rendered: %/%. Culled total: %. Culled by view distance: %. Culled by frustrum: %",
-			m_levelRenderStats.chunksRendered,
+			m_sceneRenderStats.chunksRendered,
 			m_chunks.size(),
-			m_chunks.size() - m_levelRenderStats.chunksRendered,
-			m_levelRenderStats.chunksCulledByViewDistance,
-			m_levelRenderStats.chunksCulledByFrustrum
+			m_chunks.size() - m_sceneRenderStats.chunksRendered,
+			m_sceneRenderStats.chunksCulledByViewDistance,
+			m_sceneRenderStats.chunksCulledByFrustrum
 		);
+#endif
 
 		// End render
 		Renderer::EndScene();
 	}
 
-	Entity Level::CreateEntity(const std::string& name, Chunk* chunk)
+	Entity Scene::CreateEntity(const std::string& name, Chunk* chunk)
 	{
 		if (chunk)
 			return chunk->CreateEntity(name);
@@ -116,7 +118,7 @@ namespace VoxelEngine
 			return CreateEntityWithUUID(UUID(), name);
 	}
 
-	Entity Level::CreateEntityWithUUID(UUID uuid, const std::string& name)
+	Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name)
 	{
 		// Create new entity
 		Entity entity{ m_registry.create(), this };
@@ -133,7 +135,7 @@ namespace VoxelEngine
 		return entity;
 	}
 
-	void Level::DestroyEntity(Entity entity, Chunk* chunk)
+	void Scene::DestroyEntity(Entity entity, Chunk* chunk)
 	{
 		// Remove entity and all its components from registry
 		if (chunk)
@@ -142,7 +144,7 @@ namespace VoxelEngine
 			m_registry.destroy(entity);
 	}
 
-	void Level::DuplicateEntity(Entity entity, Chunk* chunk)
+	void Scene::DuplicateEntity(Entity entity, Chunk* chunk)
 	{
 		if (chunk)
 			chunk->DuplicateEntity(entity);
@@ -160,7 +162,7 @@ namespace VoxelEngine
 		}
 	}
 
-	const Ref<Chunk>& Level::GetChunk(const glm::vec3& position) const
+	const Ref<Chunk>& Scene::GetChunk(const glm::vec3& position) const
 	{
 		if (m_chunks.find(position) != m_chunks.end())
 		{
@@ -172,7 +174,7 @@ namespace VoxelEngine
 		return nullptr;
 	}
 
-	Entity Level::GetCameraEntity()
+	Entity Scene::GetCameraEntity()
 	{
 		// Get all entities with a camera component
 		auto view = m_registry.view<CameraComponent>();
@@ -185,35 +187,35 @@ namespace VoxelEngine
 		return {};
 	}
 
-	void Level::ResetLevelRenderStats()
+	void Scene::ResetSceneRenderStats()
 	{
-		memset(&m_levelRenderStats, 0, sizeof(LevelRenderStats));
+		memset(&m_sceneRenderStats, 0, sizeof(SceneRenderStats));
 	}
 
 	template<typename T>
-	void Level::OnComponentAdded(Entity entity, T& component)
+	void Scene::OnComponentAdded(Entity entity, T& component)
 	{
 		// When no component specified, we do not want to compile
 		static_assert(sizeof(T) == 0);
 	}
 
 	template<>
-	void Level::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component)
+	void Scene::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component)
 	{}
 
 	template<>
-	void Level::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
+	void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
 	{}
 
 	template<>
-	void Level::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
+	void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
 	{}
 
 	template<>
-	void Level::OnComponentAdded<BlockComponent>(Entity entity, BlockComponent& component)
+	void Scene::OnComponentAdded<BlockComponent>(Entity entity, BlockComponent& component)
 	{}
 
 	template<>
-	void Level::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
+	void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
 	{}
 }
