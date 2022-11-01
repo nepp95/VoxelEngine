@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core/Application.h"
-#include "Scene/Block.h"
 #include "Scene/Components.h"
 #include "Scene/Entity.h"
 #include "Renderer/Camera.h"
@@ -9,18 +8,6 @@
 
 namespace VoxelEngine
 {
-	enum class QuadSide
-	{
-		Front = 0,
-		Right,
-		Back,
-		Left,
-		Bottom,
-		Top,
-
-		Default = Front
-	};
-
 	class Renderer
 	{
 	public:
@@ -33,25 +20,17 @@ namespace VoxelEngine
 
 		// Rendering
 		// Render Quad
-		static void DrawQuad(const glm::vec2& position, const glm::vec4& color = glm::vec4(1.0f), QuadSide side = QuadSide::Default);
-		static void DrawQuad(const glm::vec3& position, const glm::vec4& color = glm::vec4(1.0f), QuadSide side = QuadSide::Default);
-		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color = glm::vec4(1.0f), QuadSide side = QuadSide::Default);
+		static void DrawQuad(const glm::vec2& position, const glm::vec4& color = glm::vec4(1.0f));
+		static void DrawQuad(const glm::vec3& position, const glm::vec4& color = glm::vec4(1.0f));
+		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color = glm::vec4(1.0f));
 		// Render Quad with Texture
-		static void DrawQuad(const glm::vec2& position, const Ref<Texture>& texture, const glm::vec4& tintColor = glm::vec4(1.0f), QuadSide side = QuadSide::Default);
-		static void DrawQuad(const glm::vec3& position, const Ref<Texture>& texture, const glm::vec4& tintColor = glm::vec4(1.0f), QuadSide side = QuadSide::Default);
-		static void DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec4& tintColor = glm::vec4(1.0f), QuadSide side = QuadSide::Default);
-		// Render Cube
-		static void DrawCube(const glm::vec2& position, const glm::vec4& color = glm::vec4(1.0f));
-		static void DrawCube(const glm::vec3& position, const glm::vec4& color = glm::vec4(1.0f));
-		static void DrawCube(const glm::mat4& transform, const glm::vec4& color = glm::vec4(1.0f));
-		// Render Cube with texture
-		static void DrawCube(const glm::vec2& position, const std::vector<Ref<Texture>>& textures, const glm::vec4& tintColor = glm::vec4(1.0f));
-		static void DrawCube(const glm::vec3& position, const std::vector<Ref<Texture>>& textures, const glm::vec4& tintColor = glm::vec4(1.0f));
-		static void DrawCube(const glm::mat4& transform, const std::vector<Ref<Texture>>& textures, const glm::vec4& tintColor = glm::vec4(1.0f));
+		static void DrawQuad(const glm::vec2& position, const Ref<Texture>& texture, const glm::vec4& tintColor = glm::vec4(1.0f));
+		static void DrawQuad(const glm::vec3& position, const Ref<Texture>& texture, const glm::vec4& tintColor = glm::vec4(1.0f));
+		static void DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec4& tintColor = glm::vec4(1.0f));
 		// Render Entity
-		static void DrawEntity(const glm::vec2& position, const BlockComponent& bc, const std::vector<bool>& sides = {});
-		static void DrawEntity(const glm::vec3& position, const BlockComponent& bc, const std::vector<bool>& sides = {});
-		static void DrawEntity(const glm::mat4& transform, const BlockComponent& bc, const std::vector<bool>& sides = {});
+		static void DrawEntity(const glm::vec2& position, const SpriteComponent& sc);
+		static void DrawEntity(const glm::vec3& position, const SpriteComponent& sc);
+		static void DrawEntity(const glm::mat4& transform, const SpriteComponent& sc);
 
 		// Stats
 		struct Statistics

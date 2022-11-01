@@ -2,50 +2,20 @@
 #include "Scene.h"
 
 #include "Asset/AssetManager.h"
-#include "Scene/Chunk.h"
 #include "Scene/Components.h"
 #include "Scene/Entity.h"
-#include "Renderer/Culling/Frustrum.h"
 #include "Renderer/Renderer.h"
-
-#include <glm/glm.hpp>
 
 namespace VoxelEngine
 {
 	Scene::Scene()
 	{
 		VE_PROFILE_FUNCTION();
-
-		GenerateScene();
 	}
 
 	Scene::~Scene()
 	{
 		VE_PROFILE_FUNCTION();
-		
-		m_chunks.clear();
-	}
-
-	void Scene::GenerateScene(uint64_t seed)
-	{
-		VE_PROFILE_FUNCTION();
-
-		m_sceneData.Seed = seed;
-
-		// Amount of chunks!
-		const int xSize = 16;
-		const int zSize = 16;
-
-		for (int x = -xSize / 2; x < xSize / 2; x++)
-		{
-			for (int z = -zSize / 2; z < zSize / 2; z++)
-			{
-				glm::vec3 position = { x, 0.0f, z };
-
-				Ref<Chunk> chunk = Ref<Chunk>::Create(this, position);
-				m_chunks[position] = chunk;
-			}
-		}
 	}
 
 	void Scene::Update(float ts)
@@ -57,8 +27,6 @@ namespace VoxelEngine
 	{
 		VE_PROFILE_FUNCTION();
 
-		ResetSceneRenderStats();
-
 		// Get camera entity
 		Entity cameraEntity = GetCameraEntity();
 		Camera* camera = &cameraEntity.GetComponent<CameraComponent>().Camera;
@@ -66,56 +34,22 @@ namespace VoxelEngine
 		// Begin render
 		Renderer::BeginScene(*camera);
 
-		// Get all chunks within range
-		const float viewDistance{ 64.0f };
-		auto cameraPosition = camera->GetPosition();
-		
-		for (auto& chunk : m_chunks)
+		// Sprite components
+		auto view = m_registry.view<TransformComponent, SpriteComponent>();
+
+		for (auto entity : view)
 		{
-			auto chunkPosition = chunk.first * 16.0f;
-			bool renderChunk{ true };
-
-			// View distance
-			if (glm::length(chunkPosition - cameraPosition) > viewDistance)
-			{
-				m_sceneRenderStats.chunksCulledByViewDistance++;
-				renderChunk = false;
-			}
-
-			// Frustrum culling
-			else if (!Frustrum::Intersects(chunk.second->GetAABB()))
-			{
-				m_sceneRenderStats.chunksCulledByFrustrum++;
-				renderChunk = false;
-			}
-
-			if (renderChunk)
-			{
-				m_sceneRenderStats.chunksRendered++;
-				chunk.second->Render();
-			}
+			auto& [transform, sprite] = view.get<TransformComponent, SpriteComponent>(entity);
+			Renderer::DrawEntity(transform.GetTransform(), sprite);
 		}
-
-#if 0
-		VE_CORE_INFO("Chunks rendered: %/%. Culled total: %. Culled by view distance: %. Culled by frustrum: %",
-			m_sceneRenderStats.chunksRendered,
-			m_chunks.size(),
-			m_chunks.size() - m_sceneRenderStats.chunksRendered,
-			m_sceneRenderStats.chunksCulledByViewDistance,
-			m_sceneRenderStats.chunksCulledByFrustrum
-		);
-#endif
 
 		// End render
 		Renderer::EndScene();
 	}
 
-	Entity Scene::CreateEntity(const std::string& name, Chunk* chunk)
+	Entity Scene::CreateEntity(const std::string& name)
 	{
-		if (chunk)
-			return chunk->CreateEntity(name);
-		else
-			return CreateEntityWithUUID(UUID(), name);
+		return CreateEntityWithUUID(UUID(), name);
 	}
 
 	Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name)
@@ -135,43 +69,20 @@ namespace VoxelEngine
 		return entity;
 	}
 
-	void Scene::DestroyEntity(Entity entity, Chunk* chunk)
+	void Scene::DestroyEntity(Entity entity)
 	{
-		// Remove entity and all its components from registry
-		if (chunk)
-			chunk->DestroyEntity(entity);
-		else
-			m_registry.destroy(entity);
+		m_registry.destroy(entity);
 	}
 
-	void Scene::DuplicateEntity(Entity entity, Chunk* chunk)
+	void Scene::DuplicateEntity(Entity entity)
 	{
-		if (chunk)
-			chunk->DuplicateEntity(entity);
-		else
-		{
-			std::string name = entity.GetName();
-			Entity newEntity = CreateEntity(name);
+		std::string name = entity.GetName();
+		Entity newEntity = CreateEntity(name);
 
-			if (entity.HasComponent<TransformComponent>())
-				newEntity.AddOrReplaceComponent<TransformComponent>(entity.GetComponent<TransformComponent>());
-			if (entity.HasComponent<BlockComponent>())
-				newEntity.AddOrReplaceComponent<BlockComponent>(entity.GetComponent<BlockComponent>());
-			if (entity.HasComponent<CameraComponent>())
-				newEntity.AddOrReplaceComponent<CameraComponent>(entity.GetComponent<CameraComponent>());
-		}
-	}
-
-	const Ref<Chunk>& Scene::GetChunk(const glm::vec3& position) const
-	{
-		if (m_chunks.find(position) != m_chunks.end())
-		{
-			const auto& chunk = m_chunks.at(position);
-			if (chunk->IsGenerated())
-				return chunk;
-		}
-
-		return nullptr;
+		if (entity.HasComponent<TransformComponent>())
+			newEntity.AddOrReplaceComponent<TransformComponent>(entity.GetComponent<TransformComponent>());
+		if (entity.HasComponent<CameraComponent>())
+			newEntity.AddOrReplaceComponent<CameraComponent>(entity.GetComponent<CameraComponent>());
 	}
 
 	Entity Scene::GetCameraEntity()
@@ -185,11 +96,6 @@ namespace VoxelEngine
 
 		// Return empty entity when no entities with a camera component are found
 		return {};
-	}
-
-	void Scene::ResetSceneRenderStats()
-	{
-		memset(&m_sceneRenderStats, 0, sizeof(SceneRenderStats));
 	}
 
 	template<typename T>
@@ -212,10 +118,10 @@ namespace VoxelEngine
 	{}
 
 	template<>
-	void Scene::OnComponentAdded<BlockComponent>(Entity entity, BlockComponent& component)
+	void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
 	{}
 
 	template<>
-	void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
+	void Scene::OnComponentAdded<SpriteComponent>(Entity entity, SpriteComponent& component)
 	{}
 }

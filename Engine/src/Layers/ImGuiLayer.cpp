@@ -7,15 +7,11 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <imgui.h>
 #include <GLFW/glfw3.h>
-#include <glad/glad.h>
 
 namespace VoxelEngine
 {
 	ImGuiLayer::ImGuiLayer()
 		: Layer("ImGuiLayer")
-	{}
-
-	ImGuiLayer::~ImGuiLayer()
 	{}
 
 	void ImGuiLayer::OnAttach()

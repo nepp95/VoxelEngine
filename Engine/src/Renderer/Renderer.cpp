@@ -4,7 +4,6 @@
 #include "Asset/AssetManager.h"
 #include "Renderer/RenderCommand.h"
 #include "Renderer/Shader.h"
-#include "Renderer/Vertex.h"
 #include "Renderer/VertexArray.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -12,10 +11,18 @@
 
 namespace VoxelEngine
 {
+	struct QuadVertex
+	{
+		glm::vec3 Position{ 0.0f, 0.0f, 0.0f };
+		glm::vec4 Color{ 0.0f, 0.0f, 0.0f, 1.0f };
+		glm::vec2 TexCoord;
+		float TexIndex;
+	};
+
 	struct RendererData
 	{
 		// Batch limits
-		static const uint32_t MaxQuads{ 960000 };
+		static const uint32_t MaxQuads{ 20000 };
 		static const uint32_t MaxVertices{ MaxQuads * 4 };
 		static const uint32_t MaxIndices{ MaxQuads * 6 };
 		static const uint32_t MaxTextureSlots{ 32 };
@@ -23,14 +30,14 @@ namespace VoxelEngine
 		// Quad Data
 		Ref<VertexArray> QuadVertexArray;
 		Ref<VertexBuffer> QuadVertexBuffer;
-		Vertex* QuadVertexBufferBase{ nullptr };
-		Vertex* QuadVertexBufferPtr{ nullptr };
-		std::vector<glm::vec4> QuadVertexPositions;
-		std::vector<glm::vec2> QuadVertexTextureCoords;
+		QuadVertex* QuadVertexBufferBase{ nullptr };
+		QuadVertex* QuadVertexBufferPtr{ nullptr };
+		glm::vec4 QuadVertexPositions[4];
+		glm::vec2 QuadVertexTextureCoords[4];
 		uint32_t QuadIndexCount{ 0 };
 
 		// Shader
-		Ref<Shader> BaseShader;
+		Ref<Shader> QuadShader;
 
 		// Textures
 		Ref<Texture> WhiteTexture;
@@ -55,147 +62,53 @@ namespace VoxelEngine
 
 		// Create vertex array and buffers
 		s_data.QuadVertexArray = Ref<VertexArray>::Create();
-		s_data.QuadVertexBuffer = Ref<VertexBuffer>::Create(RendererData::MaxVertices * sizeof(Vertex));
+		s_data.QuadVertexBuffer = Ref<VertexBuffer>::Create(RendererData::MaxVertices * sizeof(QuadVertex));
 
 		s_data.QuadVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3,	"aPosition"		},
-			{ ShaderDataType::Float4,	"aColor"		},
+			{ ShaderDataType::Float4,	"aColor"			},
 			{ ShaderDataType::Float2,	"aTexCoord"		},
 			{ ShaderDataType::Float,	"aTexIndex"		}
 		});
 
 		s_data.QuadVertexArray->AddVertexBuffer(s_data.QuadVertexBuffer);
-		s_data.QuadVertexBufferBase = new Vertex[RendererData::MaxVertices];
+		s_data.QuadVertexBufferBase = new QuadVertex[RendererData::MaxVertices];
 
 		// Index buffer
-		uint32_t* indices = new uint32_t[RendererData::MaxIndices];
+		uint32_t* quadIndices = new uint32_t[RendererData::MaxIndices];
 		uint32_t offset{ 0 };
 
-		for (uint32_t i = 0; i < s_data.MaxIndices; i += 36)
+		for (uint32_t i = 0; i < s_data.MaxIndices; i += 6) // 6 indices
 		{
-			// Front
-			indices[i + 0]	= offset + 0;
-			indices[i + 1]	= offset + 1;
-			indices[i + 2]	= offset + 2;
-			indices[i + 3]	= offset + 2;
-			indices[i + 4]	= offset + 3;
-			indices[i + 5]	= offset + 0;
+			quadIndices[i + 0]	= offset + 0;
+			quadIndices[i + 1]	= offset + 1;
+			quadIndices[i + 2]	= offset + 2;
 
-			// Right
-			indices[i + 6]	= offset + 4;
-			indices[i + 7]	= offset + 6;
-			indices[i + 8]	= offset + 7;
-			indices[i + 9]	= offset + 7;
-			indices[i + 10] = offset + 5;
-			indices[i + 11] = offset + 4;
+			quadIndices[i + 3]	= offset + 2;
+			quadIndices[i + 4]	= offset + 3;
+			quadIndices[i + 5]	= offset + 0;
 
-			// Back
-			indices[i + 12] = offset + 9;
-			indices[i + 13] = offset + 8;
-			indices[i + 14] = offset + 11;
-			indices[i + 15] = offset + 11;
-			indices[i + 16] = offset + 10;
-			indices[i + 17] = offset + 9;
-
-			// Left
-			indices[i + 18] = offset + 14;
-			indices[i + 19] = offset + 12;
-			indices[i + 20] = offset + 13;
-			indices[i + 21] = offset + 13;
-			indices[i + 22] = offset + 15;
-			indices[i + 23] = offset + 14;
-
-			// Bottom
-			indices[i + 24] = offset + 18;
-			indices[i + 25] = offset + 19;
-			indices[i + 26] = offset + 17;
-			indices[i + 27] = offset + 17;
-			indices[i + 28] = offset + 16;
-			indices[i + 29] = offset + 18;
-
-			// Top
-			indices[i + 30] = offset + 21;
-			indices[i + 31] = offset + 20;
-			indices[i + 32] = offset + 22;
-			indices[i + 33] = offset + 22;
-			indices[i + 34] = offset + 23;
-			indices[i + 35] = offset + 21;
-
-			offset += 24;
+			offset += 4; // 4 vertices
 		}
 
-		Ref<IndexBuffer> indexBuffer = Ref<IndexBuffer>::Create(indices, RendererData::MaxIndices);
+		Ref<IndexBuffer> indexBuffer = Ref<IndexBuffer>::Create(quadIndices, RendererData::MaxIndices);
 		s_data.QuadVertexArray->SetIndexBuffer(indexBuffer);
-		delete[] indices;
+		delete[] quadIndices;
 
 		// Set quad vertex positions
-		s_data.QuadVertexPositions = {
-			{ -0.5f, -0.5f, 0.0f, 1.0f }, // FRONT
-			{  0.5f, -0.5f, 0.0f, 1.0f }, // FRONT
-			{  0.5f,  0.5f, 0.0f, 1.0f }, // FRONT
-			{ -0.5f,  0.5f, 0.0f, 1.0f }, // FRONT
-
-			{  0.5f, -0.5f, 0.0f, 1.0f }, // RIGHT
-			{  0.5f,  0.5f, 0.0f, 1.0f }, // RIGHT
-			{  0.5f, -0.5f, 1.0f, 1.0f }, // RIGHT
-			{  0.5f,  0.5f, 1.0f, 1.0f }, // RIGHT
-
-			{ -0.5f, -0.5f, 1.0f, 1.0f }, // BACK
-			{  0.5f, -0.5f, 1.0f, 1.0f }, // BACK
-			{  0.5f,  0.5f, 1.0f, 1.0f }, // BACK
-			{ -0.5f,  0.5f, 1.0f, 1.0f }, // BACK
-
-			{ -0.5f, -0.5f, 0.0f, 1.0f }, // LEFT
-			{ -0.5f,  0.5f, 0.0f, 1.0f }, // LEFT
-			{ -0.5f, -0.5f, 1.0f, 1.0f }, // LEFT
-			{ -0.5f,  0.5f, 1.0f, 1.0f }, // LEFT
-
-			{ -0.5f, -0.5f, 0.0f, 1.0f }, // BOTTOM
-			{  0.5f, -0.5f, 0.0f, 1.0f }, // BOTTOM
-			{ -0.5f, -0.5f, 1.0f, 1.0f }, // BOTTOM
-			{  0.5f, -0.5f, 1.0f, 1.0f }, // BOTTOM
-
-			{  0.5f,  0.5f, 0.0f, 1.0f }, // TOP
-			{ -0.5f,  0.5f, 0.0f, 1.0f }, // TOP
-			{  0.5f,  0.5f, 1.0f, 1.0f }, // TOP
-			{ -0.5f,  0.5f, 1.0f, 1.0f }, // TOP
-		};
+		s_data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+		s_data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
+		s_data.QuadVertexPositions[2] = { 0.5f,  0.5f, 0.0f, 1.0f };
+		s_data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 
 		// Set quad vertex texture coordinates
-		s_data.QuadVertexTextureCoords = {
-			{ 0.0f, 0.0f }, // FRONT
-			{ 1.0f, 0.0f }, // FRONT
-			{ 1.0f, 1.0f }, // FRONT
-			{ 0.0f, 1.0f }, // FRONT
-
-			{ 0.0f, 0.0f }, // RIGHT
-			{ 0.0f, 1.0f }, // RIGHT
-			{ 1.0f, 0.0f }, // RIGHT
-			{ 1.0f, 1.0f }, // RIGHT
-
-			{ 1.0f, 0.0f }, // BACK
-			{ 0.0f, 0.0f }, // BACK
-			{ 0.0f, 1.0f }, // BACK
-			{ 1.0f, 1.0f }, // BACK
-
-			{ 1.0f, 0.0f }, // LEFT
-			{ 1.0f, 1.0f }, // LEFT
-			{ 0.0f, 0.0f }, // LEFT
-			{ 0.0f, 1.0f }, // LEFT
-
-			{ 0.0f, 1.0f }, // BOTTOM
-			{ 1.0f, 1.0f }, // BOTTOM
-			{ 0.0f, 0.0f }, // BOTTOM
-			{ 1.0f, 0.0f }, // BOTTOM
-
-			{ 1.0f, 0.0f }, // TOP
-			{ 0.0f, 0.0f }, // TOP
-			{ 1.0f, 1.0f }, // TOP
-			{ 0.0f, 1.0f }, // TOP
-		};
+		s_data.QuadVertexTextureCoords[0] = { 0.0f, 0.0f };
+		s_data.QuadVertexTextureCoords[1] = { 1.0f, 0.0f };
+		s_data.QuadVertexTextureCoords[2] = { 1.0f, 1.0f };
+		s_data.QuadVertexTextureCoords[3] = { 0.0f, 1.0f };
 
 		// Load shader
-		s_data.BaseShader = Ref<Shader>::Create("assets/shaders/quad.glsl");
+		s_data.QuadShader = Ref<Shader>::Create("assets/shaders/quad.glsl");
 
 		// Set white texture slot (invalid texture)
 		s_data.WhiteTexture = Ref<Texture>::Create(1, 1);
@@ -233,19 +146,26 @@ namespace VoxelEngine
 		Flush();
 	}
 
-	void Renderer::DrawQuad(const glm::vec2& position, const glm::vec4& color, QuadSide side)
+	void Renderer::DrawQuad(const glm::vec2& position, const glm::vec4& color)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, color, side);
+		VE_PROFILE_FUNCTION();
+
+		DrawQuad({ position.x, position.y, 0.0f }, color);
 	}
 
-	void Renderer::DrawQuad(const glm::vec3& position, const glm::vec4& color, QuadSide side)
+	void Renderer::DrawQuad(const glm::vec3& position, const glm::vec4& color)
 	{
+		VE_PROFILE_FUNCTION();
+
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
-		DrawQuad(transform, color, side);
+		DrawQuad(transform, color);
 	}
 
-	void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color, QuadSide side)
+	void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
 	{
+		VE_PROFILE_FUNCTION();
+
+		// If batch is full (max indices)
 		if (s_data.QuadIndexCount >= RendererData::MaxIndices)
 			NextBatch();
 
@@ -253,12 +173,9 @@ namespace VoxelEngine
 
 		for (uint32_t i = 0; i < quadVertexCount; i++)
 		{
-			auto vertexPosition = s_data.QuadVertexPositions[i + ((int) side * 4)];
-			auto vertexTextureCoord = s_data.QuadVertexTextureCoords[i + ((int) side * 4)];
-
-			s_data.QuadVertexBufferPtr->Position = transform * vertexPosition;
+			s_data.QuadVertexBufferPtr->Position = transform * s_data.QuadVertexPositions[i];
 			s_data.QuadVertexBufferPtr->Color = color;
-			s_data.QuadVertexBufferPtr->TexCoord = vertexTextureCoord;
+			s_data.QuadVertexBufferPtr->TexCoord = s_data.QuadVertexTextureCoords[i];
 			s_data.QuadVertexBufferPtr->TexIndex = 0.0f;
 			s_data.QuadVertexBufferPtr++;
 		}
@@ -267,19 +184,25 @@ namespace VoxelEngine
 		s_data.Stats.AddQuad();
 	}
 
-	void Renderer::DrawQuad(const glm::vec2& position, const Ref<Texture>& texture, const glm::vec4& tintColor, QuadSide side)
+	void Renderer::DrawQuad(const glm::vec2& position, const Ref<Texture>& texture, const glm::vec4& tintColor)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, texture, tintColor, side);
+		VE_PROFILE_FUNCTION();
+
+		DrawQuad({ position.x, position.y, 0.0f }, texture, tintColor);
 	}
 
-	void Renderer::DrawQuad(const glm::vec3& position, const Ref<Texture>& texture, const glm::vec4& tintColor, QuadSide side)
+	void Renderer::DrawQuad(const glm::vec3& position, const Ref<Texture>& texture, const glm::vec4& tintColor)
 	{
+		VE_PROFILE_FUNCTION();
+
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
-		DrawQuad(transform, texture, tintColor, side);
+		DrawQuad(transform, texture, tintColor);
 	}
 
-	void Renderer::DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec4& tintColor, QuadSide side)
+	void Renderer::DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec4& tintColor)
 	{
+		VE_PROFILE_FUNCTION();
+
 		// If batch is full (max indices)
 		if (s_data.QuadIndexCount >= RendererData::MaxIndices)
 			NextBatch();
@@ -310,12 +233,9 @@ namespace VoxelEngine
 
 		for (uint32_t i = 0; i < quadVertexCount; i++)
 		{
-			auto vertexPosition = s_data.QuadVertexPositions[i + ((int)side * 4)];
-			auto vertexTextureCoord = s_data.QuadVertexTextureCoords[i + ((int)side * 4)];
-
-			s_data.QuadVertexBufferPtr->Position = transform * vertexPosition;
+			s_data.QuadVertexBufferPtr->Position = transform * s_data.QuadVertexPositions[i];
 			s_data.QuadVertexBufferPtr->Color = tintColor;
-			s_data.QuadVertexBufferPtr->TexCoord = vertexTextureCoord;
+			s_data.QuadVertexBufferPtr->TexCoord = s_data.QuadVertexTextureCoords[i];
 			s_data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_data.QuadVertexBufferPtr++;
 		}
@@ -324,85 +244,34 @@ namespace VoxelEngine
 		s_data.Stats.AddQuad();
 	}
 
-	void Renderer::DrawCube(const glm::vec2& position, const glm::vec4& color)
+	void Renderer::DrawEntity(const glm::vec2& position, const SpriteComponent& sc)
 	{
-		DrawCube({ position.x, position.y, 0.0f }, color);
+		VE_PROFILE_FUNCTION();
+
+		DrawEntity({ position.x, position.y, 0.0f }, sc);
 	}
 
-	void Renderer::DrawCube(const glm::vec3& position, const glm::vec4& color)
+	void Renderer::DrawEntity(const glm::vec3& position, const SpriteComponent& sc)
 	{
+		VE_PROFILE_FUNCTION();
+
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
-		DrawCube(transform, color);
+		DrawEntity(transform, sc);
 	}
 
-	void Renderer::DrawCube(const glm::mat4& transform, const glm::vec4& color)
+	void Renderer::DrawEntity(const glm::mat4& transform, const SpriteComponent& sc)
 	{
-		DrawQuad(transform, color, QuadSide::Front);
-		DrawQuad(transform, color, QuadSide::Right);
-		DrawQuad(transform, color, QuadSide::Back);
-		DrawQuad(transform, color, QuadSide::Left);
-		DrawQuad(transform, color, QuadSide::Bottom);
-		DrawQuad(transform, color, QuadSide::Top);
-	
-		s_data.Stats.CubeCount++;
-	}
+		VE_PROFILE_FUNCTION();
 
-	void Renderer::DrawCube(const glm::vec2& position, const std::vector<Ref<Texture>>& textures, const glm::vec4& tintColor)
-	{
-		DrawCube({ position.x, position.y, 0.0f }, textures, tintColor);
-	}
-
-	void Renderer::DrawCube(const glm::vec3& position, const std::vector<Ref<Texture>>& textures, const glm::vec4& tintColor)
-	{
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
-		DrawCube(transform, textures, tintColor);
-	}
-
-	void Renderer::DrawCube(const glm::mat4& transform, const std::vector<Ref<Texture>>& textures, const glm::vec4& tintColor)
-	{
-		if (textures.size() == 1)
-			for (int i = 0; i < 6; i++)
-				DrawQuad(transform, textures.at(0), tintColor, (QuadSide)i);
-		else if (textures.size() == 6)
-			for (int i = 0; i < 6; i++)
-				DrawQuad(transform, textures.at(i), tintColor, (QuadSide)i);
-	
-		s_data.Stats.CubeCount++;
-	}
-
-	void Renderer::DrawEntity(const glm::vec2& position, const BlockComponent& bc, const std::vector<bool>& sides)
-	{
-		DrawEntity({ position.x, position.y, 0.0f }, bc, sides);
-	}
-
-	void Renderer::DrawEntity(const glm::vec3& position, const BlockComponent& bc, const std::vector<bool>& sides)
-	{
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
-		DrawEntity(transform, bc, sides);
-	}
-
-	void Renderer::DrawEntity(const glm::mat4& transform, const BlockComponent& bc, const std::vector<bool>& sides)
-	{
-		if (bc.Data.TextureHandle)
+		if (sc.TextureHandle)
 		{
 			// Draw cube with texture
-			Ref<Texture> texture = AssetManager::GetAsset<Texture>(bc.Data.TextureHandle);
-
-			if (sides.empty())
-				DrawCube(transform, std::vector<Ref<Texture>>{ texture });
-			else
-				for (uint32_t i = 0; i < 6; i++)
-					if (sides[i])
-						DrawQuad(transform, texture, glm::vec4(1.0f), (QuadSide) i);
+			Ref<Texture> texture = AssetManager::GetAsset<Texture>(sc.TextureHandle);
+			DrawQuad(transform, texture);
 		} else 
 		{
 			// Draw white cube (no texture)
-			if (sides.empty())
-				DrawCube(transform);
-			else
-				for (uint32_t i = 0; i < 6; i++)
-					if (sides[i])
-						DrawQuad(transform, glm::vec4(1.0f), (QuadSide) i);
+			DrawQuad(transform, glm::vec4(1.0f));
 		}
 	}
 
@@ -432,8 +301,8 @@ namespace VoxelEngine
 				s_data.TextureSlots[i]->Bind(i);
 
 			// Create draw call
-			s_data.BaseShader->Bind();
-			s_data.BaseShader->SetMat4("uViewProjection", s_data.ViewProjection); // TODO: Move to begin scene
+			s_data.QuadShader->Bind();
+			s_data.QuadShader->SetMat4("uViewProjection", s_data.ViewProjection); // TODO: Move to begin scene
 			RenderCommand::DrawIndexed(s_data.QuadVertexArray, s_data.QuadIndexCount);
 			s_data.Stats.DrawCalls++;
 		}
