@@ -23,12 +23,19 @@ namespace VoxelEngine
 
 		TagComponent() = default;
 		TagComponent(const TagComponent& other) = default;
+		TagComponent(const std::string& tag)
+			: Tag(tag)
+		{}
+
+		operator std::string&() { return Tag; }
+		operator const std::string&() const { return Tag; }
 	};
 	
 	struct TransformComponent
 	{
 		glm::vec3 Translation{ 0.0f, 0.0f, 0.0f };
 		glm::vec3 Scale{ 1.0f, 1.0f, 1.0f };
+		// TODO: Add rotation
 
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent&) = default;
