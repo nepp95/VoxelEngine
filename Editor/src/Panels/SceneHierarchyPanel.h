@@ -16,7 +16,11 @@ namespace VoxelEngine
 		void RenderGui();
 
 	private:
+		template<typename T>
+		void DisplayAddComponentEntry(const std::string& entryName);
+
 		void DrawEntityNode(Entity entity);
+		void DrawProperties(Entity entity);
 
 	private:
 		Ref<Scene> m_context;

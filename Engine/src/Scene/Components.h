@@ -60,7 +60,7 @@ namespace VoxelEngine
 
 	struct SpriteComponent
 	{
-		AssetHandle TextureHandle;
+		AssetHandle TextureHandle{ 0 };
 
 		SpriteComponent() = default;
 		SpriteComponent(const SpriteComponent&) = default;
