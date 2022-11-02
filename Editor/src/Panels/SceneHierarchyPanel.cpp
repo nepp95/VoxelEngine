@@ -13,7 +13,7 @@ namespace VoxelEngine
 	{
 		ImGui::Begin("Scene Hierarchy");
 
-		// For each entity in our registry
+		// Add each entity in our registry to the list
 		m_context->m_registry.each([&] (auto entityId)
 		{
 			// TODO: Copy entity necessary?
@@ -21,7 +21,36 @@ namespace VoxelEngine
 			DrawEntityNode(entity);
 		});
 
+		if (ImGui::BeginPopupContextWindow(0, 1))
+		{
+			if (ImGui::MenuItem("Create new entity"))
+				m_context->CreateEntity("Empty entity");
+
+			ImGui::EndPopup();
+		}
+
 		ImGui::End();
+
+		// Properties, since scene hierarchy and properties are so intwined, we put them in one class.
+		ImGui::Begin("Properties");
+
+		if (m_selectedEntity)
+			DrawProperties(m_selectedEntity);
+
+		ImGui::End();
+	}
+
+	template <typename T>
+	void SceneHierarchyPanel::DisplayAddComponentEntry(const std::string& entryName)
+	{
+		if (!m_selectedEntity.HasComponent<T>())
+		{
+			if (ImGui::MenuItem(entryName.c_str()))
+			{
+				m_selectedEntity.AddComponent<T>();
+				ImGui::CloseCurrentPopup();
+			}
+		}
 	}
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
@@ -54,5 +83,38 @@ namespace VoxelEngine
 
 			m_context->DestroyEntity(entity);
 		}
+	}
+
+	void SceneHierarchyPanel::DrawProperties(Entity entity)
+	{
+		if (entity.HasComponent<TagComponent>())
+		{
+			std::string& tag = entity.GetComponent<TagComponent>();
+
+			// ImGui wants a char*, we use std::string
+			// We could cast a c_str to char*, but we still could not write to it
+			char buffer[256]{ 0 };
+			// Since ImGui accounts for the buffer size AND the null termination char, we can safely use strncpy.
+			std::strncpy(buffer, tag.c_str(), sizeof(buffer));
+			// Double quote prevents the label from showing
+			if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
+				tag = std::string(buffer);
+		}
+
+		ImGui::SameLine();
+		ImGui::PushItemWidth(-1);
+
+		if (ImGui::Button("+"))
+			ImGui::OpenPopup("AddComponent");
+
+		if (ImGui::BeginPopup("AddComponent"))
+		{
+			DisplayAddComponentEntry<CameraComponent>("Camera");
+			DisplayAddComponentEntry<SpriteComponent>("Sprite renderer");
+
+			ImGui::EndPopup(); // AddComponent
+		}
+
+		ImGui::PopItemWidth(); // -1
 	}
 }

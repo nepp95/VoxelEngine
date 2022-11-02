@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include <Engine.h>
-#include "Panels/ContentBrowserPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 
 namespace VoxelEngine {

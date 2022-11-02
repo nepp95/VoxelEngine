@@ -61,7 +61,7 @@ namespace VoxelEngine
 		}
 
 		// Update
-		m_camera->Update(ts);	
+		//m_camera->Update(ts);	
 		m_scene->Update(ts);
 	}
 
@@ -179,7 +179,6 @@ namespace VoxelEngine
 
 		ImGui::Text("Renderer Statistics");
 		ImGui::Text("\tDraw calls: %d", stats.DrawCalls);
-		ImGui::Text("\tCubes: %d", stats.CubeCount);
 		ImGui::Text("\tQuads: %d", stats.QuadCount);
 		ImGui::Text("\tVertices: %d", stats.VertexCount);
 		ImGui::Text("\tIndices: %d", stats.IndexCount);
