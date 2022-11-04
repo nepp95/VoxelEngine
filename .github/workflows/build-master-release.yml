@@ -17,8 +17,16 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+
+      - name: Cache premake
+        id: premake-cache
+        uses: actions/cache@v3.0.11
+        with:
+          path: .premake
+          key: cache-premake
         
       - name: Setup Premake
+        if: steps.premake-cache.outputs.cache-hit != 'true'
         uses: abel0b/setup-premake@v2.1
         with:
           version: "5.0.0-beta2"
