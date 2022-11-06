@@ -22,6 +22,9 @@ namespace VoxelEngine
 		void DrawEntityNode(Entity entity);
 		void DrawProperties(Entity entity);
 
+		template<typename T, typename UIFunction>
+		void DrawProperty(const std::string& name, Entity entity, UIFunction uiFunction);
+
 	private:
 		Ref<Scene> m_context;
 		Entity m_selectedEntity;

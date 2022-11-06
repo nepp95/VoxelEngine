@@ -7,6 +7,9 @@
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+
 namespace VoxelEngine
 {
 	struct IDComponent
@@ -34,8 +37,8 @@ namespace VoxelEngine
 	struct TransformComponent
 	{
 		glm::vec3 Translation{ 0.0f, 0.0f, 0.0f };
+		glm::vec3 Rotation{ 0.0f, 0.0f, 0.0f };
 		glm::vec3 Scale{ 1.0f, 1.0f, 1.0f };
-		// TODO: Add rotation
 
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent&) = default;
@@ -45,7 +48,10 @@ namespace VoxelEngine
 
 		glm::mat4 GetTransform() const
 		{
+			const glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
+
 			return glm::translate(glm::mat4(1.0f), Translation)
+				* rotation
 				* glm::scale(glm::mat4(1.0f), Scale);
 		}
 	};
@@ -61,6 +67,7 @@ namespace VoxelEngine
 	struct SpriteComponent
 	{
 		AssetHandle TextureHandle{ 0 };
+		glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
 
 		SpriteComponent() = default;
 		SpriteComponent(const SpriteComponent&) = default;
