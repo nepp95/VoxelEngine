@@ -15,6 +15,7 @@ namespace VoxelEngine
 
 		uint32_t Width;
 		uint32_t Height;
+		bool OverrideWindowSize{ false };
 
 		bool VSync;
 

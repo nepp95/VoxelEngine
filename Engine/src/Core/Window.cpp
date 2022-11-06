@@ -18,9 +18,6 @@ namespace VoxelEngine
 	Window::Window(const WindowSpecification& specification)
 		: m_specification(specification)
 	{
-		// TODO: Refactor when logging fixed
-		VE_CORE_INFO("Creating window of size %x%", m_specification.Width, m_specification.Height);
-
 		// Init GLFW
 		int success{glfwInit()};
 		VE_CORE_ASSERT(success, "Failed to initialize GLFW!");
@@ -28,13 +25,23 @@ namespace VoxelEngine
 		// Set callback for GLFW errors
 		glfwSetErrorCallback(GLFWErrorCallback);
 
-		// Create window
 		#ifdef V_DEBUG
-		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 		#endif
 
-		m_window = glfwCreateWindow(m_specification.Width, m_specification.Height, m_specification.Title.c_str(),
-		                            nullptr, nullptr);
+		// Get monitors and check if a different resolution is needed/wanted
+		GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+		const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
+
+		if (!m_specification.OverrideWindowSize)
+		{
+			m_specification.Width = mode->width;
+			m_specification.Height = mode->height;
+		}
+
+		// Create window
+		VE_CORE_INFO("Creating window of size %x%", m_specification.Width, m_specification.Height);
+		m_window = glfwCreateWindow(m_specification.Width, m_specification.Height, m_specification.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_window);
 
 		// Setup glad
