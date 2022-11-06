@@ -21,6 +21,9 @@ namespace VoxelEngine
 		void BlockEvents(bool block) { m_blockEvents = block; }
 
 	private:
+		void SetDarkThemeColors();
+
+	private:
 		bool m_blockEvents{ true };
 	};
 }

@@ -33,8 +33,6 @@ namespace VoxelEngine
 	private:
 		void UpdateCameraVectors();
 
-		bool OnMouseMoved(MouseMovedEvent& e);
-
 	private:
 		glm::vec3 m_position;
 		glm::vec3 m_front{ 0.0f, 0.0f, -1.0f };

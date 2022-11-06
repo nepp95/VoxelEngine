@@ -18,7 +18,6 @@ namespace VoxelEngine
 		static void BeginScene(const Camera& camera);
 		static void EndScene();
 
-		// Rendering
 		// Render Quad
 		static void DrawQuad(const glm::vec2& position, const glm::vec4& color = glm::vec4(1.0f));
 		static void DrawQuad(const glm::vec3& position, const glm::vec4& color = glm::vec4(1.0f));
@@ -37,7 +36,6 @@ namespace VoxelEngine
 		{
 			uint32_t DrawCalls{ 0 };
 
-			uint32_t CubeCount{ 0 };
 			uint32_t QuadCount{ 0 };
 			uint32_t VertexCount{ 0 };
 			uint32_t IndexCount{ 0 };

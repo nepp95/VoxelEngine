@@ -270,8 +270,8 @@ namespace VoxelEngine
 			DrawQuad(transform, texture);
 		} else 
 		{
-			// Draw white cube (no texture)
-			DrawQuad(transform, glm::vec4(1.0f));
+			// Draw colored cube (no texture)
+			DrawQuad(transform, sc.Color);
 		}
 	}
 
