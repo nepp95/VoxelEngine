@@ -18,6 +18,9 @@ namespace VoxelEngine
 
 		IDComponent() = default;
 		IDComponent(const IDComponent& other) = default;
+
+		operator UUID&() { return uuid; }
+		operator const UUID&() const { return uuid; }
 	};
 
 	struct TagComponent

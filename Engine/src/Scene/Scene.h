@@ -21,6 +21,15 @@ namespace VoxelEngine
 		void DestroyEntity(Entity entity);
 		void DuplicateEntity(Entity entity);
 
+		template<typename T>
+		static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap);
+		template<typename T>
+		static void CopyComponentIfExists(Entity dst, Entity src);
+		static Ref<Scene> Copy(Ref<Scene> scene);
+
+		void OnRuntimeStart();
+		void OnRuntimeStop();
+
 		Entity GetCameraEntity();
 
 	private:

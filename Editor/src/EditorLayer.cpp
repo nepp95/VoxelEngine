@@ -8,14 +8,15 @@ namespace VoxelEngine
 	{
 		VE_PROFILE_FUNCTION();
 
-		m_scene = Ref<Scene>::Create();
+		m_editorScene = Ref<Scene>::Create();
+		m_activeScene = m_editorScene;
 
-		auto entity = m_scene->CreateEntity();
+		auto entity = m_editorScene->CreateEntity();
 		auto& sc = entity.AddComponent<SpriteComponent>();
 		sc.TextureHandle = AssetManager::GetMetadata("assets/textures/grass.png").Handle;
 
 		// Camera
-		auto cameraEntity = m_scene->CreateEntity("Camera");
+		auto cameraEntity = m_editorScene->CreateEntity("Camera");
 		auto& cc = cameraEntity.AddComponent<CameraComponent>();
 		cc.Camera.SetPitch(0.0f);
 		cc.Camera.SetYaw(-90.0f);
@@ -34,7 +35,7 @@ namespace VoxelEngine
 		m_framebuffer = Ref<Framebuffer>::Create(fbSpecification);
 
 		// Panels
-		m_sceneHierarchyPanel.SetContext(m_scene);
+		m_sceneHierarchyPanel.SetContext(m_editorScene);
 	}
 
 	void EditorLayer::OnDetach()
@@ -62,7 +63,7 @@ namespace VoxelEngine
 
 		// Update
 		//m_camera->Update(ts);	
-		m_scene->Update(ts);
+		m_editorScene->Update(ts);
 	}
 
 	void EditorLayer::Render()
@@ -75,7 +76,7 @@ namespace VoxelEngine
 		RenderCommand::Clear();
 
 		// Render scene
-		m_scene->Render();
+		m_editorScene->Render();
 
 		// Unbind framebuffer
 		m_framebuffer->Unbind();
@@ -251,7 +252,7 @@ namespace VoxelEngine
 		ImGui::End(); // DockSpace Demo
 	}
 
-	void EditorLayer::OnEvent(VoxelEngine::Event& e)
+	void EditorLayer::OnEvent(Event& e)
 	{
 		m_camera->OnEvent(e);
 
@@ -330,6 +331,22 @@ namespace VoxelEngine
 
 	void EditorLayer::SaveSceneAs()
 	{
+	}
+
+	void EditorLayer::OnScenePlay()
+	{
+
+	}
+
+	void EditorLayer::OnSceneStop()
+	{
+		VE_CORE_ASSERT(m_sceneState == SceneState::Play, "Tried to stop a runtime scene which wasn't running!");
+		m_sceneState = SceneState::Edit;
+
+		m_activeScene->OnRuntimeStop();
+		m_activeScene = Scene::Copy(m_editorScene);
+
+		m_sceneHierarchyPanel.SetContext(m_activeScene);
 	}
 
 	void EditorLayer::UIToolbar()

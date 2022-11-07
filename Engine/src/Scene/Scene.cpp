@@ -85,6 +85,60 @@ namespace VoxelEngine
 			newEntity.AddOrReplaceComponent<CameraComponent>(entity.GetComponent<CameraComponent>());
 	}
 
+	template<typename T>
+	static void Scene::CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
+	{
+		auto view = src.view<T>();
+
+		for (auto srcEntity : view)
+		{
+			entt::entity dstEntity = enttMap.at(src.get<IDComponent>(srcEntity));
+			auto& srcComponent = src.get<T>(srcEntity);
+			dst.emplace_or_replace<T>(dstEntity, srcComponent);
+		}
+	}
+
+	template<typename T>
+	static void Scene::CopyComponentIfExists(Entity dst, Entity src)
+	{
+		if (src.HasComponent<T>())
+			dst.AddOrReplaceComponent<T>(src.GetComponent<T>());
+	}
+
+	Ref<Scene> Scene::Copy(Ref<Scene> scene)
+	{
+		Ref<Scene> newScene = Ref<Scene>::Create();
+		std::unordered_map<UUID, entt::entity> enttMap;
+
+		auto& srcRegistry = scene->m_registry;
+		auto& dstRegistry = newScene->m_registry;
+		auto idView = srcRegistry.view<IDComponent>();
+
+		for (auto entity : idView)
+		{
+			UUID uuid = srcRegistry.get<IDComponent>(entity);
+			const auto& name = srcRegistry.get<TagComponent>(entity);
+			Entity newEntity = newScene->CreateEntityWithUUID(uuid, name);
+			enttMap[uuid] = newEntity;
+		}
+
+		CopyComponent<TransformComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<CameraComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<SpriteComponent>(dstRegistry, srcRegistry, enttMap);
+
+		return newScene;
+	}
+
+	void Scene::OnRuntimeStart()
+	{
+
+	}
+
+	void Scene::OnRuntimeStop()
+	{
+
+	}
+
 	Entity Scene::GetCameraEntity()
 	{
 		// Get all entities with a camera component

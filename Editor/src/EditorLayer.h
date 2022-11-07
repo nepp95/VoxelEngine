@@ -27,11 +27,15 @@ namespace VoxelEngine {
 		bool OnKeyPressed(KeyPressedEvent& e);
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
+		// Scene management
 		void NewScene();
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);
 		void SaveScene();
 		void SaveSceneAs();
+
+		void OnScenePlay();
+		void OnSceneStop();
 
 		// UI
 		void UIToolbar();
@@ -47,7 +51,14 @@ namespace VoxelEngine {
 		Camera* m_camera;
 
 		// Scene
-		Ref<Scene> m_scene;
+		Ref<Scene> m_activeScene; // runtime
+		Ref<Scene> m_editorScene; // editor
+
+		enum class SceneState
+		{
+			Edit = 0, Play
+		};
+		SceneState m_sceneState{ SceneState::Edit };
 
 		// Viewport
 		bool m_viewportFocused{false}, m_viewportHovered{false};
