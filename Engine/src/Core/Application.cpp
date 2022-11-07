@@ -67,6 +67,8 @@ namespace VoxelEngine
 
 			if (!m_isMinimized)
 			{
+				VE_PROFILE_SCOPE_CAT("Application", "Frametime");
+
 				{
 					VE_PROFILE_SCOPE_CAT("Application", "Update");
 
@@ -93,12 +95,13 @@ namespace VoxelEngine
 					}
 				}
 
-				// Render gui
-				RenderImGui();
-
-				// Update window
-				m_window->Update();
 			}
+
+			// Render gui
+			RenderImGui();
+
+			// Update window
+			m_window->Update();
 		}
 	}
 

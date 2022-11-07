@@ -198,11 +198,11 @@ namespace VoxelEngine
 
 		for (auto& category : categorizedProfileData)
 		{
-			ImGui::Text("\t%s", category.first);
+			ImGui::Text("\t%s", category.first.c_str());
 
 			for (auto& categoryData : category.second)
 			{
-				ImGui::Text("\t\t%s: %.3fms", categoryData.Name, categoryData.ElapsedTime.count() / 1000.0f);
+				ImGui::Text("\t\t%s: %.3fms", categoryData.Name.c_str(), categoryData.ElapsedTime.count() / 1000.0f);
 			}
 		}
 
