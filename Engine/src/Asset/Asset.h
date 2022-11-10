@@ -7,24 +7,21 @@ namespace VoxelEngine
 {
 	using AssetHandle = UUID;
 
-	class Asset : public RefCounted
+	class Asset
 	{
 	public:
-		AssetHandle Handle{ 0 };
-
+		Asset() = default;
 		virtual ~Asset() = default;
 
-		static AssetType GetStaticType() { return AssetType::None; }
-		virtual AssetType GetAssetType() const { return AssetType::None; }
+		const AssetHandle& GetHandle() const { return m_handle; }
 
-		virtual bool operator==(const Asset& other) const
+		template<typename T>
+		Ref<T> As() const
 		{
-			return Handle == other.Handle;
+			return Ref<T>(*this);
 		}
 
-		virtual bool operator!=(const Asset& other) const
-		{
-			return !(*this == other);
-		}
+	private:
+		AssetHandle m_handle;
 	};
 }

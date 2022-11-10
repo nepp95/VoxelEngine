@@ -15,8 +15,6 @@
 // Assets
 #include "Asset/Asset.h"
 #include "Asset/AssetManager.h"
-#include "Asset/AssetMetadata.h"
-#include "Asset/AssetSerializer.h"
 #include "Asset/AssetTypes.h"
 
 // Debug

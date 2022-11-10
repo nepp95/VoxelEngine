@@ -1,197 +1,44 @@
 #include "pch.h"
 #include "AssetManager.h"
 
-#include "Asset/AssetSerializer.h"
-#include "Core/Application.h" // For some reason we need this for the profiler? But debug/profiler.h does not work?
-#include "Renderer/Texture.h"
-
-#include <yaml-cpp/yaml.h>
-
 namespace VoxelEngine
 {
-	std::unordered_map<AssetHandle, Ref<Asset>> AssetManager::s_loadedAssets;
-	std::unordered_map<AssetHandle, AssetMetadata> AssetManager::s_assetRegistry;
-
-	std::filesystem::path AssetManager::s_assetsDir;
-	std::filesystem::path AssetManager::s_assetRegistryFilepath;
-	std::filesystem::path AssetManager::s_texturesDir;
+	std::unordered_map<AssetHandle, Ref<Asset>> AssetManager::m_assets;
+	std::unordered_map<std::filesystem::path, AssetHandle> AssetManager::m_assetHandles;
 
 	void AssetManager::Init()
 	{
-		VE_PROFILE_FUNCTION();
-
-		// Load all files in assets dir into registry
-		// todo: ONLY IF NOT IN REGISTRY FILE
-		s_assetsDir = "assets";
-		s_texturesDir = s_assetsDir / "textures";
-		s_assetRegistryFilepath = s_assetsDir / "registry.yaml";
-
-		// Load assets from registry file
-		if (std::filesystem::exists(s_assetRegistryFilepath))
-		{
-			VE_CORE_INFO("Asset registry file found at: %", s_assetRegistryFilepath);
-			LoadRegistry();
-		} else
-		{
-			VE_CORE_WARN("Asset registry file not found or can't be opened");
-		}
-
-		// Load assets to registry from recursive file dir search
-		VE_CORE_INFO("Loading textures from: %", s_texturesDir.string());
-
-		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(s_texturesDir))
-		{
-			VE_CORE_INFO("Checking texture: %", dirEntry.path().string());
-			AssetMetadata metadata = GetMetadata(dirEntry.path());
-			if (!metadata.IsValid())
-				CreateAsset<Texture>(dirEntry.path());
-			else
-				GetAsset<Texture>(metadata.Handle);
-
-		}
-
-		WriteRegistry();
+		LoadAssetsFromDirectory("assets/textures");
 	}
 
-	void AssetManager::Shutdown()
+	void AssetManager::LoadAssetsFromDirectory(const std::filesystem::path& directoryPath)
 	{
-		VE_PROFILE_FUNCTION();
-
-		// Write registry to file
-		WriteRegistry();
-
-		// Clear assets
-		s_loadedAssets.clear();
-		s_assetRegistry.clear();
-	}
-
-	AssetMetadata& AssetManager::GetMetadataInternal(AssetHandle handle)
-	{
-		if (s_assetRegistry.find(handle) != s_assetRegistry.end())
-			return s_assetRegistry.at(handle);
-
-		return AssetMetadata();
-	}
-
-	const AssetMetadata& AssetManager::GetMetadata(AssetHandle handle)
-	{
-		if (s_assetRegistry.find(handle) != s_assetRegistry.end())
-			return s_assetRegistry.at(handle);
-
-		return AssetMetadata();
-	}
-
-	const AssetMetadata& AssetManager::GetMetadata(const std::filesystem::path& filepath)
-	{
-		for (auto& [handle, metadata] : s_assetRegistry)
+		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(directoryPath))
 		{
-			if (metadata.FilePath == filepath)
-				return metadata;
-		}
-
-		return AssetMetadata();
-	}
-
-	bool AssetManager::TryLoadData(const AssetMetadata& metadata, Ref<Asset>& asset)
-	{
-		// Create asset
-		switch (metadata.Type)
-		{
-			case AssetType::None:
-			{
-				return false;
-			}
-
-			case AssetType::Texture:
-			{
-				asset = Ref<Texture>::Create(metadata.FilePath.string());
-				asset->Handle = metadata.Handle;
-
-				return asset.As<Texture>()->IsLoaded();
-			}
-		}
-		
-		return false;
-	}
-
-	void AssetManager::WriteRegistry()
-	{
-		VE_PROFILE_FUNCTION();
-
-		std::ofstream outFile(s_assetRegistryFilepath, std::ios::binary | std::ios::out);
-
-		if (outFile.is_open())
-		{
-			YAML::Emitter out;
-			out << YAML::BeginMap;
-			out << YAML::Key << "Assets" << YAML::Value << YAML::BeginSeq;
-
-			for (auto& asset : s_assetRegistry)
-				AssetSerializer::SerializeAsset(out, asset.second);
-
-			out << YAML::EndSeq;
-			out << YAML::EndMap;
-
-			outFile << out.c_str();
-			outFile.close();
-		} else
-		{
-			VE_CORE_ERROR("Something went wrong writing the asset registry!");
+			VE_CORE_INFO(dirEntry.path().string());
 		}
 	}
 
-	void AssetManager::LoadRegistry()
+	template<typename T>
+	Ref<T> AssetManager::GetAsset(const std::filesystem::path& filepath)
 	{
-		VE_PROFILE_FUNCTION();
+		static_assert(std::is_base_of<Asset, T>::value, "Class is not based on Asset!");
+	}
 
-		std::ifstream inFile(s_assetRegistryFilepath);
+	template<typename T>
+	Ref<T> AssetManager::GetAsset(AssetHandle handle)
+	{
+		static_assert(std::is_base_of<Asset, T>::value, "Class is not based on Asset!");
 
-		if (inFile.is_open())
-		{
-			std::stringstream ss;
-			ss << inFile.rdbuf();
+		if (m_assets.find(handle) != m_assets.end())
+			return m_assets.at(handle);
+	}
 
-			YAML::Node data = YAML::Load(ss.str());
-			VE_CORE_ASSERT(data["Assets"], "Invalid assets registry file!");
+	AssetHandle AssetManager::GetAssetHandle(const std::filesystem::path& filepath)
+	{
+		if (m_assetHandles.find(filepath) != m_assetHandles.end())
+			return m_assetHandles.at(filepath);
 
-			VE_CORE_INFO("Deserializing asset registry file.");
-
-			YAML::Node assets = data["Assets"];
-			if (assets)
-			{
-				// Loop through asset entries from asset registry
-				for (auto asset : assets)
-				{
-					// Create metadata from asset registry entry
-					AssetMetadata metadata;
-					metadata.Handle = asset["Handle"].as<uint64_t>();
-					metadata.FilePath = asset["Filepath"].as<std::string>();
-					metadata.Type = Utils::AssetTypeFromString(asset["Type"].as<std::string>());
-
-					// Invalid asset
-					if (metadata.Type == AssetType::None)
-						continue;
-
-					if (!std::filesystem::exists(metadata.FilePath))
-					{
-						VE_CORE_WARN("Missing asset '%' found in registry file.", metadata.FilePath);
-						continue;
-					}
-
-					if (!metadata.IsValid())
-					{
-						VE_CORE_WARN("Trying to load an invalid asset: %", metadata.FilePath);
-						continue;
-					}
-
-					s_assetRegistry.insert_or_assign(metadata.Handle, metadata);
-				}
-			}
-
-			VE_CORE_INFO("Loaded % assets from asset registry file.", s_assetRegistry.size());
-		} else
-		{
-			VE_CORE_WARN("Asset registry file not found or can't be opened");
-		}
+		return AssetHandle{ 0 }; // invalid handle
 	}
 }

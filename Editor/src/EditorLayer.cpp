@@ -13,7 +13,7 @@ namespace VoxelEngine
 
 		auto entity = m_editorScene->CreateEntity();
 		auto& sc = entity.AddComponent<SpriteComponent>();
-		sc.TextureHandle = AssetManager::GetMetadata("assets/textures/grass.png").Handle;
+		sc.TextureHandle = AssetManager::GetAssetHandle("assets/textures/grass.png");
 
 		// Camera
 		auto cameraEntity = m_editorScene->CreateEntity("Camera");

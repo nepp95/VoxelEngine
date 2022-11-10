@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Base.h"
+
 #include <string>
 
 namespace VoxelEngine
@@ -14,8 +16,8 @@ namespace VoxelEngine
 	{
 		inline AssetType AssetTypeFromString(const std::string& assetType)
 		{
-			if (assetType == "None")			return AssetType::None;
-			if (assetType == "Texture")			return AssetType::Texture;
+			if (assetType == "None")				return AssetType::None;
+			if (assetType == "Texture")				return AssetType::Texture;
 
 			VE_CORE_ASSERT(false, "Unknown AssetType!");
 			return AssetType::None;
@@ -23,11 +25,8 @@ namespace VoxelEngine
 
 		inline std::string AssetTypeToString(AssetType assetType)
 		{
-			switch (assetType)
-			{
-				case AssetType::None:			return "None";
-				case AssetType::Texture:		return "Texture";
-			}
+			if (assetType == AssetType::None)		return "None";
+			if (assetType == AssetType::Texture)	return "Texture";
 
 			VE_CORE_ASSERT(false, "Unknown AssetType!");
 			return "None";
