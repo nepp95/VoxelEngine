@@ -46,7 +46,7 @@ namespace VoxelEngine
 		bool SwapchainTarget{ false };
 	};
 
-	class Framebuffer : public RefCounted
+	class Framebuffer
 	{
 	public:
 		Framebuffer(const FramebufferSpecification& specification);

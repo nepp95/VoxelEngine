@@ -61,8 +61,8 @@ namespace VoxelEngine
 		AssetManager::Init();
 
 		// Create vertex array and buffers
-		s_data.QuadVertexArray = Ref<VertexArray>::Create();
-		s_data.QuadVertexBuffer = Ref<VertexBuffer>::Create(RendererData::MaxVertices * sizeof(QuadVertex));
+		s_data.QuadVertexArray = CreateRef<VertexArray>();
+		s_data.QuadVertexBuffer = CreateRef<VertexBuffer>(RendererData::MaxVertices * sizeof(QuadVertex));
 
 		s_data.QuadVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3,	"aPosition"		},
@@ -91,7 +91,7 @@ namespace VoxelEngine
 			offset += 4; // 4 vertices
 		}
 
-		Ref<IndexBuffer> indexBuffer = Ref<IndexBuffer>::Create(quadIndices, RendererData::MaxIndices);
+		Ref<IndexBuffer> indexBuffer = CreateRef<IndexBuffer>(quadIndices, RendererData::MaxIndices);
 		s_data.QuadVertexArray->SetIndexBuffer(indexBuffer);
 		delete[] quadIndices;
 
@@ -108,10 +108,10 @@ namespace VoxelEngine
 		s_data.QuadVertexTextureCoords[3] = { 0.0f, 1.0f };
 
 		// Load shader
-		s_data.QuadShader = Ref<Shader>::Create("assets/shaders/quad.glsl");
+		s_data.QuadShader = CreateRef<Shader>("assets/shaders/quad.glsl");
 
 		// Set white texture slot (invalid texture)
-		s_data.WhiteTexture = Ref<Texture>::Create(1, 1);
+		s_data.WhiteTexture = CreateRef<Texture>(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
 		s_data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
@@ -212,7 +212,7 @@ namespace VoxelEngine
 		// Check if texture is loaded into the GPU and set texture index to it if so
 		float textureIndex{ 0.0f };
 		for (uint32_t i = 0; i < s_data.TextureSlotIndex; i++)
-			if (*s_data.TextureSlots[i] == *texture.Raw())
+			if (*s_data.TextureSlots[i] == *texture)
 			{
 				textureIndex = (float) i;
 				break;

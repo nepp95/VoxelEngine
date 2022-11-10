@@ -8,7 +8,7 @@ namespace VoxelEngine
 	{
 		VE_PROFILE_FUNCTION();
 
-		m_editorScene = Ref<Scene>::Create();
+		m_editorScene = CreateRef<Scene>();
 		m_activeScene = m_editorScene;
 
 		auto entity = m_editorScene->CreateEntity();
@@ -32,7 +32,7 @@ namespace VoxelEngine
 		fbSpecification.Width = 1280;
 		fbSpecification.Height = 720;
 		fbSpecification.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
-		m_framebuffer = Ref<Framebuffer>::Create(fbSpecification);
+		m_framebuffer = CreateRef<Framebuffer>(fbSpecification);
 
 		// Panels
 		m_sceneHierarchyPanel.SetContext(m_editorScene);

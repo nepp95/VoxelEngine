@@ -7,7 +7,7 @@ namespace VoxelEngine
 {
 	class Entity;
 
-	class Scene : public RefCounted
+	class Scene
 	{
 	public:
 		Scene();

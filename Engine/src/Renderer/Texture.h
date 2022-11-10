@@ -10,7 +10,6 @@ namespace VoxelEngine
 	{
 	public:
 		Texture(uint32_t width, uint32_t height);
-		Texture(const std::string& filepath);
 		Texture(const std::filesystem::path& filepath);
 		~Texture();
 

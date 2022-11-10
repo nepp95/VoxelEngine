@@ -107,7 +107,7 @@ namespace VoxelEngine
 
 	Ref<Scene> Scene::Copy(Ref<Scene> scene)
 	{
-		Ref<Scene> newScene = Ref<Scene>::Create();
+		Ref<Scene> newScene = CreateRef<Scene>();
 		std::unordered_map<UUID, entt::entity> enttMap;
 
 		auto& srcRegistry = scene->m_registry;

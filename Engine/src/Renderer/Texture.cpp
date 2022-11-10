@@ -22,12 +22,6 @@ namespace VoxelEngine
 		glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	}
 
-	Texture::Texture(const std::string& filepath)
-		: m_filepath(filepath)
-	{
-		LoadTexture();
-	}
-
 	Texture::Texture(const std::filesystem::path& filepath)
 		: m_filepath(filepath)
 	{

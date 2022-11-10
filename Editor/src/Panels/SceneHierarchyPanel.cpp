@@ -21,7 +21,7 @@ namespace VoxelEngine
 		m_context->m_registry.each([&] (auto entityId)
 		{
 			// TODO: Copy entity necessary?
-			Entity entity{ entityId, m_context.Raw() };
+			Entity entity{ entityId, m_context.get() };
 			DrawEntityNode(entity);
 		});
 
