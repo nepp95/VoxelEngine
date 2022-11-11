@@ -28,7 +28,6 @@ project "Editor"
 
     defines {
         "_CRT_SECURE_NO_WARNINGS",
-        "ENABLE_PROFILING"
     }
 
     filter "system:windows"
