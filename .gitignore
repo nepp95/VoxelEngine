@@ -6,8 +6,9 @@
 # Cache
 __pycache__
 
+# Debug
+Editor/Profile.json
+
 # Binaries
 bin
 bin-int
-Editor/assets/registry.yaml
-Editor/Profile.json

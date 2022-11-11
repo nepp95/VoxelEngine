@@ -1,52 +1,73 @@
 ﻿#pragma once
 
 #include <Engine.h>
+#include "Panels/DebugPanel.h"
+#include "Panels/PanelManager.h"
+#include "Panels/SceneHierarchyPanel.h"
 
-using namespace VoxelEngine;
+namespace VoxelEngine {
+	class EditorLayer : public Layer
+	{
+	public:
+		EditorLayer()
+			: Layer("EditorLayer")
+		{}
+		EditorLayer(const EditorLayer& other) = delete;
 
-class EditorLayer : public Layer
-{
-public:
-	EditorLayer(const std::string& name = std::string())
-		: Layer(name.empty() ? name : "EditorLayer")
-	{}
+		~EditorLayer() override = default;
 
-	~EditorLayer() override = default;
+		void OnAttach() override;
+		void OnDetach() override;
 
-	void OnAttach() override;
-	void OnDetach() override;
+		void Update(float ts) override;
+		void Render() override;
+		void RenderGui() override;
 
-	void Update(float ts) override;
-	void Render() override;
-	void ImGuiRender() override;
+		void OnEvent(Event& e) override;
 
-	void OnEvent(Event& e) override;
+	private:
+		bool OnKeyPressed(KeyPressedEvent& e);
+		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
-private:
-	bool OnKeyPressed(KeyPressedEvent& e);
-	bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
+		// Scene management
+		void NewScene();
+		void OpenScene();
+		void OpenScene(const std::filesystem::path& path);
+		void SaveScene();
+		void SaveSceneAs();
 
-	void UI_Toolbar();
+		void OnScenePlay();
+		void OnSceneStop();
 
-private:
-	// Test data
-	Ref<Texture> m_grassTexture;
-	float m_timestep{ 0.0f };
+		// UI
+		void UIToolbar();
 
-	// Camera
-	Camera* m_camera;
+	private:
+		// Panels
+		Scope<PanelManager> m_panelManager;
 
-	// Scene
-	Ref<Scene> m_scene;
+		// Timing
+		float m_timestep{ 0.0f };
 
-	// Viewport
-	bool m_viewportFocused{false}, m_viewportHovered{false};
-	glm::vec2 m_viewportBounds[2];
-	glm::vec2 m_viewportSize{ 0.0f, 0.0f };
+		// Camera
+		Camera* m_camera;
 
-	// Framebuffer
-	Ref<Framebuffer> m_framebuffer;
+		// Scene
+		Ref<Scene> m_activeScene; // runtime
+		Ref<Scene> m_editorScene; // editor
 
-	// Settings
-	bool m_enableVSync;
-};
+		enum class SceneState
+		{
+			Edit = 0, Play
+		};
+		SceneState m_sceneState{ SceneState::Edit };
+
+		// Viewport
+		bool m_viewportFocused{false}, m_viewportHovered{false};
+		glm::vec2 m_viewportBounds[2];
+		glm::vec2 m_viewportSize{ 0.0f, 0.0f };
+
+		// Framebuffer
+		Ref<Framebuffer> m_framebuffer;
+	};
+}
