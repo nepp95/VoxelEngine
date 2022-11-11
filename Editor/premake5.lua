@@ -28,7 +28,6 @@ project "Editor"
 
     defines {
         "_CRT_SECURE_NO_WARNINGS",
-        "ENABLE_PROFILING"
     }
 
     filter "system:windows"
@@ -38,10 +37,6 @@ project "Editor"
 		defines "V_DEBUG"
 		runtime "Debug"
 		symbols "On"
-
-        defines {
-            "WRITE_PROFILES"
-        }
 
 	filter "configurations:Release"
 		defines "V_RELEASE"

@@ -12,7 +12,8 @@ project "Engine"
 
     defines {
         "_CRT_SECURE_NO_WARNINGS",
-        "GLFW_INCLUDE_NONE"
+        "GLFW_INCLUDE_NONE",
+        "ENABLE_PROFILING"
     }
 
     files {
@@ -55,6 +56,10 @@ project "Engine"
         defines "V_DEBUG"
         runtime "Debug"
         symbols "On"
+
+        defines {
+            "WRITE_PROFILES"
+        }
     
     filter "configurations:Release"
         defines "V_RELEASE"
