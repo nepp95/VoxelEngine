@@ -2,6 +2,7 @@
 
 #include <Engine.h>
 #include "Panels/DebugPanel.h"
+#include "Panels/PanelManager.h"
 #include "Panels/SceneHierarchyPanel.h"
 
 namespace VoxelEngine {
@@ -43,8 +44,7 @@ namespace VoxelEngine {
 
 	private:
 		// Panels
-		DebugPanel m_debugPanel;
-		SceneHierarchyPanel m_sceneHierarchyPanel;
+		Scope<PanelManager> m_panelManager;
 
 		// Timing
 		float m_timestep{ 0.0f };
@@ -69,8 +69,5 @@ namespace VoxelEngine {
 
 		// Framebuffer
 		Ref<Framebuffer> m_framebuffer;
-
-		// Settings
-		bool m_enableVSync;
 	};
 }

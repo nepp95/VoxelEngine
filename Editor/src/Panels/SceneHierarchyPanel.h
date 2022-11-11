@@ -1,19 +1,17 @@
 #pragma once
 
-#include <Engine/Core/Base.h>
-#include <Engine/Scene/Entity.h>
-#include <Engine/Scene/Scene.h>
+#include <Engine.h>
+#include "Panels/Panel.h"
 
 namespace VoxelEngine
 {
-	class SceneHierarchyPanel
+	class SceneHierarchyPanel : public Panel
 	{
 	public:
 		SceneHierarchyPanel() = default;
 
-		void SetContext(const Ref<Scene>& context);
-
-		void RenderGui();
+		void RenderGui() override;
+		void SetSceneContext(const Ref<Scene>& scene) override;
 
 	private:
 		template<typename T>

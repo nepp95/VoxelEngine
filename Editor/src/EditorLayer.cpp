@@ -4,6 +4,9 @@
 
 namespace VoxelEngine
 {
+	#define DEBUG_PANEL "DebugPanel"
+	#define SCENE_HIERARCHY_PANEL "SceneHierarchyPanel"
+
 	void EditorLayer::OnAttach()
 	{
 		VE_PROFILE_FUNCTION();
@@ -23,10 +26,6 @@ namespace VoxelEngine
 		cc.Camera.SetPosition({ 0.0f, 0.0f, 2.0f });
 		m_camera = &cc.Camera;
 
-		// Set settings
-		auto& app = Application::Get();
-		m_enableVSync = app.GetWindow().IsVSync(); // TODO: Make this work?!
-
 		// Create framebuffer
 		FramebufferSpecification fbSpecification;
 		fbSpecification.Width = 1280;
@@ -35,7 +34,11 @@ namespace VoxelEngine
 		m_framebuffer = CreateRef<Framebuffer>(fbSpecification);
 
 		// Panels
-		m_sceneHierarchyPanel.SetContext(m_editorScene);
+		m_panelManager = CreateScope<PanelManager>();
+		m_panelManager->AddPanel<DebugPanel>(DEBUG_PANEL, true);
+		m_panelManager->AddPanel<SceneHierarchyPanel>(SCENE_HIERARCHY_PANEL, true);
+
+		m_panelManager->SetSceneContext(m_editorScene);
 	}
 
 	void EditorLayer::OnDetach()
@@ -166,8 +169,7 @@ namespace VoxelEngine
 			ImGui::EndMenuBar();
 		}
 
-		m_debugPanel.RenderGui();
-		m_sceneHierarchyPanel.RenderGui();
+		m_panelManager->RenderGui();
 
 		// -----------------------------------------
 		//
@@ -294,7 +296,7 @@ namespace VoxelEngine
 		m_activeScene->OnRuntimeStop();
 		m_activeScene = Scene::Copy(m_editorScene);
 
-		m_sceneHierarchyPanel.SetContext(m_activeScene);
+		m_panelManager->SetSceneContext(m_activeScene);
 	}
 
 	void EditorLayer::UIToolbar()

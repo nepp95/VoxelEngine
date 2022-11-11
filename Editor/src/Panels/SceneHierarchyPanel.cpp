@@ -3,12 +3,12 @@
 #include "Controls.h"
 
 #include <glm/gtc/type_ptr.hpp>
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
+#include <imgui.h>
+#include <imgui_internal.h>
 
 namespace VoxelEngine
 {
-	void SceneHierarchyPanel::SetContext(const Ref<Scene>& context)
+	void SceneHierarchyPanel::SetSceneContext(const Ref<Scene>& context)
 	{
 		m_context = context;
 	}

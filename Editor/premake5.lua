@@ -18,6 +18,7 @@ project "Editor"
         "%{wks.location}/Engine/vendor",
         "%{IncludeDir.entt}",
         "%{IncludeDir.glm}",
+        "%{IncludeDir.imgui}",
         "%{IncludeDir.yaml_cpp}"
     }
 

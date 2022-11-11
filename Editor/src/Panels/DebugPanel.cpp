@@ -1,7 +1,6 @@
 #include "DebugPanel.h"
 
-#include <Engine.h>
-#include <imgui/imgui.h>
+#include <imgui.h>
 
 namespace VoxelEngine
 {

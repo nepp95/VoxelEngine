@@ -66,5 +66,7 @@ namespace VoxelEngine
 				return asset->IsLoaded();
 			}
 		}
+
+		return false;
 	}
 }

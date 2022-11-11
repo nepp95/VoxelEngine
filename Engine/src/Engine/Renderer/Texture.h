@@ -2,6 +2,8 @@
 
 #include "Engine/Asset/Asset.h"
 
+#include <filesystem>
+
 typedef unsigned int GLenum;
 
 namespace VoxelEngine
