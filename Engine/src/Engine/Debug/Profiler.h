@@ -63,11 +63,7 @@ namespace VoxelEngine
 	};
 }
 
-#define ENABLE_PROFILING
 #ifdef ENABLE_PROFILING
-	#ifdef V_DEBUG
-		#define WRITE_PROFILES
-	#endif
 	#define VE_PROFILE_SCOPE(name) ProfileTimer timer__LINE__(name, Application::Get().GetProfiler());
 	#define VE_PROFILE_SCOPE_CAT(category, name) ProfileTimer timer__LINE__(name, Application::Get().GetProfiler(), category);
 	#define VE_PROFILE_FUNCTION() VE_PROFILE_SCOPE(__FUNCSIG__)

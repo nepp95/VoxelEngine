@@ -29,6 +29,9 @@ namespace VoxelEngine
 
 		// Get camera entity
 		Entity cameraEntity = GetCameraEntity();
+		if (!cameraEntity)
+			return;
+
 		Camera* camera = &cameraEntity.GetComponent<CameraComponent>().Camera;
 
 		// Begin render

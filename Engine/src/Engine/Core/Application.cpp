@@ -36,8 +36,10 @@ namespace VoxelEngine
 		m_imGuiLayer = new ImGuiLayer();
 		PushOverlay(m_imGuiLayer);
 
-		// Profiler
-		m_profiler->BeginSession("Profile.json");
+		#ifdef WRITE_PROFILES
+			// Profiler
+			m_profiler->BeginSession("Profile.json");
+		#endif
 	}
 
 	Application::~Application()
@@ -98,7 +100,7 @@ namespace VoxelEngine
 			}
 
 			// Render gui
-			RenderImGui();
+			RenderGui();
 
 			// Update window
 			m_window->Update();
@@ -130,7 +132,7 @@ namespace VoxelEngine
 		m_layerStack.PushOverlay(layer);
 	}
 
-	void Application::RenderImGui()
+	void Application::RenderGui()
 	{
 		// TODO: Fix profiler
 		VE_PROFILE_SCOPE("Application::RenderImGui");
@@ -138,7 +140,7 @@ namespace VoxelEngine
 		m_imGuiLayer->Begin();
 
 		for (Layer* layer : m_layerStack)
-			layer->ImGuiRender();
+			layer->RenderGui();
 
 		m_imGuiLayer->End();
 	}

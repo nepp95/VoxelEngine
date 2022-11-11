@@ -5,7 +5,9 @@ namespace VoxelEngine
 {
 	Profiler::~Profiler()
 	{
-		EndSession();
+		#ifdef WRITE_PROFILES
+			EndSession();
+		#endif
 	}
 
 	void Profiler::BeginSession(const std::string& filepath)

@@ -16,7 +16,7 @@ namespace VoxelEngine
 		virtual void Update(float ts) {}
 		virtual void Render() {}
 
-		virtual void ImGuiRender() {}
+		virtual void RenderGui() {}
 		virtual void OnEvent(Event& e) {}
 
 		const std::string& GetName() const { return m_debugName; }

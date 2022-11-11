@@ -85,7 +85,7 @@ namespace VoxelEngine
 		m_framebuffer->Unbind();
 	}
 
-	void EditorLayer::ImGuiRender()
+	void EditorLayer::RenderGui()
 	{
 		VE_PROFILE_FUNCTION();
 

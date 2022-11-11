@@ -9,8 +9,8 @@ namespace VoxelEngine {
 	class EditorLayer : public Layer
 	{
 	public:
-		EditorLayer(const std::string& name = std::string())
-			: Layer(name.empty() ? name : "EditorLayer")
+		EditorLayer()
+			: Layer("EditorLayer")
 		{}
 		EditorLayer(const EditorLayer& other) = delete;
 
@@ -21,7 +21,7 @@ namespace VoxelEngine {
 
 		void Update(float ts) override;
 		void Render() override;
-		void ImGuiRender() override;
+		void RenderGui() override;
 
 		void OnEvent(Event& e) override;
 

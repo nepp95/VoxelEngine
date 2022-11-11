@@ -49,7 +49,7 @@ namespace VoxelEngine
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 
-		void RenderImGui();
+		void RenderGui();
 
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
