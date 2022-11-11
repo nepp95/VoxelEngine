@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <Engine.h>
+#include "Panels/DebugPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 
 namespace VoxelEngine {
@@ -42,6 +43,7 @@ namespace VoxelEngine {
 
 	private:
 		// Panels
+		DebugPanel m_debugPanel;
 		SceneHierarchyPanel m_sceneHierarchyPanel;
 
 		// Timing
