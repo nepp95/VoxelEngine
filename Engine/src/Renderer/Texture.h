@@ -18,12 +18,15 @@ namespace VoxelEngine
 		uint32_t GetWidth() const { return m_width; }
 		uint32_t GetHeight() const { return m_height; }
 		uint32_t GetRendererID() const { return m_rendererID; }
+		const std::filesystem::path& GetFilepath() const { return m_filepath; }
 
 		void SetData(void* data, uint32_t size);
 		void Bind(uint32_t slot = 0) const;
 
 		bool IsLoaded() const { return m_isLoaded; }
 		bool operator==(const Texture& other) const { return m_rendererID == other.GetRendererID(); }
+
+		static AssetType GetStaticType() { return AssetType::Texture; }
 
 	private:
 		uint32_t m_rendererID;

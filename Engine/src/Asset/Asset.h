@@ -10,15 +10,19 @@ namespace VoxelEngine
 	class Asset
 	{
 	public:
-		Asset() = default;
 		virtual ~Asset() = default;
 
 		const AssetHandle& GetHandle() const { return m_handle; }
+		static AssetType GetStaticType() { return AssetType::None; }
 
-		template<typename T>
-		Ref<T> As() const
+		virtual bool operator==(const Asset& other) const
 		{
-			return Ref<T>(*this);
+			return m_handle == other.m_handle;
+		}
+
+		virtual bool operator!=(const Asset& other) const
+		{
+			return !(*this == other);
 		}
 
 	private:

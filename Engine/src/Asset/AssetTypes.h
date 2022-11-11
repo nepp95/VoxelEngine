@@ -16,8 +16,12 @@ namespace VoxelEngine
 	{
 		inline AssetType AssetTypeFromString(const std::string& assetType)
 		{
+			// AssetType string
 			if (assetType == "None")				return AssetType::None;
 			if (assetType == "Texture")				return AssetType::Texture;
+
+			// Asset folder string
+			if (assetType == "textures")			return AssetType::Texture;
 
 			VE_CORE_ASSERT(false, "Unknown AssetType!");
 			return AssetType::None;

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "AssetManager.h"
 
+#include "Renderer/Texture.h"
+
 namespace VoxelEngine
 {
 	std::unordered_map<AssetHandle, Ref<Asset>> AssetManager::m_assets;
@@ -15,23 +17,26 @@ namespace VoxelEngine
 	{
 		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(directoryPath))
 		{
-			VE_CORE_INFO(dirEntry.path().string());
+			VE_CORE_INFO(dirEntry.path());
+
+			// TODO: This is very error prone! Come up with an other way.
+			// Get asset type from path
+			std::string assetType = dirEntry.path().parent_path().string().substr(7);
+
+			switch (Utils::AssetTypeFromString(assetType))
+			{
+				case AssetType::None:
+				{
+					break;
+				}
+
+				case AssetType::Texture:
+				{
+					CreateAsset<Texture>(dirEntry.path());
+					break;
+				}
+			}
 		}
-	}
-
-	template<typename T>
-	Ref<T> AssetManager::GetAsset(const std::filesystem::path& filepath)
-	{
-		static_assert(std::is_base_of<Asset, T>::value, "Class is not based on Asset!");
-	}
-
-	template<typename T>
-	Ref<T> AssetManager::GetAsset(AssetHandle handle)
-	{
-		static_assert(std::is_base_of<Asset, T>::value, "Class is not based on Asset!");
-
-		if (m_assets.find(handle) != m_assets.end())
-			return m_assets.at(handle);
 	}
 
 	AssetHandle AssetManager::GetAssetHandle(const std::filesystem::path& filepath)
@@ -40,5 +45,26 @@ namespace VoxelEngine
 			return m_assetHandles.at(filepath);
 
 		return AssetHandle{ 0 }; // invalid handle
+	}
+
+	template<typename T>
+	bool AssetManager::LoadData(const std::filesystem::path& filepath, Ref<T>& asset)
+	{
+		static_assert(std::is_base_of<Asset, T>::value, "Class is not based on Asset!");
+
+		switch (T::GetStaticType())
+		{
+			case AssetType::None:
+			{
+				return false;
+				break;
+			}
+
+			case AssetType::Texture:
+			{
+				asset = CreateRef<Texture>(filepath);
+				return asset->IsLoaded();
+			}
+		}
 	}
 }
