@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Core/Base.h>
-#include <Scene/Entity.h>
-#include <Scene/Scene.h>
+#include <Engine/Core/Base.h>
+#include <Engine/Scene/Entity.h>
+#include <Engine/Scene/Scene.h>
 
 namespace VoxelEngine
 {
