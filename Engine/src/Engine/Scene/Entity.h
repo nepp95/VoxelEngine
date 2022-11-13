@@ -17,6 +17,7 @@ namespace VoxelEngine
 		Entity(const Entity& other) = default;
 
 		const std::string& GetName() { return GetComponent<TagComponent>(); }
+		const UUID& GetUUID() { return GetComponent<IDComponent>(); }
 
 		// Component logic
 		template<typename T, typename... Args>

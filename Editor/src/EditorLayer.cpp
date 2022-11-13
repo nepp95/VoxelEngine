@@ -12,7 +12,7 @@ namespace VoxelEngine
 		VE_PROFILE_FUNCTION();
 
 		m_editorScene = CreateRef<Scene>();
-		m_activeScene = m_editorScene;
+		m_activeScene = CreateRef<Scene>();
 
 		auto entity = m_editorScene->CreateEntity();
 		auto& sc = entity.AddComponent<SpriteComponent>();
@@ -277,6 +277,11 @@ namespace VoxelEngine
 
 	void EditorLayer::SaveScene()
 	{
+		if (m_sceneState != SceneState::Edit)
+			OnSceneStop();
+
+		SceneSerializer serializer(m_editorScene);
+		serializer.Serialize("assets/scenes/test.scene");
 	}
 
 	void EditorLayer::SaveSceneAs()
@@ -296,7 +301,7 @@ namespace VoxelEngine
 		m_activeScene->OnRuntimeStop();
 		m_activeScene = Scene::Copy(m_editorScene);
 
-		m_panelManager->SetSceneContext(m_activeScene);
+		m_panelManager->SetSceneContext(m_editorScene);
 	}
 
 	void EditorLayer::UIToolbar()

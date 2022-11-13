@@ -28,11 +28,6 @@
 // Layers
 #include "Engine/Layers/ImGuiLayer.h"
 
-// Scene
-#include "Engine/Scene/Components.h"
-#include "Engine/Scene/Entity.h"
-#include "Engine/Scene/Scene.h"
-
 // Renderer
 #include "Engine/Renderer/Buffer.h"
 #include "Engine/Renderer/Camera.h"
@@ -42,3 +37,9 @@
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Renderer/VertexArray.h"
+
+// Scene
+#include "Engine/Scene/Components.h"
+#include "Engine/Scene/Entity.h"
+#include "Engine/Scene/Scene.h"
+#include "Engine/Scene/SceneSerializer.h"
