@@ -269,10 +269,20 @@ namespace VoxelEngine
 
 	void EditorLayer::OpenScene()
 	{
+		OpenScene("assets/scenes/test.scene");
 	}
 
-	void EditorLayer::OpenScene(const std::filesystem::path& path)
+	void EditorLayer::OpenScene(const std::filesystem::path& filepath)
 	{
+		if (m_sceneState != SceneState::Edit)
+			OnSceneStop();
+
+		Ref<Scene> newScene;
+
+		SceneSerializer serializer(newScene);
+		serializer.Deserialize(filepath);
+
+		m_editorScene = newScene;
 	}
 
 	void EditorLayer::SaveScene()
@@ -290,7 +300,15 @@ namespace VoxelEngine
 
 	void EditorLayer::OnScenePlay()
 	{
+		if (m_sceneState != SceneState::Edit)
+			OnSceneStop();
 
+		m_sceneState = SceneState::Play;
+
+		m_activeScene = Scene::Copy(m_editorScene);
+		m_activeScene->OnRuntimeStart();
+
+		m_panelManager->SetSceneContext(m_activeScene);
 	}
 
 	void EditorLayer::OnSceneStop()

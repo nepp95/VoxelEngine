@@ -33,7 +33,7 @@ namespace VoxelEngine
 		: m_scene(scene)
 	{}
 
-	void SceneSerializer::Serialize(const std::filesystem::path& filepath)
+	bool SceneSerializer::Serialize(const std::filesystem::path& filepath)
 	{
 		YAML::Emitter out;
 
@@ -56,11 +56,48 @@ namespace VoxelEngine
 
 		std::ofstream fout(filepath);
 		fout << out.c_str();
+
+		return true;
 	}
 
-	void SceneSerializer::Deserialize(Ref<Scene>& outScene)
+	bool SceneSerializer::Deserialize(const std::filesystem::path& filepath)
 	{
+		YAML::Node data;
 
+		try
+		{
+			data = YAML::LoadFile(filepath.string());
+		}
+		catch (YAML::ParserException e)
+		{
+			VE_CORE_ERROR("Failed to load .scene file '%'!\nError: %", filepath, e.what())
+			return false;
+		}
+
+		// If the root node is not "Scene", the file is most likely invalid
+		if (!data["Scene"])
+			return false;
+
+		std::string name = data["Scene"].as<std::string>();
+		VE_CORE_INFO("Deserializing scene '%'", name);
+
+		auto entities = data["Entities"];
+
+		if (!entities)
+		{
+			VE_CORE_WARN("Scene has no entities, are you sure this is correct?");
+			return true;
+		}
+
+		for (auto entity : entities)
+		{
+
+			return false;
+		}
+		// entities = data[entities]
+		// loop entities
+
+		return true;
 	}
 
 	void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity entity)

@@ -16,8 +16,8 @@ namespace VoxelEngine
 	public:
 		SceneSerializer(const Ref<Scene>& scene);
 
-		void Serialize(const std::filesystem::path& filepath);
-		void Deserialize(Ref<Scene>& scene);
+		bool Serialize(const std::filesystem::path& filepath);
+		bool Deserialize(const std::filesystem::path& filepath);
 
 	private:
 		void SerializeEntity(YAML::Emitter& out, Entity entity);

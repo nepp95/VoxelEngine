@@ -32,7 +32,7 @@ namespace VoxelEngine {
 		// Scene management
 		void NewScene();
 		void OpenScene();
-		void OpenScene(const std::filesystem::path& path);
+		void OpenScene(const std::filesystem::path& filepath);
 		void SaveScene();
 		void SaveSceneAs();
 
