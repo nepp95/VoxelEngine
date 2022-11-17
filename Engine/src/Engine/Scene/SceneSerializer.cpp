@@ -5,12 +5,67 @@
 
 namespace YAML
 {
+	template<>
+	struct convert<glm::vec3>
+	{
+		static Node encode(const glm::vec3& rhs)
+		{
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.push_back(rhs.z);
+			node.SetStyle(EmitterStyle::Flow);
+
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec3& rhs)
+		{
+			if (!node.IsSequence() || node.size() != 3)
+				return false;
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			rhs.z = node[2].as<float>();
+
+			return true;
+		}
+	};
+
+	template<>
+	struct convert<glm::vec4>
+	{
+		static Node encode(const glm::vec4& rhs)
+		{
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.push_back(rhs.z);
+			node.push_back(rhs.w);
+			node.SetStyle(EmitterStyle::Flow);
+
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec4& rhs)
+		{
+			if (!node.IsSequence() || node.size() != 4)
+				return false;
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			rhs.z = node[2].as<float>();
+			rhs.w = node[3].as<float>();
+
+			return true;
+		}
+	};
+
+	// Operator overloading
 	Emitter& operator<<(Emitter& out, const glm::vec3& v)
 	{
 		out << YAML::Flow;
-		out << YAML::BeginSeq;
-		out << v.x << v.y << v.z;
-		out << YAML::EndSeq;
+		out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
 
 		return out;
 	}
@@ -18,9 +73,7 @@ namespace YAML
 	Emitter& operator<<(Emitter& out, const glm::vec4& v)
 	{
 		out << YAML::Flow;
-		out << YAML::BeginSeq;
-		out << v.x << v.y << v.z << v.w;
-		out << YAML::EndSeq;
+		out << YAML::BeginSeq << v.x << v.y << v.z << v.w << YAML::EndSeq;
 
 		return out;
 	}
@@ -35,6 +88,8 @@ namespace VoxelEngine
 
 	bool SceneSerializer::Serialize(const std::filesystem::path& filepath)
 	{
+		VE_CORE_INFO("Serializing scene '%'", "Untitled");
+
 		YAML::Emitter out;
 
 		out << YAML::BeginMap;
@@ -91,11 +146,41 @@ namespace VoxelEngine
 
 		for (auto entity : entities)
 		{
+			UUID uuid = entity["Entity"].as<uint64_t>();
+			std::string name;
 
-			return false;
+			auto tagComponent = entity["TagComponent"];
+			if (tagComponent)
+				name = tagComponent["Tag"].as<std::string>();
+
+			VE_CORE_INFO("Deserializing entity '%' (%)", name, uuid);
+
+			Entity newEntity = m_scene->CreateEntityWithUUID(uuid, name);
+
+			auto transformComponent = entity["TransformComponent"];
+			if (transformComponent)
+			{
+				auto& tc = newEntity.GetComponent<TransformComponent>();
+				tc.Translation = transformComponent["Translation"].as<glm::vec3>();
+				tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
+				tc.Scale = transformComponent["Scale"].as<glm::vec3>();
+			}
+
+			auto cameraComponent = entity["CameraComponent"];
+			if (cameraComponent)
+			{
+				auto& cc = newEntity.AddComponent<CameraComponent>();
+				cc.Camera.SetPosition(cameraComponent["Position"].as<glm::vec3>());
+			}
+
+			auto spriteComponent = entity["SpriteComponent"];
+			if (spriteComponent)
+			{
+				auto& sc = newEntity.AddComponent<SpriteComponent>();
+				sc.TextureHandle = spriteComponent["TextureHandle"].as<uint64_t>();
+				sc.Color = spriteComponent["Color"].as<glm::vec4>();
+			}
 		}
-		// entities = data[entities]
-		// loop entities
 
 		return true;
 	}
@@ -103,20 +188,23 @@ namespace VoxelEngine
 	void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity entity)
 	{
 		VE_CORE_ASSERT(entity.HasComponent<IDComponent>() && entity.HasComponent<TagComponent>(), "Trying to serialize invalid entity!");
+		VE_CORE_INFO("Serializing entity '%' (%)", entity.GetName(), entity.GetUUID());
 
 		out << YAML::BeginMap;
-		out << YAML::Key << "Entity" << YAML::Value;
+		out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID();
 
-		out << YAML::BeginMap;
-		out << YAML::Key << "UUID" << YAML::Value << entity.GetUUID();
-		out << YAML::Key << "Tag" << YAML::Value << entity.GetName();
+		if (entity.HasComponent<TagComponent>())
+		{
+			out << YAML::Key << "TagComponent" << YAML::Value;
+			out << YAML::BeginMap;
 
-		out << YAML::Key << "Components" << YAML::Value;
-		out << YAML::BeginSeq;
+			out << YAML::Key << "Tag" << YAML::Value << entity.GetName();
+
+			out << YAML::EndMap;
+		}
 
 		if (entity.HasComponent<TransformComponent>())
 		{
-			out << YAML::BeginMap;
 			out << YAML::Key << "TransformComponent" << YAML::Value;
 			out << YAML::BeginMap;
 
@@ -126,12 +214,10 @@ namespace VoxelEngine
 			out << YAML::Key << "Scale" << YAML::Value << c.Scale;
 
 			out << YAML::EndMap;
-			out << YAML::EndMap;
 		}
 
 		if (entity.HasComponent<CameraComponent>())
 		{
-			out << YAML::BeginMap;
 			out << YAML::Key << "CameraComponent" << YAML::Value;
 			out << YAML::BeginMap;
 
@@ -140,26 +226,20 @@ namespace VoxelEngine
 			out << YAML::Key << "Position" << YAML::Value << c.Camera.GetPosition();
 
 			out << YAML::EndMap;
-			out << YAML::EndMap;
 		}
 
 		if (entity.HasComponent<SpriteComponent>())
 		{
-			out << YAML::BeginMap;
 			out << YAML::Key << "SpriteComponent" << YAML::Value;
 			out << YAML::BeginMap;
 
-			// TODO: What do we serialize?
 			auto& c = entity.GetComponent<SpriteComponent>();
 			out << YAML::Key << "TextureHandle" << YAML::Value << c.TextureHandle;
 			out << YAML::Key << "Color" << YAML::Value << c.Color;
 
 			out << YAML::EndMap;
-			out << YAML::EndMap;
 		}
 
-		out << YAML::EndSeq;
-		out << YAML::EndMap;
 		out << YAML::EndMap;
 	}
 }

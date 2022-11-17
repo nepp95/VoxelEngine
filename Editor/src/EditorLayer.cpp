@@ -12,7 +12,7 @@ namespace VoxelEngine
 		VE_PROFILE_FUNCTION();
 
 		m_editorScene = CreateRef<Scene>();
-		m_activeScene = CreateRef<Scene>();
+		m_activeScene = m_editorScene;
 
 		auto entity = m_editorScene->CreateEntity();
 		auto& sc = entity.AddComponent<SpriteComponent>();
@@ -277,12 +277,15 @@ namespace VoxelEngine
 		if (m_sceneState != SceneState::Edit)
 			OnSceneStop();
 
-		Ref<Scene> newScene;
+		Ref<Scene> newScene = CreateRef<Scene>();
 
 		SceneSerializer serializer(newScene);
-		serializer.Deserialize(filepath);
-
-		m_editorScene = newScene;
+		
+		if (serializer.Deserialize(filepath))
+		{
+			m_editorScene = newScene;
+			m_panelManager->SetSceneContext(m_editorScene);
+		}
 	}
 
 	void EditorLayer::SaveScene()

@@ -267,6 +267,7 @@ namespace VoxelEngine
 		{
 			// Draw cube with texture
 			Ref<Texture> texture = AssetManager::GetAsset<Texture>(sc.TextureHandle);
+			// TODO: When loading a scene, uuid's are refreshed and this crashes.
 			DrawQuad(transform, texture);
 		} else 
 		{
