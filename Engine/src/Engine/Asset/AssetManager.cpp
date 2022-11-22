@@ -15,8 +15,16 @@ namespace VoxelEngine
 
 	void AssetManager::Init()
 	{
+		// We first load all assets that are in our registry file.
+		// The registry file only contains AssetMetadata structures.
 		LoadAssetsFromRegistry();
+
+		// Then we do a recursive search and add any other assets that were
+		// not in our asset registry file.
 		LoadAssetsFromDirectory("assets/textures");
+
+		// Finally we rewrite the registry file to add potential missing assets
+		// that were found in the recursive directory search.
 		WriteRegistry();
 
 		VE_CORE_INFO("% Assets loaded.", m_assetHandles.size());
