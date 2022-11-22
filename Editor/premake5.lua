@@ -38,7 +38,15 @@ project "Editor"
 		runtime "Debug"
 		symbols "On"
 
+        postbuildcommands {
+		    '{COPY} "../Engine/vendor/mono/bin/Debug/mono-2.0-sgen.dll" "%{cfg.targetdir}"'
+	    }
+
 	filter "configurations:Release"
 		defines "V_RELEASE"
 		runtime "Release"
 		optimize "On"
+
+        postbuildcommands {
+		    '{COPY} "../Engine/vendor/mono/bin/Release/mono-2.0-sgen.dll" "%{cfg.targetdir}"'
+	    }
