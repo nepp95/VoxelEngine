@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Asset/Asset.h"
+#include "Engine/Asset/AssetMetadata.h"
 
 #include <filesystem>
 
@@ -12,24 +13,33 @@ namespace VoxelEngine
 		static void Init();
 		static void LoadAssetsFromDirectory(const std::filesystem::path& directoryPath);
 
-		template<typename T>
-		static Ref<T> CreateAsset(const std::filesystem::path& filepath)
+		template<typename T, typename... Args>
+		static Ref<T> CreateAsset(const std::filesystem::path& filepath, Args&&... args)
 		{
 			static_assert(std::is_base_of<Asset, T>::value, "Class is not based on Asset!");
 
 			if (!std::filesystem::exists(filepath))
 				return nullptr;
+
+			// Create asset metadata
+			AssetMetadata metadata;
+			metadata.Handle = AssetHandle();
+			metadata.Filepath = filepath;
+			metadata.Type = T::GetStaticType();
+
+			m_assetHandles.insert_or_assign(metadata.Handle, metadata);
 			
-			Ref<T> asset = nullptr;
+			// Load asset
+			Ref<Asset> asset = nullptr;
+
+			if (!LoadData(metadata, asset))
+				return nullptr;
+
+			asset->SetHandle(metadata.Handle);
+
+			m_assets.insert_or_assign(metadata.Handle, asset);
 			
-			if (LoadData(filepath, asset))
-			{
-				m_assets.insert_or_assign(asset->GetHandle(), asset);
-				m_assetHandles.insert_or_assign(filepath, asset->GetHandle());
-				return asset;
-			}
-			
-			return nullptr;
+			return std::dynamic_pointer_cast<T>(asset);
 		}
 
 		template<typename T>
@@ -37,36 +47,41 @@ namespace VoxelEngine
 		{
 			static_assert(std::is_base_of<Asset, T>::value, "Class is not based on Asset!");
 
-			if (m_assets.find(handle) != m_assets.end())
-			{
-				Ref<T> asset = std::dynamic_pointer_cast<T>(m_assets.at(handle));
+			Ref<Asset> asset = nullptr;
 
-				if (asset)
-					return asset;
+			auto& metadata = GetMetadata(handle);
+			if (!metadata.IsValid())
+				return nullptr;
+
+			if (m_assets.find(handle) == m_assets.end())
+			{
+				if (!LoadData(metadata, asset))
+					return nullptr;
+
+				m_assets.insert_or_assign(handle, asset);
+			} else
+			{
+				asset = m_assets.at(handle);
 			}
 
-			return nullptr;
+
+			return std::dynamic_pointer_cast<T>(asset);
 		}
 
 		template<typename T>
 		static Ref<T> GetAsset(const std::filesystem::path& filepath)
 		{
-			static_assert(std::is_base_of<Asset, T>::value, "Class is not based on Asset!");
-
-			if (m_assetHandles.find(filepath) != m_assetHandles.end())
-				return GetAsset<T>(m_assetHandles.at(filepath));
-
-			return nullptr;
+			return GetAsset<T>(GetMetadata(filepath).Handle);
 		}
 
-		static AssetHandle GetAssetHandle(const std::filesystem::path& filepath);
+		static const AssetMetadata& GetMetadata(AssetHandle handle);
+		static const AssetMetadata& GetMetadata(const std::filesystem::path& filepath);
 
 	private:
-		template<typename T>
-		static bool LoadData(const std::filesystem::path& filepath, Ref<T>& asset);
+		static bool LoadData(AssetMetadata metadata, Ref<Asset>& asset);
 
 	private:
 		static std::unordered_map<AssetHandle, Ref<Asset>> m_assets;
-		static std::unordered_map<std::filesystem::path, AssetHandle> m_assetHandles;
+		static std::unordered_map<AssetHandle, AssetMetadata> m_assetHandles;
 	};
 }

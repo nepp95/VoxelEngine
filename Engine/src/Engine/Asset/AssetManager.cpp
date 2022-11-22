@@ -6,7 +6,9 @@
 namespace VoxelEngine
 {
 	std::unordered_map<AssetHandle, Ref<Asset>> AssetManager::m_assets;
-	std::unordered_map<std::filesystem::path, AssetHandle> AssetManager::m_assetHandles;
+	std::unordered_map<AssetHandle, AssetMetadata> AssetManager::m_assetHandles;
+
+	static AssetMetadata s_NullMetadata;
 
 	void AssetManager::Init()
 	{
@@ -39,20 +41,28 @@ namespace VoxelEngine
 		}
 	}
 
-	AssetHandle AssetManager::GetAssetHandle(const std::filesystem::path& filepath)
+	const AssetMetadata& AssetManager::GetMetadata(AssetHandle handle)
 	{
-		if (m_assetHandles.find(filepath) != m_assetHandles.end())
-			return m_assetHandles.at(filepath);
+		if (m_assetHandles.find(handle) != m_assetHandles.end())
+			return m_assetHandles.at(handle);
 
-		return AssetHandle{ 0 }; // invalid handle
+		return s_NullMetadata;
 	}
 
-	template<typename T>
-	bool AssetManager::LoadData(const std::filesystem::path& filepath, Ref<T>& asset)
+	const AssetMetadata& AssetManager::GetMetadata(const std::filesystem::path& filepath)
 	{
-		static_assert(std::is_base_of<Asset, T>::value, "Class is not based on Asset!");
+		for (auto& [handle, metadata] : m_assetHandles)
+		{
+			if (metadata.Filepath == filepath)
+				return metadata;
+		}
 
-		switch (T::GetStaticType())
+		return s_NullMetadata;
+	}
+
+	bool AssetManager::LoadData(AssetMetadata metadata, Ref<Asset>& asset)
+	{
+		switch (metadata.Type)
 		{
 			case AssetType::None:
 			{
@@ -62,8 +72,8 @@ namespace VoxelEngine
 
 			case AssetType::Texture:
 			{
-				asset = CreateRef<Texture>(filepath);
-				return asset->IsLoaded();
+				asset = CreateRef<Texture>(metadata.Filepath);
+				return std::dynamic_pointer_cast<Texture>(asset)->IsLoaded();
 			}
 		}
 
