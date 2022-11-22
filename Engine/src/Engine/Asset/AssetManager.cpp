@@ -3,8 +3,11 @@
 
 #include "Engine/Renderer/Texture.h"
 
+#include <yaml-cpp/yaml.h>
+
 namespace VoxelEngine
 {
+	std::filesystem::path AssetManager::m_assetRegistryFilepath("assets/assetregistry.vereg");
 	std::unordered_map<AssetHandle, Ref<Asset>> AssetManager::m_assets;
 	std::unordered_map<AssetHandle, AssetMetadata> AssetManager::m_assetHandles;
 
@@ -12,14 +15,60 @@ namespace VoxelEngine
 
 	void AssetManager::Init()
 	{
+		LoadAssetsFromRegistry();
 		LoadAssetsFromDirectory("assets/textures");
+		WriteRegistry();
+
+		VE_CORE_INFO("% Assets loaded.", m_assetHandles.size());
+	}
+
+	void AssetManager::LoadAssetsFromRegistry()
+	{
+		if (!std::filesystem::exists(m_assetRegistryFilepath))
+		{
+			VE_CORE_WARN("Asset registry file does not exist!");
+			return;
+		}
+
+		VE_CORE_INFO("Loading assets from registry...");
+
+		YAML::Node data;
+
+		try
+		{
+			data = YAML::LoadFile(m_assetRegistryFilepath.string());
+		} catch (YAML::ParserException e)
+		{
+			VE_CORE_ERROR("Failed to load .vereg file '%'!\nError: %", m_assetRegistryFilepath.string(), e.what());
+			return;
+		}
+
+		// If the root node is not "Assets", the file is most likely invalid
+		if (!data["Assets"])
+			return;
+
+		auto assets = data["Assets"];
+
+		for (auto asset : assets)
+		{
+			AssetMetadata metadata;
+
+			metadata.Handle = asset["AssetHandle"].as<uint64_t>();
+			metadata.Type = Utils::AssetTypeFromString(asset["AssetType"].as<std::string>());
+			metadata.Filepath = asset["Filepath"].as<std::string>();
+
+			m_assetHandles.insert_or_assign(metadata.Handle, metadata);
+		}
 	}
 
 	void AssetManager::LoadAssetsFromDirectory(const std::filesystem::path& directoryPath)
 	{
+		VE_CORE_INFO("Loading assets from recursive directory search in '%'...", directoryPath.string());
+
 		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(directoryPath))
 		{
-			VE_CORE_INFO(dirEntry.path());
+			if (GetMetadata(dirEntry.path()).IsValid())
+				continue;
 
 			// TODO: This is very error prone! Come up with an other way.
 			// Get asset type from path
@@ -78,5 +127,33 @@ namespace VoxelEngine
 		}
 
 		return false;
+	}
+
+	void AssetManager::WriteRegistry()
+	{
+		YAML::Emitter out;
+
+		out << YAML::BeginMap;
+		out << YAML::Key << "Assets" << YAML::Value;
+		out << YAML::BeginSeq;
+
+		for (auto& asset : m_assetHandles)
+		{
+			AssetMetadata& metadata = asset.second;
+
+			out << YAML::BeginMap;
+
+			out << YAML::Key << "AssetHandle" << YAML::Value << metadata.Handle;
+			out << YAML::Key << "AssetType" << YAML::Value << Utils::AssetTypeToString(metadata.Type);
+			out << YAML::Key << "Filepath" << YAML::Value << metadata.Filepath.string();
+		
+			out << YAML::EndMap;
+		}
+
+		out << YAML::EndSeq;
+		out << YAML::EndMap;
+
+		std::ofstream fout(m_assetRegistryFilepath);
+		fout << out.c_str();
 	}
 }

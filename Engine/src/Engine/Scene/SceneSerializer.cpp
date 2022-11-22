@@ -122,8 +122,7 @@ namespace VoxelEngine
 		try
 		{
 			data = YAML::LoadFile(filepath.string());
-		}
-		catch (YAML::ParserException e)
+		} catch (YAML::ParserException e)
 		{
 			VE_CORE_ERROR("Failed to load .scene file '%'!\nError: %", filepath, e.what())
 			return false;

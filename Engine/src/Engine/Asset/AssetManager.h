@@ -11,6 +11,7 @@ namespace VoxelEngine
 	{
 	public:
 		static void Init();
+		static void LoadAssetsFromRegistry();
 		static void LoadAssetsFromDirectory(const std::filesystem::path& directoryPath);
 
 		template<typename T, typename... Args>
@@ -79,8 +80,10 @@ namespace VoxelEngine
 
 	private:
 		static bool LoadData(AssetMetadata metadata, Ref<Asset>& asset);
+		static void WriteRegistry();
 
 	private:
+		static std::filesystem::path m_assetRegistryFilepath;
 		static std::unordered_map<AssetHandle, Ref<Asset>> m_assets;
 		static std::unordered_map<AssetHandle, AssetMetadata> m_assetHandles;
 	};
