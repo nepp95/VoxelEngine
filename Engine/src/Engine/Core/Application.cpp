@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Scripting/ScriptEngine.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -31,6 +32,7 @@ namespace VoxelEngine
 
 		// Initialize renderer
 		Renderer::Init();
+		ScriptEngine::Init();
 
 		// Add ImGui layer
 		m_imGuiLayer = new ImGuiLayer();
@@ -46,6 +48,7 @@ namespace VoxelEngine
 	{
 		VE_CORE_INFO("Shutting down...");
 
+		ScriptEngine::Shutdown();
 		Renderer::Shutdown();
 
 		m_profiler->EndSession();

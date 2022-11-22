@@ -35,11 +35,13 @@ project "Engine"
         "%{IncludeDir.glfw}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.imgui}",
+        "%{IncludeDir.mono}",
         "%{IncludeDir.stb}",
         "%{IncludeDir.yaml_cpp}"
     }
 
     links {
+        "%{Library.mono}",
         "glad",
         "glfw",
         "imgui",

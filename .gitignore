@@ -1,10 +1,12 @@
 ﻿# Visual studio/code
 .vs
 *.vcxproj*
+*.csproj*
 *.sln
 
 # Cache
 __pycache__
+*.vereg
 
 # Debug
 Editor/Profile.json
