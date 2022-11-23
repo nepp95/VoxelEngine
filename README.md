@@ -5,22 +5,17 @@
 
 # VoxelEngine
 
-VoxelEngine is an engine built with C++ and OpenGL 4.6. It is a personal project in which I learn (a lot) more about graphics programming and programming in general. A lot of this is based on Hazel Engine ([Website](https://hazelengine.com/), [Github](https://github.com/TheCherno/Hazel)), but there is a lot that wasn't covered in Hazel.
+VoxelEngine is an engine built with C++ and OpenGL 4.6. It is a personal project in which I learn (a lot) more about graphics programming and programming in general. A lot of this is based on Hazel Engine ([Website](https://hazelengine.com/), [Github](https://github.com/TheCherno/Hazel)).
 
 Current features:
-- Reference Counting*
-- 3D Cube Rendering
-- Asset Management*
-- Scene Management
-- Basic logging*
+- Asset/Scene Management
+- Asset/Scene Serialization
+- Basic logging
 - Debug UI
 
 Planned features:
 - Sound
-- World generation
 - User UI
-
-*explicitly done without a library to learn more about it.
 
 ## Installation
 
