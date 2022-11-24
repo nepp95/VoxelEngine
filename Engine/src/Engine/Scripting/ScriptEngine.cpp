@@ -8,6 +8,10 @@ namespace VoxelEngine
 {
 	namespace Utils
 	{
+		/************************************************************************/
+		/* Read binary file and return a byte pointer                           */
+		/************************************************************************/
+		// TODO: Move to filesystem utils? When we create that...
 		static char* ReadBytes(const std::filesystem::path& filepath, uint32_t* size)
 		{
 			std::ifstream stream(filepath, std::ios::binary | std::ios::ate);
@@ -27,6 +31,9 @@ namespace VoxelEngine
 			return buffer;
 		}
 
+		/************************************************************************/
+		/* Load C# assembly                                                     */
+		/************************************************************************/
 		static MonoAssembly* LoadCSharpAssembly(const std::filesystem::path& assemblyPath)
 		{
 			uint32_t fileSize{ 0 };
@@ -48,6 +55,9 @@ namespace VoxelEngine
 			return assembly;
 		}
 
+		/************************************************************************/
+		/* Print every type in our assembly to console                          */
+		/************************************************************************/
 		static void PrintAssemblyTypes(MonoAssembly* assembly)
 		{
 			MonoImage* image = mono_assembly_get_image(assembly);
@@ -64,6 +74,23 @@ namespace VoxelEngine
 
 				VE_CORE_INFO("%.%", nameSpace, name);
 			}
+		}
+
+		/************************************************************************/
+		/* Get class reference from assembly                                    */
+		/************************************************************************/
+		MonoClass* GetClassInAssembly(MonoAssembly* assembly, const char* namespaceName, const char* className)
+		{
+			MonoImage* image = mono_assembly_get_image(assembly);
+			MonoClass* monoClass = mono_class_from_name(image, namespaceName, className);
+
+			if (monoClass == nullptr)
+			{
+				VE_CORE_ERROR("Class '%' not found in namespace '%'!", className, namespaceName);
+				return nullptr;
+			}
+
+			return monoClass;
 		}
 	}
 
@@ -82,6 +109,11 @@ namespace VoxelEngine
 		s_data = new ScriptEngineData();
 
 		InitMono();
+
+		MonoClass* test = Utils::GetClassInAssembly(s_data->CoreAssembly, "VoxelEngine", "Main");
+		MonoObject* testInstance = mono_object_new(s_data->AppDomain, test);
+
+		mono_runtime_object_init(testInstance);
 	}
 
 	void ScriptEngine::Shutdown()
@@ -96,7 +128,6 @@ namespace VoxelEngine
 		// Setup root domain
 		MonoDomain* rootDomain = mono_jit_init("VoxelEngineJITRuntime");
 		VE_CORE_ASSERT(rootDomain, "RootDomain is null!");
-
 		s_data->RootDomain = rootDomain;
 	
 		// Setup app domain
