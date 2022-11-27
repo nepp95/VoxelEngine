@@ -15,3 +15,5 @@ Editor/Profile.json
 /bin
 /bin-int
 /vendor/premake/bin
+Editor/Resources/Scripts
+Editor/Scripts/Intermediates
