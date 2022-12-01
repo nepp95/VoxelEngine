@@ -110,10 +110,35 @@ namespace VoxelEngine
 
 		InitMono();
 
-		MonoClass* test = Utils::GetClassInAssembly(s_data->CoreAssembly, "VoxelEngine", "Main");
-		MonoObject* testInstance = mono_object_new(s_data->AppDomain, test);
-
+		// 1. Create instance and call constructor
+		MonoClass* testClass = Utils::GetClassInAssembly(s_data->CoreAssembly, "VoxelEngine", "Main");
+		MonoObject* testInstance = mono_object_new(s_data->AppDomain, testClass);
 		mono_runtime_object_init(testInstance);
+
+		// 2. Call method without params
+		MonoMethod* printMessageFunc = mono_class_get_method_from_name(testClass, "PrintMessage", 0);
+		mono_runtime_invoke(printMessageFunc, testInstance, nullptr, nullptr);
+
+		// 3. Call method with param
+		MonoMethod* printIntFunc = mono_class_get_method_from_name(testClass, "PrintInt", 1);
+		int value = 5;
+		void* params = &value;
+
+		mono_runtime_invoke(printIntFunc, testInstance, &params, nullptr);
+
+		// 4. Call method with multiple params
+		MonoMethod* printIntsFunc = mono_class_get_method_from_name(testClass, "PrintInts", 2);
+		int value1 = 7, value2 = 8;
+		void* params2[2] = { &value1, &value2 };
+
+		mono_runtime_invoke(printIntsFunc, testInstance, params2, nullptr);
+
+		// 5. Call method with string param
+		MonoMethod* printCustomMessageFunc = mono_class_get_method_from_name(testClass, "PrintCustomMessage", 1);
+		MonoString* str = mono_string_new(s_data->AppDomain, "test string");
+		void* params3 = str;
+
+		mono_runtime_invoke(printCustomMessageFunc, testInstance, &params3, nullptr);
 	}
 
 	void ScriptEngine::Shutdown()
