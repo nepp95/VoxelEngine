@@ -3,6 +3,9 @@
 #include <iostream>
 #include <sstream>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
+
 namespace VoxelEngine
 {
 	enum class LogLevel
@@ -56,6 +59,20 @@ namespace VoxelEngine
 			}
 		}
 	};
+}
+
+// Log vectors
+template<typename OStream, glm::length_t L, typename T, glm::qualifier Q>
+inline OStream& operator<<(OStream& os, const glm::vec<L, T, Q>& vector)
+{
+	return os << glm::to_string(vector);
+}
+
+// Log matrices
+template<typename OStream, glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+inline OStream& operator<<(OStream& os, const glm::mat<C, R, T, Q>& matrix)
+{
+	return os << glm::to_string(matrix);
 }
 
 // Logging macros
