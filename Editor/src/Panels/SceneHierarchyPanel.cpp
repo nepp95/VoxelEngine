@@ -10,6 +10,7 @@ namespace VoxelEngine
 {
 	void SceneHierarchyPanel::SetSceneContext(const Ref<Scene>& context)
 	{
+		m_selectedEntity = {};
 		m_context = context;
 	}
 

@@ -1,6 +1,6 @@
 Scene: Untitled
 Entities:
-  - Entity: 7276356450532299846
+  - Entity: 15170198583126069173
     TagComponent:
       Tag: Camera
     TransformComponent:
@@ -9,13 +9,13 @@ Entities:
       Scale: [1, 1, 1]
     CameraComponent:
       Position: [0, 0, 2]
-  - Entity: 5736274196651633991
+  - Entity: 9160800987370487430
     TagComponent:
       Tag: Entity
     TransformComponent:
-      Translation: [0.699999988, 0, 0]
+      Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SpriteComponent:
-      TextureHandle: 4257249944099949748
-      Color: [1, 1, 1, 1]
+      TextureHandle: 0
+      Color: [0.632352948, 0.0340974703, 0.0340974703, 1]
