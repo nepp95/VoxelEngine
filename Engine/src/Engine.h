@@ -43,3 +43,7 @@
 #include "Engine/Scene/Entity.h"
 #include "Engine/Scene/Scene.h"
 #include "Engine/Scene/SceneSerializer.h"
+
+// Utility
+#include "Engine/Utility/Filesystem.h"
+#include "Engine/Utility/Random.h"
