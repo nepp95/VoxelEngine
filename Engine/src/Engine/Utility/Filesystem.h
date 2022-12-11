@@ -9,7 +9,7 @@ namespace VoxelEngine
         std::filesystem::path RootPath;
         std::filesystem::path AssetPath;
         std::filesystem::path BinPath;
-    }
+    };
 
     class Filesystem
     {
@@ -19,5 +19,5 @@ namespace VoxelEngine
 
     private:
         static FilesystemData s_data;    
-    }
+    };
 }

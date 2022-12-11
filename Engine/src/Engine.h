@@ -29,8 +29,8 @@
 #include "Engine/Layers/ImGuiLayer.h"
 
 // Renderer
+#include "Engine/Renderer/Camera/EditorCamera.h"
 #include "Engine/Renderer/Buffer.h"
-#include "Engine/Renderer/Camera.h"
 #include "Engine/Renderer/Framebuffer.h"
 #include "Engine/Renderer/RenderCommand.h"
 #include "Engine/Renderer/Renderer.h"

@@ -1,14 +1,26 @@
 ﻿#pragma once
 
-#include "Engine/Events/Event.h"
-#include "Engine/Events/MouseEvent.h"
-
 #include <glm/glm.hpp>
 
 namespace VoxelEngine
 {
-	// Camera logic used is from OpenGL Camera tutorial
 	class Camera
+	{
+	public:
+		Camera() = default;
+		Camera(const glm::mat4& projection);
+		Camera(float width, float height, float nearClip, float farClip, float fov);
+		virtual ~Camera() = default;
+
+		const glm::mat4& GetProjectionMatrix() const { return m_projectionMatrix; }
+		void SetProjectionMatrix(const glm::mat4& projection) { m_projectionMatrix = projection; }
+
+	protected:
+		glm::mat4 m_projectionMatrix{ glm::mat4(1.0f) };
+	};
+
+	// Camera logic used is from OpenGL Camera tutorial
+	/*class Camera
 	{
 	public:
 		Camera(const glm::vec3& position = { 0.0f, 0.0f, 0.0f }, const glm::vec3& up = { 0.0f, 1.0f, 0.0f }, float yaw = -90.0f, float pitch = 0.0f);
@@ -52,5 +64,5 @@ namespace VoxelEngine
 
 		float m_lastX, m_lastY;
 		bool m_firstMouse{ true };
-	};
+	};*/
 }
