@@ -2,7 +2,7 @@
 
 #include "Engine/Asset/Asset.h"
 #include "Engine/Core/UUID.h"
-#include "Engine/Renderer/Camera.h"
+#include "Engine/Renderer/Camera/SceneCamera.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -61,7 +61,8 @@ namespace VoxelEngine
 
 	struct CameraComponent
 	{
-		Camera Camera{ { 0.0f, 0.0f, 3.0f } };
+		SceneCamera Camera;
+		bool Primary{ true };
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;

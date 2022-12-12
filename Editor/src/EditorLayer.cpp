@@ -46,8 +46,6 @@ namespace VoxelEngine
 	void EditorLayer::OnDetach()
 	{
 		VE_PROFILE_FUNCTION();
-
-		m_camera = nullptr;
 	}
 
 	void EditorLayer::Update(float ts)
@@ -64,11 +62,24 @@ namespace VoxelEngine
 			(specification.Width != m_viewportSize.x || specification.Height != m_viewportSize.y))
 		{
 			m_framebuffer->Resize((uint32_t) m_viewportSize.x, (uint32_t) m_viewportSize.y);
+			m_editorCamera.SetViewportSize(m_viewportSize.x, m_viewportSize.y);
 		}
 
 		// Update
-		//m_camera->Update(ts);	
-		m_editorScene->Update(ts);
+		switch (m_sceneState)
+		{
+			case SceneState::Edit:
+			{
+				m_editorCamera.OnUpdate(ts);
+				break;
+			}
+
+			case SceneState::Play:
+			{
+				m_activeScene->OnUpdateRuntime(ts);
+				break;
+			}
+		}
 	}
 
 	void EditorLayer::Render()
@@ -81,7 +92,20 @@ namespace VoxelEngine
 		RenderCommand::Clear();
 
 		// Render scene
-		m_editorScene->Render();
+		switch (m_sceneState)
+		{
+			case SceneState::Edit:
+			{
+				m_editorScene->OnRenderEditor(m_editorCamera);
+				break;
+			}
+
+			case SceneState::Play:
+			{
+				m_activeScene->OnRenderRuntime();
+				break;
+			}
+		}
 
 		// Unbind framebuffer
 		m_framebuffer->Unbind();
@@ -206,7 +230,8 @@ namespace VoxelEngine
 
 	void EditorLayer::OnEvent(Event& e)
 	{
-		m_camera->OnEvent(e);
+		if (m_sceneState == SceneState::Edit)
+			m_editorCamera.OnEvent(e);
 
 		EventDispatcher dispatcher(e);
 

@@ -137,13 +137,17 @@ namespace VoxelEngine
 		{
 			auto& camera = component.Camera;
 
-			float pitch = camera.GetPitch();
-			if (ImGui::DragFloat("Pitch", &pitch))
-				camera.SetPitch(pitch);
+			ImGui::Checkbox("Primary", &component.Primary);
 
-			float yaw = camera.GetYaw();
-			if (ImGui::DragFloat("Yaw", &yaw))
-				camera.SetYaw(yaw);
+			if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
+			{
+				
+			}
+
+			if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic)
+			{
+				
+			}
 		});
 
 		DrawProperty<SpriteComponent>("Sprite", entity, [](auto& component)

@@ -169,7 +169,18 @@ namespace VoxelEngine
 			if (cameraComponent)
 			{
 				auto& cc = newEntity.AddComponent<CameraComponent>();
-				cc.Camera.SetPosition(cameraComponent["Position"].as<glm::vec3>());
+				auto& camera = cc.Camera;
+				auto& properties = cameraComponent["Camera"];
+
+				camera.SetProjectionType((SceneCamera::ProjectionType)properties["ProjectionType"].as<int>());
+				camera.SetPerspectiveFov(properties["PerspectiveFov"].as<float>());
+				camera.SetPerspectiveNearClip(properties["PerspectiveNear"].as<float>());
+				camera.SetPerspectiveFarClip(properties["PerspectiveFar"].as<float>());
+				camera.SetOrthographicSize(properties["OrthographicSize"].as<float>());
+				camera.SetOrthographicNearClip(properties["OrthographicNear"].as<float>());
+				camera.SetOrthographicFarClip(properties["OrthographicFar"].as<float>());
+				
+				cc.Primary = cameraComponent["Primary"].as<bool>();
 			}
 
 			auto spriteComponent = entity["SpriteComponent"];
@@ -222,7 +233,22 @@ namespace VoxelEngine
 
 			// TODO: What do we serialize?
 			auto& c = entity.GetComponent<CameraComponent>();
-			out << YAML::Key << "Position" << YAML::Value << c.Camera.GetPosition();
+			auto& camera = c.Camera;
+
+			out << YAML::Key << "Camera" << YAML::Value;
+			out << YAML::BeginMap;
+
+			out << YAML::Key << "ProjectionType" << YAML::Value << (int)camera.GetProjectionType();
+			out << YAML::Key << "PerspectiveFov" << YAML::Value << camera.GetPerspectiveFov();
+			out << YAML::Key << "PerspectiveNear" << YAML::Value << camera.GetPerspectiveNearClip();
+			out << YAML::Key << "PerspectiveFar" << YAML::Value << camera.GetPerspectiveFarClip();
+			out << YAML::Key << "OrthographicSize" << YAML::Value << camera.GetOrthographicSize();
+			out << YAML::Key << "OrthographicNear" << YAML::Value << camera.GetOrthographicNearClip();
+			out << YAML::Key << "OrthographicFar" << YAML::Value << camera.GetOrthographicFarClip();
+
+			out << YAML::EndMap;
+
+			out << YAML::Key << "Primary" << YAML::Value << c.Primary;
 
 			out << YAML::EndMap;
 		}

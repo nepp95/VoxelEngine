@@ -30,6 +30,7 @@
 
 // Renderer
 #include "Engine/Renderer/Camera/EditorCamera.h"
+#include "Engine/Renderer/Camera/SceneCamera.h"
 #include "Engine/Renderer/Buffer.h"
 #include "Engine/Renderer/Framebuffer.h"
 #include "Engine/Renderer/RenderCommand.h"
