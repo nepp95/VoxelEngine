@@ -12,7 +12,7 @@ void SandboxLayer::OnDetach()
 
 void SandboxLayer::Update(float ts)
 {
-	m_activeScene->Update(ts);
+	m_activeScene->OnUpdateRuntime(ts);
 }
 
 void SandboxLayer::Render()
@@ -21,7 +21,7 @@ void SandboxLayer::Render()
 	RenderCommand::Clear();
 	Renderer::ResetStats();
 
-	m_activeScene->Render();
+	m_activeScene->OnRenderRuntime();
 }
 
 void SandboxLayer::RenderGui()

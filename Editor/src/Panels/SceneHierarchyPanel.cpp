@@ -137,13 +137,59 @@ namespace VoxelEngine
 		{
 			auto& camera = component.Camera;
 
-			float pitch = camera.GetPitch();
-			if (ImGui::DragFloat("Pitch", &pitch))
-				camera.SetPitch(pitch);
+			ImGui::Checkbox("Primary", &component.Primary);
 
-			float yaw = camera.GetYaw();
-			if (ImGui::DragFloat("Yaw", &yaw))
-				camera.SetYaw(yaw);
+			const char* projectionTypeStrings[] = { "Perspective", "Orthographic "};
+			const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];
+
+			if (ImGui::BeginCombo("Projection", currentProjectionTypeString))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					bool isSelected = currentProjectionTypeString == projectionTypeStrings[i];
+					
+					if (ImGui::Selectable(projectionTypeStrings[i], isSelected))
+					{
+						currentProjectionTypeString = projectionTypeStrings[i];
+						camera.SetProjectionType((SceneCamera::ProjectionType)i);
+					}
+					
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+				
+				ImGui::EndCombo();
+			}
+			
+			if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
+			{
+				float perspectiveFov = glm::degrees(camera.GetPerspectiveFov());
+				if (ImGui::DragFloat("Field of View", &perspectiveFov))
+					camera.SetPerspectiveFov(glm::radians(perspectiveFov));
+
+				float perspectiveNear = camera.GetPerspectiveNearClip();
+				if (ImGui::DragFloat("Near clip", &perspectiveNear))
+					camera.SetPerspectiveNearClip(perspectiveNear);
+
+				float perspectiveFar = camera.GetPerspectiveFarClip();
+				if (ImGui::DragFloat("Far clip", &perspectiveFar))
+					camera.SetPerspectiveFarClip(perspectiveFar);
+			}
+
+			if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic)
+			{
+				float orthographicSize = camera.GetOrthographicSize();
+				if (ImGui::DragFloat("Size", &orthographicSize))
+					camera.SetOrthographicSize(orthographicSize);
+
+				float orthographicNear = camera.GetOrthographicNearClip();
+				if (ImGui::DragFloat("Near", &orthographicNear))
+					camera.SetOrthographicNearClip(orthographicNear);
+
+				float orthographicFar = camera.GetOrthographicFarClip();
+				if (ImGui::DragFloat("Far", &orthographicFar))
+					camera.SetOrthographicFarClip(orthographicFar);
+			}
 		});
 
 		DrawProperty<SpriteComponent>("Sprite", entity, [](auto& component)

@@ -20,7 +20,7 @@ namespace VoxelEngine
 		// Performance
 		const auto categorizedProfileData = Application::Get().GetProfiler()->GetCategorizedProfileTimerData();
 
-		ImGui::NewLine();
+		ImGui::Separator();
 		ImGui::Text("Performance");
 
 		for (auto& category : categorizedProfileData)
