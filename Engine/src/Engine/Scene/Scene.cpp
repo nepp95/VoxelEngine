@@ -107,7 +107,38 @@ namespace VoxelEngine
 
 	void Scene::OnRenderRuntime()
 	{
+		// Get the main camera
+		SceneCamera* sceneCamera{ nullptr };
+		glm::mat4 cameraTransform;
 
+		{
+			auto view = m_registry.view<TransformComponent, CameraComponent>();
+			for (auto entity : view)
+			{
+				auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+				if (camera.Primary)
+				{
+					sceneCamera = &camera.Camera;
+					cameraTransform = transform.GetTransform();
+
+					break;
+				}
+			}
+		}
+
+		if (sceneCamera)
+		{
+			Renderer::BeginScene(*sceneCamera, cameraTransform);
+			
+			auto view = m_registry.view<TransformComponent, SpriteComponent>();
+			for (auto entity : view)
+			{
+				auto [transform, sprite] = view.get<TransformComponent, SpriteComponent>(entity);
+				Renderer::DrawEntity(transform.GetTransform(), sprite);
+			}
+
+			Renderer::EndScene();
+		}
 	}
 
 	void Scene::OnRenderEditor(EditorCamera& camera)

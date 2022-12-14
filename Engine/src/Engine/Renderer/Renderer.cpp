@@ -312,7 +312,7 @@ namespace VoxelEngine
 
 			// Create draw call
 			s_data.QuadShader->Bind();
-			s_data.QuadShader->SetMat4("uViewProjection", s_data.ViewProjection); // TODO: Move to begin scene
+			s_data.QuadShader->SetMat4("uViewProjection", s_data.ViewProjection); // TODO: Move to begin scene, uniform buffers
 			RenderCommand::DrawIndexed(s_data.QuadVertexArray, s_data.QuadIndexCount);
 			s_data.Stats.DrawCalls++;
 		}

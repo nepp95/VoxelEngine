@@ -91,7 +91,7 @@ namespace VoxelEngine
 	{
 		if (m_projectionType == ProjectionType::Perspective)
 		{
-			m_projectionMatrix = glm::perspective(m_perspectiveFov, m_aspectRatio, m_perspectiveNearClip, m_perspectiveFarClip);
+			m_projection = glm::perspective(m_perspectiveFov, m_aspectRatio, m_perspectiveNearClip, m_perspectiveFarClip);
 		} else if (m_projectionType == ProjectionType::Orthographic)
 		{
 			float orthoLeft = -m_orthographicSize * m_aspectRatio * 0.5f;
@@ -99,7 +99,7 @@ namespace VoxelEngine
 			float orthoBottom = -m_orthographicSize * 0.5f;
 			float orthoTop = m_orthographicSize * 0.5f;
 
-			m_projectionMatrix = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, m_orthographicNearClip, m_orthographicFarClip);
+			m_projection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, m_orthographicNearClip, m_orthographicFarClip);
 		}
 	}
 }

@@ -9,7 +9,7 @@
 namespace VoxelEngine
 {
 	EditorCamera::EditorCamera(float fov, float aspectRatio, float nearClip, float farClip)
-		: Camera(glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip)), m_fov(fov), m_aspectRatio(aspectRatio), m_nearClip(nearClip), m_farClip(farClip)
+		: m_fov(fov), m_aspectRatio(aspectRatio), m_nearClip(nearClip), m_farClip(farClip), Camera(glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip))
 	{
 		UpdateCameraView();
 	}
@@ -46,7 +46,12 @@ namespace VoxelEngine
 		
 		// Update projection
 		m_aspectRatio = m_viewportWidth / m_viewportHeight;
-		m_projectionMatrix = glm::perspective(glm::radians(m_fov), m_aspectRatio, m_nearClip, m_farClip);
+		m_projection = glm::perspective(glm::radians(m_fov), m_aspectRatio, m_nearClip, m_farClip);
+	}
+
+	void EditorCamera::SetDistance(float distance)
+	{
+		m_distance = distance;
 	}
 
 	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)
@@ -117,7 +122,7 @@ namespace VoxelEngine
 
 	glm::vec3 EditorCamera::GetForwardDirection() const
 	{
-		return glm::rotate(GetOrientation(), glm::vec3(0.0f, 0.0f, 1.0f));
+		return glm::rotate(GetOrientation(), glm::vec3(0.0f, 0.0f, -1.0f));
 	}
 
 	glm::quat EditorCamera::GetOrientation() const

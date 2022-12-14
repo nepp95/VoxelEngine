@@ -50,7 +50,7 @@ namespace VoxelEngine {
 		float m_timestep{ 0.0f };
 
 		// Camera
-		EditorCamera m_editorCamera;
+		EditorCamera m_editorCamera{ 30.0f, 1.778f, 0.1f, 1000.0f };
 
 		// Scene
 		Ref<Scene> m_activeScene; // runtime

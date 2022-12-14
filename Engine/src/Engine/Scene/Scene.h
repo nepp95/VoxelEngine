@@ -35,6 +35,7 @@ namespace VoxelEngine
 		void OnRuntimeStop();
 
 		void OnViewportResize(uint32_t width, uint32_t height);
+		glm::vec2 GetViewportSize() const { return glm::vec2{ m_viewportWidth, m_viewportHeight }; }
 
 		Entity GetCameraEntity();
 

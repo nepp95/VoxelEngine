@@ -57,12 +57,28 @@ namespace VoxelEngine
 		m_timestep = ts;
 
 		// Handle resize
+		bool resizeEvent{ false };
 		if (FramebufferSpecification specification = m_framebuffer->GetSpecification();
 			m_viewportSize.x > 0.0f && m_viewportSize.y > 0.0f &&
 			(specification.Width != m_viewportSize.x || specification.Height != m_viewportSize.y))
+			resizeEvent = true;
+		else if (glm::vec2 viewportSize = m_editorScene->GetViewportSize();
+			m_sceneState == SceneState::Edit &&
+			m_viewportSize.x > 0.0f && m_viewportSize.y > 0.0f &&
+			(viewportSize.x != m_viewportSize.x || viewportSize.y != m_viewportSize.y))
+			resizeEvent = true;
+		else if (glm::vec2 viewportSize = m_activeScene->GetViewportSize();
+			m_sceneState == SceneState::Play &&
+			m_viewportSize.x > 0.0f && m_viewportSize.y > 0.0f &&
+			(viewportSize.x != m_viewportSize.x || viewportSize.y != m_viewportSize.y))
+			resizeEvent = true;
+
+		if (resizeEvent)
 		{
 			m_framebuffer->Resize((uint32_t) m_viewportSize.x, (uint32_t) m_viewportSize.y);
 			m_editorCamera.SetViewportSize(m_viewportSize.x, m_viewportSize.y);
+			m_editorScene->OnViewportResize((uint32_t) m_viewportSize.x, (uint32_t) m_viewportSize.y);
+			m_activeScene->OnViewportResize((uint32_t) m_viewportSize.x, (uint32_t) m_viewportSize.y);
 		}
 
 		// Update
@@ -110,7 +126,7 @@ namespace VoxelEngine
 		// Unbind framebuffer
 		m_framebuffer->Unbind();
 	}
-
+	
 	void EditorLayer::RenderGui()
 	{
 		VE_PROFILE_FUNCTION();
@@ -190,6 +206,17 @@ namespace VoxelEngine
 					Application::Get().Close();
 
 				ImGui::EndMenu(); // File
+			}
+
+			if (ImGui::BeginMenu("Scene"))
+			{
+				if (ImGui::MenuItem("Start scene"))
+					OnScenePlay();
+				
+				if (ImGui::MenuItem("End scene"))
+					OnSceneStop();
+				
+				ImGui::EndMenu();
 			}
 
 			ImGui::EndMenuBar();

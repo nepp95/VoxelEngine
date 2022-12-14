@@ -17,11 +17,16 @@ namespace VoxelEngine
 
 		void SetViewportSize(float width, float height);
 
+		float GetDistance() const { return m_distance; }
+		void SetDistance(float distance);
+
 		const glm::mat4& GetViewMatrix() const { return m_viewMatrix; }
-		glm::mat4 GetViewProjectionMatrix() const { return m_projectionMatrix * m_viewMatrix; }
+		glm::mat4 GetViewProjectionMatrix() const { return m_projection * m_viewMatrix; }
 
 		float GetPitch() const { return m_pitch; }
 		float GetYaw() const { return m_yaw; }
+
+		glm::vec3 GetPosition() const { return m_position; }
 
 	private:
 		// Events
