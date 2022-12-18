@@ -7,7 +7,6 @@ namespace VoxelEngine
 	{
 		std::filesystem::path RootPath;
 		std::filesystem::path AssetPath;
-		std::filesystem::path BinPath;
 	};
 
 	FilesystemData* s_data;
@@ -17,7 +16,7 @@ namespace VoxelEngine
 		s_data = new FilesystemData();
 
 		s_data->RootPath = std::filesystem::current_path();
-		VE_CORE_INFO(ReadBytes(s_data->RootPath / "imgui.ini"));
+		s_data->AssetPath = s_data->RootPath / "assets";
 	}
 
 	void Filesystem::Shutdown()
