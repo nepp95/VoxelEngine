@@ -97,7 +97,14 @@ namespace VoxelEngine
 			if (Type == BodyType::Kinematic)	return "Kinematic";
 		}
 
-		BodyType TypeFromString(const std::string& type)
+		static std::string TypeToString(BodyType type)
+		{
+			if (type == BodyType::Static)		return "Static";
+			if (type == BodyType::Dynamic)		return "Dynamic";
+			if (type == BodyType::Kinematic)	return "Kinematic";
+		}
+
+		static BodyType TypeFromString(const std::string& type)
 		{
 			if (type == "Static")				return BodyType::Static;
 			if (type == "Dynamic")				return BodyType::Dynamic;

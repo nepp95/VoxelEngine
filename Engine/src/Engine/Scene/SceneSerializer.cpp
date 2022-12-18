@@ -195,7 +195,7 @@ namespace VoxelEngine
 			if (rigidBodyComponent)
 			{
 				auto& rbc = newEntity.AddComponent<RigidBodyComponent>();
-				rbc.Type = rbc.TypeFromString(rigidBodyComponent["BodyType"].as<std::string>());
+				rbc.Type = RigidBodyComponent::TypeFromString(rigidBodyComponent["BodyType"].as<std::string>());
 				rbc.FixedRotation = rigidBodyComponent["FixedRotation"].as<bool>();
 			}
 		}
