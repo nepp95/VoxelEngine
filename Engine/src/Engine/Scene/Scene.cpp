@@ -6,8 +6,20 @@
 #include "Engine/Scene/Entity.h"
 #include "Engine/Renderer/Renderer.h"
 
+#include <box2d/box2d.h>
+
 namespace VoxelEngine
 {
+	static b2BodyType RigidBodyTypeToBox2DBodyType(RigidBodyComponent::BodyType bodyType)
+	{
+		if (bodyType == RigidBodyComponent::BodyType::Static)		return b2_staticBody;
+		if (bodyType == RigidBodyComponent::BodyType::Dynamic)		return b2_dynamicBody;
+		if (bodyType == RigidBodyComponent::BodyType::Kinematic)	return b2_kinematicBody;
+
+		VE_CORE_ERROR("Unknown body type!");
+		return b2_staticBody;
+	}
+
 	Scene::Scene()
 	{
 		VE_PROFILE_FUNCTION();
@@ -54,6 +66,10 @@ namespace VoxelEngine
 			newEntity.AddOrReplaceComponent<TransformComponent>(entity.GetComponent<TransformComponent>());
 		if (entity.HasComponent<CameraComponent>())
 			newEntity.AddOrReplaceComponent<CameraComponent>(entity.GetComponent<CameraComponent>());
+		if (entity.HasComponent<SpriteComponent>())
+			newEntity.AddOrReplaceComponent<SpriteComponent>(entity.GetComponent<SpriteComponent>());
+		if (entity.HasComponent<RigidBodyComponent>())
+			newEntity.AddOrReplaceComponent<RigidBodyComponent>(entity.GetComponent<RigidBodyComponent>());
 	}
 
 	template<typename T>
@@ -96,13 +112,31 @@ namespace VoxelEngine
 		CopyComponent<TransformComponent>(dstRegistry, srcRegistry, enttMap);
 		CopyComponent<CameraComponent>(dstRegistry, srcRegistry, enttMap);
 		CopyComponent<SpriteComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<RigidBodyComponent>(dstRegistry, srcRegistry, enttMap);
 
 		return newScene;
 	}
 
 	void Scene::OnUpdateRuntime(float ts)
 	{
+		const int32_t velocityIterations = 6;
+		const int32_t positionIterations = 2;
 
+		m_physicsWorld->Step(ts, velocityIterations, positionIterations);
+
+		auto view = m_registry.view<RigidBodyComponent>();
+		for (auto entity : view)
+		{
+			auto& transform = m_registry.get<TransformComponent>(entity);
+			auto& rigidbody = m_registry.get<RigidBodyComponent>(entity);
+
+			b2Body* body = (b2Body*) rigidbody.RuntimeBody;
+			const auto& position = body->GetPosition();
+
+			transform.Translation.x = position.x;
+			transform.Translation.y = position.y;
+			transform.Rotation.z = body->GetAngle();
+		}
 	}
 
 	void Scene::OnRenderRuntime()
@@ -148,12 +182,29 @@ namespace VoxelEngine
 
 	void Scene::OnRuntimeStart()
 	{
+		m_physicsWorld = new b2World({ 0.0f, -9.8f });
 
+		auto view = m_registry.view<RigidBodyComponent>();
+		for (auto entity : view)
+		{
+			auto& transform = m_registry.get<TransformComponent>(entity);
+			auto& rigidbody = m_registry.get<RigidBodyComponent>(entity);
+
+			b2BodyDef bodyDef;
+			bodyDef.type = RigidBodyTypeToBox2DBodyType(rigidbody.Type);
+			bodyDef.position.Set(transform.Translation.x, transform.Translation.y);
+			bodyDef.angle = transform.Rotation.z;
+
+			b2Body* body = m_physicsWorld->CreateBody(&bodyDef);
+			body->SetFixedRotation(rigidbody.FixedRotation);
+			rigidbody.RuntimeBody = body;
+		}
 	}
 
 	void Scene::OnRuntimeStop()
 	{
-
+		delete m_physicsWorld;
+		m_physicsWorld = nullptr;
 	}
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
@@ -233,5 +284,9 @@ namespace VoxelEngine
 
 	template<>
 	void Scene::OnComponentAdded<SpriteComponent>(Entity entity, SpriteComponent& component)
+	{}
+
+	template<>
+	void Scene::OnComponentAdded<RigidBodyComponent>(Entity entity, RigidBodyComponent& component)
 	{}
 }

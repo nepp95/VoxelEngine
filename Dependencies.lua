@@ -1,6 +1,7 @@
 -- VoxelEngine Dependencies
 
 IncludeDir = {}
+IncludeDir["box2d"] = "%{wks.location}/Engine/vendor/box2d/include"
 IncludeDir["entt"] = "%{wks.location}/Engine/vendor/entt/single_include"
 IncludeDir["glad"] = "%{wks.location}/Engine/vendor/glad/include"
 IncludeDir["glfw"] = "%{wks.location}/Engine/vendor/glfw/include"

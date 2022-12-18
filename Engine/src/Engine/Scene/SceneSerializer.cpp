@@ -190,6 +190,14 @@ namespace VoxelEngine
 				sc.TextureHandle = spriteComponent["TextureHandle"].as<uint64_t>();
 				sc.Color = spriteComponent["Color"].as<glm::vec4>();
 			}
+
+			auto rigidBodyComponent = entity["RigidBodyComponent"];
+			if (rigidBodyComponent)
+			{
+				auto& rbc = newEntity.AddComponent<RigidBodyComponent>();
+				rbc.Type = rbc.TypeFromString(rigidBodyComponent["BodyType"].as<std::string>());
+				rbc.FixedRotation = rigidBodyComponent["FixedRotation"].as<bool>();
+			}
 		}
 
 		return true;
@@ -238,7 +246,7 @@ namespace VoxelEngine
 			out << YAML::Key << "Camera" << YAML::Value;
 			out << YAML::BeginMap;
 
-			out << YAML::Key << "ProjectionType" << YAML::Value << (int)camera.GetProjectionType();
+			out << YAML::Key << "ProjectionType" << YAML::Value << (int) camera.GetProjectionType();
 			out << YAML::Key << "PerspectiveFov" << YAML::Value << camera.GetPerspectiveFov();
 			out << YAML::Key << "PerspectiveNear" << YAML::Value << camera.GetPerspectiveNearClip();
 			out << YAML::Key << "PerspectiveFar" << YAML::Value << camera.GetPerspectiveFarClip();
@@ -261,6 +269,18 @@ namespace VoxelEngine
 			auto& c = entity.GetComponent<SpriteComponent>();
 			out << YAML::Key << "TextureHandle" << YAML::Value << c.TextureHandle;
 			out << YAML::Key << "Color" << YAML::Value << c.Color;
+
+			out << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<RigidBodyComponent>())
+		{
+			out << YAML::Key << "RigidBodyComponent" << YAML::Value;
+			out << YAML::BeginMap;
+
+			auto& c = entity.GetComponent<RigidBodyComponent>();
+			out << YAML::Key << "BodyType" << YAML::Value << c.TypeToString();
+			out << YAML::Key << "FixedRotation" << YAML::Value << c.FixedRotation;
 
 			out << YAML::EndMap;
 		}

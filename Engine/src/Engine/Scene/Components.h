@@ -10,6 +10,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
+enum b2BodyType;
+
 namespace VoxelEngine
 {
 	struct IDComponent
@@ -75,5 +77,31 @@ namespace VoxelEngine
 
 		SpriteComponent() = default;
 		SpriteComponent(const SpriteComponent&) = default;
+	};
+
+	struct RigidBodyComponent
+	{
+		enum class BodyType { Static, Dynamic, Kinematic };
+		BodyType Type{ BodyType::Static };
+		bool FixedRotation{ false };
+
+		void* RuntimeBody{ nullptr };
+
+		RigidBodyComponent() = default;
+		RigidBodyComponent(const RigidBodyComponent&) = default;
+
+		std::string TypeToString() const
+		{
+			if (Type == BodyType::Static)		return "Static";
+			if (Type == BodyType::Dynamic)		return "Dynamic";
+			if (Type == BodyType::Kinematic)	return "Kinematic";
+		}
+
+		BodyType TypeFromString(const std::string& type)
+		{
+			if (type == "Static")				return BodyType::Static;
+			if (type == "Dynamic")				return BodyType::Dynamic;
+			if (type == "Kinematic")			return BodyType::Kinematic;
+		}
 	};
 }

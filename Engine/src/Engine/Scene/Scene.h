@@ -5,6 +5,8 @@
 
 #include <entt/entt.hpp>
 
+class b2World;
+
 namespace VoxelEngine
 {
 	class Entity;
@@ -49,6 +51,8 @@ namespace VoxelEngine
 		entt::registry m_registry;
 		uint32_t m_viewportWidth{ 0 };
 		uint32_t m_viewportHeight{ 0 };
+
+		b2World* m_physicsWorld{ nullptr };
 
 		friend class Entity;
 		friend class SceneHierarchyPanel;

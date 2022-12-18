@@ -30,6 +30,7 @@ project "Engine"
 
     includedirs {
         "src",
+        "%{IncludeDir.box2d}",
         "%{IncludeDir.entt}",
         "%{IncludeDir.glad}",
         "%{IncludeDir.glfw}",
@@ -42,6 +43,7 @@ project "Engine"
 
     links {
         "%{Library.mono}",
+        "box2d",
         "glad",
         "glfw",
         "imgui",

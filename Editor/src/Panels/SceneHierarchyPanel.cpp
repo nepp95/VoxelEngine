@@ -118,6 +118,7 @@ namespace VoxelEngine
 		{
 			DisplayAddComponentEntry<CameraComponent>("Camera");
 			DisplayAddComponentEntry<SpriteComponent>("Sprite renderer");
+			DisplayAddComponentEntry<RigidBodyComponent>("Rigidbody");
 
 			ImGui::EndPopup(); // AddComponent
 		}
@@ -139,7 +140,7 @@ namespace VoxelEngine
 
 			ImGui::Checkbox("Primary", &component.Primary);
 
-			const char* projectionTypeStrings[] = { "Perspective", "Orthographic "};
+			const char* projectionTypeStrings[] = { "Perspective", "Orthographic"};
 			const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];
 
 			if (ImGui::BeginCombo("Projection", currentProjectionTypeString))
@@ -151,7 +152,7 @@ namespace VoxelEngine
 					if (ImGui::Selectable(projectionTypeStrings[i], isSelected))
 					{
 						currentProjectionTypeString = projectionTypeStrings[i];
-						camera.SetProjectionType((SceneCamera::ProjectionType)i);
+						camera.SetProjectionType((SceneCamera::ProjectionType) i);
 					}
 					
 					if (isSelected)
@@ -196,6 +197,33 @@ namespace VoxelEngine
 		{
 			// TODO: Texture changing/removing/adding
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+		});
+
+		DrawProperty<RigidBodyComponent>("Rigidbody", entity, [](auto& component)
+		{
+			const char* bodyTypeStrings[] = { "Static", "Dynamic", "Kinematic (not functional)" };
+			const char* currentBodyTypeString = bodyTypeStrings[(int) component.Type];
+
+			if (ImGui::BeginCombo("Body Type", currentBodyTypeString))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					bool isSelected = currentBodyTypeString == bodyTypeStrings[i];
+
+					if (ImGui::Selectable(bodyTypeStrings[i], isSelected))
+					{
+						currentBodyTypeString = bodyTypeStrings[i];
+						component.Type = (RigidBodyComponent::BodyType) i;
+					}
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+
+				ImGui::EndCombo();
+			}
+
+			ImGui::Checkbox("Fixed Rotation", &component.FixedRotation);
 		});
 	}
 

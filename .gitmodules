@@ -10,3 +10,6 @@
 [submodule "Engine/vendor/entt"]
 	path = Engine/vendor/entt
 	url = https://github.com/nepp95/entt.git
+[submodule "Engine/vendor/box2d"]
+	path = Engine/vendor/box2d
+	url = https://github.com/nepp95/box2d.git
