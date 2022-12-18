@@ -198,6 +198,16 @@ namespace VoxelEngine
 			b2Body* body = m_physicsWorld->CreateBody(&bodyDef);
 			body->SetFixedRotation(rigidbody.FixedRotation);
 			rigidbody.RuntimeBody = body;
+			
+			b2PolygonShape boxShape;
+			boxShape.SetAsBox(0.5f, 0.5f);
+
+			b2FixtureDef fixtureDef;
+			fixtureDef.shape = &boxShape;
+			fixtureDef.density = 1.0f;
+			fixtureDef.friction = 0.3f;
+
+			body->CreateFixture(&fixtureDef);
 		}
 	}
 
