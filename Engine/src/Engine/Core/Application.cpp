@@ -3,6 +3,7 @@
 
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Scripting/ScriptEngine.h"
+#include "Engine/Utility/Filesystem.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -30,7 +31,8 @@ namespace VoxelEngine
 		m_window = CreateScope<Window>(spec);
 		m_window->SetEventCallback([this](Event& e) { Application::OnEvent(e); });
 
-		// Initialize renderer
+		// Initialize systems
+		Filesystem::Init();
 		Renderer::Init();
 		ScriptEngine::Init();
 
@@ -50,6 +52,7 @@ namespace VoxelEngine
 
 		ScriptEngine::Shutdown();
 		Renderer::Shutdown();
+		Filesystem::Shutdown();
 
 		m_profiler->EndSession();
 	}

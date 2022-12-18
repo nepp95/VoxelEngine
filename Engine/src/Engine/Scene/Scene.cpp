@@ -18,38 +18,6 @@ namespace VoxelEngine
 		VE_PROFILE_FUNCTION();
 	}
 
-	void Scene::Update(float ts)
-	{
-		VE_PROFILE_FUNCTION();
-	}
-
-	void Scene::Render()
-	{
-		VE_PROFILE_FUNCTION();
-
-		// Get camera entity
-		Entity cameraEntity = GetCameraEntity();
-		if (!cameraEntity)
-			return;
-
-		Camera* camera = &cameraEntity.GetComponent<CameraComponent>().Camera;
-
-		// Begin render
-		Renderer::BeginScene(*camera);
-
-		// Sprite components
-		auto view = m_registry.view<TransformComponent, SpriteComponent>();
-
-		for (auto entity : view)
-		{
-			auto& [transform, sprite] = view.get<TransformComponent, SpriteComponent>(entity);
-			Renderer::DrawEntity(transform.GetTransform(), sprite);
-		}
-
-		// End render
-		Renderer::EndScene();
-	}
-
 	Entity Scene::CreateEntity(const std::string& name)
 	{
 		return CreateEntityWithUUID(UUID(), name);
@@ -132,6 +100,52 @@ namespace VoxelEngine
 		return newScene;
 	}
 
+	void Scene::OnUpdateRuntime(float ts)
+	{
+
+	}
+
+	void Scene::OnRenderRuntime()
+	{
+		// Get the main camera
+		SceneCamera* sceneCamera{ nullptr };
+		glm::mat4 cameraTransform;
+
+		{
+			auto view = m_registry.view<TransformComponent, CameraComponent>();
+			for (auto entity : view)
+			{
+				auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+				if (camera.Primary)
+				{
+					sceneCamera = &camera.Camera;
+					cameraTransform = transform.GetTransform();
+
+					break;
+				}
+			}
+		}
+
+		if (sceneCamera)
+		{
+			Renderer::BeginScene(*sceneCamera, cameraTransform);
+			
+			auto view = m_registry.view<TransformComponent, SpriteComponent>();
+			for (auto entity : view)
+			{
+				auto [transform, sprite] = view.get<TransformComponent, SpriteComponent>(entity);
+				Renderer::DrawEntity(transform.GetTransform(), sprite);
+			}
+
+			Renderer::EndScene();
+		}
+	}
+
+	void Scene::OnRenderEditor(EditorCamera& camera)
+	{
+		RenderScene(camera);
+	}
+
 	void Scene::OnRuntimeStart()
 	{
 
@@ -142,17 +156,56 @@ namespace VoxelEngine
 
 	}
 
+	void Scene::OnViewportResize(uint32_t width, uint32_t height)
+	{
+		m_viewportWidth = width;
+		m_viewportHeight = height;
+
+		auto view = m_registry.view<CameraComponent>();
+
+		for (auto entity : view)
+		{
+			auto& cameraComponent = view.get<CameraComponent>(entity);
+
+			cameraComponent.Camera.SetViewportSize(width, height);
+		}
+	}
+
 	Entity Scene::GetCameraEntity()
 	{
 		// Get all entities with a camera component
 		auto view = m_registry.view<CameraComponent>();
 		
-		// Return the first entity found with a camera component, typically there is only one
+		// Return the first entity found with a primary camera
 		for (auto entity : view)
-			return Entity{ entity, this };
+		{
+			const auto& camera = view.get<CameraComponent>(entity);
+			if (camera.Primary)
+				return Entity{ entity, this };
+		}
 
 		// Return empty entity when no entities with a camera component are found
 		return {};
+	}
+
+	void Scene::RenderScene(EditorCamera& camera)
+	{
+		VE_PROFILE_FUNCTION();
+
+		// Begin render
+		Renderer::BeginScene(camera);
+
+		// Sprite components
+		auto view = m_registry.view<TransformComponent, SpriteComponent>();
+
+		for (auto entity : view)
+		{
+			auto& [transform, sprite] = view.get<TransformComponent, SpriteComponent>(entity);
+			Renderer::DrawEntity(transform.GetTransform(), sprite);
+		}
+
+		// End render
+		Renderer::EndScene();
 	}
 
 	template<typename T>

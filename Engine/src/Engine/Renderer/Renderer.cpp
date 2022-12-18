@@ -130,7 +130,16 @@ namespace VoxelEngine
 		delete[] s_data.QuadVertexBufferBase;
 	}
 
-	void Renderer::BeginScene(const Camera& camera)
+	void Renderer::BeginScene(const Camera& camera, const glm::mat4& transform)
+	{
+		VE_PROFILE_FUNCTION();
+
+		s_data.ViewProjection = camera.GetProjectionMatrix() * glm::inverse(transform);
+
+		StartBatch();
+	}
+
+	void Renderer::BeginScene(const EditorCamera& camera)
 	{
 		VE_PROFILE_FUNCTION();
 
@@ -303,7 +312,7 @@ namespace VoxelEngine
 
 			// Create draw call
 			s_data.QuadShader->Bind();
-			s_data.QuadShader->SetMat4("uViewProjection", s_data.ViewProjection); // TODO: Move to begin scene
+			s_data.QuadShader->SetMat4("uViewProjection", s_data.ViewProjection); // TODO: Move to begin scene, uniform buffers
 			RenderCommand::DrawIndexed(s_data.QuadVertexArray, s_data.QuadIndexCount);
 			s_data.Stats.DrawCalls++;
 		}
