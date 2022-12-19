@@ -10,16 +10,6 @@
 
 namespace VoxelEngine
 {
-	static b2BodyType RigidBodyTypeToBox2DBodyType(RigidBodyComponent::BodyType bodyType)
-	{
-		if (bodyType == RigidBodyComponent::BodyType::Static)		return b2_staticBody;
-		if (bodyType == RigidBodyComponent::BodyType::Dynamic)		return b2_dynamicBody;
-		if (bodyType == RigidBodyComponent::BodyType::Kinematic)	return b2_kinematicBody;
-
-		VE_CORE_ERROR("Unknown body type!");
-		return b2_staticBody;
-	}
-
 	Scene::Scene()
 	{
 		VE_PROFILE_FUNCTION();
@@ -70,6 +60,8 @@ namespace VoxelEngine
 			newEntity.AddOrReplaceComponent<SpriteComponent>(entity.GetComponent<SpriteComponent>());
 		if (entity.HasComponent<RigidBodyComponent>())
 			newEntity.AddOrReplaceComponent<RigidBodyComponent>(entity.GetComponent<RigidBodyComponent>());
+		if (entity.HasComponent<BoxColliderComponent>())
+			newEntity.AddOrReplaceComponent<BoxColliderComponent>(entity.GetComponent<BoxColliderComponent>());
 	}
 
 	template<typename T>
@@ -113,6 +105,7 @@ namespace VoxelEngine
 		CopyComponent<CameraComponent>(dstRegistry, srcRegistry, enttMap);
 		CopyComponent<SpriteComponent>(dstRegistry, srcRegistry, enttMap);
 		CopyComponent<RigidBodyComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<BoxColliderComponent>(dstRegistry, srcRegistry, enttMap);
 
 		return newScene;
 	}
@@ -191,13 +184,15 @@ namespace VoxelEngine
 			auto& rigidbody = m_registry.get<RigidBodyComponent>(entity);
 
 			b2BodyDef bodyDef;
-			bodyDef.type = RigidBodyTypeToBox2DBodyType(rigidbody.Type);
+			bodyDef.type = Converter::RigidBodyTypeToBox2DBodyType(rigidbody.Type);
 			bodyDef.position.Set(transform.Translation.x, transform.Translation.y);
 			bodyDef.angle = transform.Rotation.z;
 
 			b2Body* body = m_physicsWorld->CreateBody(&bodyDef);
 			body->SetFixedRotation(rigidbody.FixedRotation);
 			rigidbody.RuntimeBody = body;
+
+			auto& boxCollider = m_registry.get<BoxColliderComponent>(entity);
 			
 			b2PolygonShape boxShape;
 			boxShape.SetAsBox(0.5f, 0.5f);
@@ -298,5 +293,9 @@ namespace VoxelEngine
 
 	template<>
 	void Scene::OnComponentAdded<RigidBodyComponent>(Entity entity, RigidBodyComponent& component)
+	{}
+
+	template<>
+	void Scene::OnComponentAdded<BoxColliderComponent>(Entity entity, BoxColliderComponent& component)
 	{}
 }

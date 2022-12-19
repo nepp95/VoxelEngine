@@ -89,26 +89,21 @@ namespace VoxelEngine
 
 		RigidBodyComponent() = default;
 		RigidBodyComponent(const RigidBodyComponent&) = default;
+	};
 
-		std::string TypeToString() const
-		{
-			if (Type == BodyType::Static)		return "Static";
-			if (Type == BodyType::Dynamic)		return "Dynamic";
-			if (Type == BodyType::Kinematic)	return "Kinematic";
-		}
+	struct BoxColliderComponent
+	{
+		glm::vec2 Offset{ 0.0f, 0.0f };
+		glm::vec2 Size{ 0.5f, 0.5f };
 
-		static std::string TypeToString(BodyType type)
-		{
-			if (type == BodyType::Static)		return "Static";
-			if (type == BodyType::Dynamic)		return "Dynamic";
-			if (type == BodyType::Kinematic)	return "Kinematic";
-		}
+		float Density{ 1.0f };
+		float Friction{ 0.5f };
+		float Restitution{ 0.0f };
+		float RestitutionThreshold{ 0.5f };
 
-		static BodyType TypeFromString(const std::string& type)
-		{
-			if (type == "Static")				return BodyType::Static;
-			if (type == "Dynamic")				return BodyType::Dynamic;
-			if (type == "Kinematic")			return BodyType::Kinematic;
-		}
+		void* RuntimeFixture{ nullptr };
+
+		BoxColliderComponent() = default;
+		BoxColliderComponent(const BoxColliderComponent&) = default;
 	};
 }
