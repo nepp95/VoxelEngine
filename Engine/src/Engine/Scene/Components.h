@@ -101,8 +101,6 @@ namespace VoxelEngine
 		float Restitution{ 0.0f };
 		float RestitutionThreshold{ 0.5f };
 
-		void* RuntimeFixture{ nullptr };
-
 		BoxColliderComponent() = default;
 		BoxColliderComponent(const BoxColliderComponent&) = default;
 	};

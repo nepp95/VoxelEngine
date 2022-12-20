@@ -10,6 +10,16 @@ Entities:
     SpriteComponent:
       TextureHandle: 0
       Color: [0.850980401, 0.41568628, 0.152941182, 1]
+    RigidBodyComponent:
+      BodyType: Static
+      FixedRotation: false
+    BoxColliderComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
   - Entity: 12646086744861812834
     TagComponent:
       Tag: Camera
@@ -37,6 +47,16 @@ Entities:
     SpriteComponent:
       TextureHandle: 0
       Color: [0.850980401, 0.41568628, 0.152941182, 1]
+    RigidBodyComponent:
+      BodyType: Static
+      FixedRotation: false
+    BoxColliderComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
   - Entity: 17090305173727741277
     TagComponent:
       Tag: Wall Right
@@ -47,6 +67,16 @@ Entities:
     SpriteComponent:
       TextureHandle: 0
       Color: [0.850980401, 0.41568628, 0.152941182, 1]
+    RigidBodyComponent:
+      BodyType: Static
+      FixedRotation: false
+    BoxColliderComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
   - Entity: 2608290871690426620
     TagComponent:
       Tag: Square
@@ -58,5 +88,12 @@ Entities:
       TextureHandle: 0
       Color: [0.0918397084, 0.44607842, 0, 1]
     RigidBodyComponent:
-      BodyType: Static
+      BodyType: Dynamic
       FixedRotation: false
+    BoxColliderComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5

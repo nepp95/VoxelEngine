@@ -180,8 +180,9 @@ namespace VoxelEngine
 		auto view = m_registry.view<RigidBodyComponent>();
 		for (auto entity : view)
 		{
-			auto& transform = m_registry.get<TransformComponent>(entity);
-			auto& rigidbody = m_registry.get<RigidBodyComponent>(entity);
+			Entity e{ entity, this };
+			auto& transform = e.GetComponent<TransformComponent>();
+			auto& rigidbody = e.GetComponent<RigidBodyComponent>();
 
 			b2BodyDef bodyDef;
 			bodyDef.type = Converter::RigidBodyTypeToBox2DBodyType(rigidbody.Type);
@@ -192,17 +193,22 @@ namespace VoxelEngine
 			body->SetFixedRotation(rigidbody.FixedRotation);
 			rigidbody.RuntimeBody = body;
 
-			auto& boxCollider = m_registry.get<BoxColliderComponent>(entity);
-			
-			b2PolygonShape boxShape;
-			boxShape.SetAsBox(0.5f, 0.5f);
+			if (e.HasComponent<BoxColliderComponent>())
+			{
+				auto& boxCollider = e.GetComponent<BoxColliderComponent>();
 
-			b2FixtureDef fixtureDef;
-			fixtureDef.shape = &boxShape;
-			fixtureDef.density = 1.0f;
-			fixtureDef.friction = 0.3f;
+				b2PolygonShape boxShape;
+				boxShape.SetAsBox(0.5f, 0.5f);
 
-			body->CreateFixture(&fixtureDef);
+				b2FixtureDef fixtureDef;
+				fixtureDef.shape = &boxShape;
+				fixtureDef.density = boxCollider.Density;
+				fixtureDef.friction = boxCollider.Friction;
+				fixtureDef.restitution = boxCollider.Restitution;
+				fixtureDef.restitutionThreshold = boxCollider.RestitutionThreshold;
+
+				body->CreateFixture(&fixtureDef);
+			}
 		}
 	}
 
