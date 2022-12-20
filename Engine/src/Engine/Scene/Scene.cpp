@@ -6,6 +6,8 @@
 #include "Engine/Scene/Entity.h"
 #include "Engine/Renderer/Renderer.h"
 
+#include <box2d/box2d.h>
+
 namespace VoxelEngine
 {
 	Scene::Scene()
@@ -54,6 +56,12 @@ namespace VoxelEngine
 			newEntity.AddOrReplaceComponent<TransformComponent>(entity.GetComponent<TransformComponent>());
 		if (entity.HasComponent<CameraComponent>())
 			newEntity.AddOrReplaceComponent<CameraComponent>(entity.GetComponent<CameraComponent>());
+		if (entity.HasComponent<SpriteComponent>())
+			newEntity.AddOrReplaceComponent<SpriteComponent>(entity.GetComponent<SpriteComponent>());
+		if (entity.HasComponent<RigidBodyComponent>())
+			newEntity.AddOrReplaceComponent<RigidBodyComponent>(entity.GetComponent<RigidBodyComponent>());
+		if (entity.HasComponent<BoxColliderComponent>())
+			newEntity.AddOrReplaceComponent<BoxColliderComponent>(entity.GetComponent<BoxColliderComponent>());
 	}
 
 	template<typename T>
@@ -96,13 +104,32 @@ namespace VoxelEngine
 		CopyComponent<TransformComponent>(dstRegistry, srcRegistry, enttMap);
 		CopyComponent<CameraComponent>(dstRegistry, srcRegistry, enttMap);
 		CopyComponent<SpriteComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<RigidBodyComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<BoxColliderComponent>(dstRegistry, srcRegistry, enttMap);
 
 		return newScene;
 	}
 
 	void Scene::OnUpdateRuntime(float ts)
 	{
+		const int32_t velocityIterations = 6;
+		const int32_t positionIterations = 2;
 
+		m_physicsWorld->Step(ts, velocityIterations, positionIterations);
+
+		auto view = m_registry.view<RigidBodyComponent>();
+		for (auto entity : view)
+		{
+			auto& transform = m_registry.get<TransformComponent>(entity);
+			auto& rigidbody = m_registry.get<RigidBodyComponent>(entity);
+
+			b2Body* body = (b2Body*) rigidbody.RuntimeBody;
+			const auto& position = body->GetPosition();
+
+			transform.Translation.x = position.x;
+			transform.Translation.y = position.y;
+			transform.Rotation.z = body->GetAngle();
+		}
 	}
 
 	void Scene::OnRenderRuntime()
@@ -148,12 +175,47 @@ namespace VoxelEngine
 
 	void Scene::OnRuntimeStart()
 	{
+		m_physicsWorld = new b2World({ 0.0f, -9.8f });
 
+		auto view = m_registry.view<RigidBodyComponent>();
+		for (auto entity : view)
+		{
+			Entity e{ entity, this };
+			auto& transform = e.GetComponent<TransformComponent>();
+			auto& rigidbody = e.GetComponent<RigidBodyComponent>();
+
+			b2BodyDef bodyDef;
+			bodyDef.type = Converter::RigidBodyTypeToBox2DBodyType(rigidbody.Type);
+			bodyDef.position.Set(transform.Translation.x, transform.Translation.y);
+			bodyDef.angle = transform.Rotation.z;
+
+			b2Body* body = m_physicsWorld->CreateBody(&bodyDef);
+			body->SetFixedRotation(rigidbody.FixedRotation);
+			rigidbody.RuntimeBody = body;
+
+			if (e.HasComponent<BoxColliderComponent>())
+			{
+				auto& boxCollider = e.GetComponent<BoxColliderComponent>();
+
+				b2PolygonShape boxShape;
+				boxShape.SetAsBox(0.5f, 0.5f);
+
+				b2FixtureDef fixtureDef;
+				fixtureDef.shape = &boxShape;
+				fixtureDef.density = boxCollider.Density;
+				fixtureDef.friction = boxCollider.Friction;
+				fixtureDef.restitution = boxCollider.Restitution;
+				fixtureDef.restitutionThreshold = boxCollider.RestitutionThreshold;
+
+				body->CreateFixture(&fixtureDef);
+			}
+		}
 	}
 
 	void Scene::OnRuntimeStop()
 	{
-
+		delete m_physicsWorld;
+		m_physicsWorld = nullptr;
 	}
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
@@ -233,5 +295,13 @@ namespace VoxelEngine
 
 	template<>
 	void Scene::OnComponentAdded<SpriteComponent>(Entity entity, SpriteComponent& component)
+	{}
+
+	template<>
+	void Scene::OnComponentAdded<RigidBodyComponent>(Entity entity, RigidBodyComponent& component)
+	{}
+
+	template<>
+	void Scene::OnComponentAdded<BoxColliderComponent>(Entity entity, BoxColliderComponent& component)
 	{}
 }

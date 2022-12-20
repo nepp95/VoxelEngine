@@ -6,6 +6,31 @@
 namespace YAML
 {
 	template<>
+	struct convert<glm::vec2>
+	{
+		static Node encode(const glm::vec2& rhs)
+		{
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.SetStyle(EmitterStyle::Flow);
+
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec2& rhs)
+		{
+			if (!node.IsSequence() || node.size() != 2)
+				return false;
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+		
+			return true;
+		}
+	};
+
+	template<>
 	struct convert<glm::vec3>
 	{
 		static Node encode(const glm::vec3& rhs)
@@ -62,6 +87,14 @@ namespace YAML
 	};
 
 	// Operator overloading
+	Emitter& operator<<(Emitter& out, const glm::vec2& v)
+	{
+		out << YAML::Flow;
+		out << YAML::BeginSeq << v.x << v.y << YAML::EndSeq;
+
+		return out;
+	}
+
 	Emitter& operator<<(Emitter& out, const glm::vec3& v)
 	{
 		out << YAML::Flow;
@@ -190,6 +223,26 @@ namespace VoxelEngine
 				sc.TextureHandle = spriteComponent["TextureHandle"].as<uint64_t>();
 				sc.Color = spriteComponent["Color"].as<glm::vec4>();
 			}
+
+			auto rigidBodyComponent = entity["RigidBodyComponent"];
+			if (rigidBodyComponent)
+			{
+				auto& rbc = newEntity.AddComponent<RigidBodyComponent>();
+				rbc.Type = Converter::RigidBodyTypeFromString(rigidBodyComponent["BodyType"].as<std::string>());
+				rbc.FixedRotation = rigidBodyComponent["FixedRotation"].as<bool>();
+			}
+
+			auto boxColliderComponent = entity["BoxColliderComponent"];
+			if (boxColliderComponent)
+			{
+				auto& bcc = newEntity.AddComponent<BoxColliderComponent>();
+				bcc.Offset = boxColliderComponent["Offset"].as<glm::vec2>();
+				bcc.Size = boxColliderComponent["Size"].as<glm::vec2>();
+				bcc.Density = boxColliderComponent["Density"].as<float>();
+				bcc.Friction = boxColliderComponent["Friction"].as<float>();
+				bcc.Restitution = boxColliderComponent["Restitution"].as<float>();
+				bcc.RestitutionThreshold = boxColliderComponent["RestitutionThreshold"].as<float>();
+			}
 		}
 
 		return true;
@@ -238,7 +291,7 @@ namespace VoxelEngine
 			out << YAML::Key << "Camera" << YAML::Value;
 			out << YAML::BeginMap;
 
-			out << YAML::Key << "ProjectionType" << YAML::Value << (int)camera.GetProjectionType();
+			out << YAML::Key << "ProjectionType" << YAML::Value << (int) camera.GetProjectionType();
 			out << YAML::Key << "PerspectiveFov" << YAML::Value << camera.GetPerspectiveFov();
 			out << YAML::Key << "PerspectiveNear" << YAML::Value << camera.GetPerspectiveNearClip();
 			out << YAML::Key << "PerspectiveFar" << YAML::Value << camera.GetPerspectiveFarClip();
@@ -262,6 +315,34 @@ namespace VoxelEngine
 			out << YAML::Key << "TextureHandle" << YAML::Value << c.TextureHandle;
 			out << YAML::Key << "Color" << YAML::Value << c.Color;
 
+			out << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<RigidBodyComponent>())
+		{
+			out << YAML::Key << "RigidBodyComponent" << YAML::Value;
+			out << YAML::BeginMap;
+
+			auto& c = entity.GetComponent<RigidBodyComponent>();
+			out << YAML::Key << "BodyType" << YAML::Value << Converter::RigidBodyTypeToString(c.Type);
+			out << YAML::Key << "FixedRotation" << YAML::Value << c.FixedRotation;
+
+			out << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<BoxColliderComponent>())
+		{
+			out << YAML::Key << "BoxColliderComponent" << YAML::Value;
+			out << YAML::BeginMap;
+
+			auto& c = entity.GetComponent<BoxColliderComponent>();
+			out << YAML::Key << "Offset" << YAML::Value << c.Offset;
+			out << YAML::Key << "Size" << YAML::Value << c.Size;
+			out << YAML::Key << "Density" << YAML::Value << c.Density;
+			out << YAML::Key << "Friction" << YAML::Value << c.Friction;
+			out << YAML::Key << "Restitution" << YAML::Value << c.Restitution;
+			out << YAML::Key << "RestitutionThreshold" << YAML::Value << c.RestitutionThreshold;
+		
 			out << YAML::EndMap;
 		}
 
