@@ -15,3 +15,5 @@ EpEditor/Profile.json
 /bin
 /bin-int
 /vendor/premake/bin
+EpEditor/Resources/Scripts
+EpEditor/Scripts/Intermediates
