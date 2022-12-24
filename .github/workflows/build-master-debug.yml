@@ -40,4 +40,4 @@ jobs:
         
       - name: Build solution
         working-directory: ${{env.GITHUB_WORKSPACE}}
-        run: msbuild /m /p:Configuration=Debug VoxelEngine.sln
+        run: msbuild /m /p:Configuration=Debug EpEngine.sln

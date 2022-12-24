@@ -14,8 +14,8 @@ project "Sandbox"
 
     includedirs {
         "src",
-        "%{wks.location}/Engine/src",
-        "%{wks.location}/Engine/vendor",
+        "%{wks.location}/EpEngine/src",
+        "%{wks.location}/EpEngine/vendor",
         "%{IncludeDir.entt}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.imgui}",
@@ -23,7 +23,7 @@ project "Sandbox"
     }
 
     links {
-        "Engine"
+        "EpEngine"
     }
 
     defines {
@@ -34,11 +34,16 @@ project "Sandbox"
 		systemversion "latest"
 
     filter "configurations:Debug"
-		defines "V_DEBUG"
+		defines "EP_DEBUG"
 		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
-		defines "V_RELEASE"
+		defines "EP_RELEASE"
+		runtime "Release"
+		optimize "On"
+
+  	filter "configurations:Dist"
+    	defines "EP_DIST"
 		runtime "Release"
 		optimize "On"
