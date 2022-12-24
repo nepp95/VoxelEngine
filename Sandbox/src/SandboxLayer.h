@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Engine.h>
+#include <EpEngine.h>
 
-using namespace VoxelEngine;
+using namespace EpEngine;
 
 class SandboxLayer : public Layer
 {

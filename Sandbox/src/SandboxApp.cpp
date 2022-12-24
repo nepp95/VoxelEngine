@@ -1,9 +1,9 @@
-#include <Engine.h>
-#include <Engine/Core/Entrypoint.h>
+#include <EpEngine.h>
+#include <EpEngine/Core/Entrypoint.h>
 
 #include "SandboxLayer.h"
 
-using namespace VoxelEngine;
+using namespace EpEngine;
 
 class Sandbox : public Application
 {
@@ -17,7 +17,7 @@ public:
 	~Sandbox() = default;
 };
 
-Application* VoxelEngine::CreateApplication(ApplicationCommandLineArgs args)
+Application* EpEngine::CreateApplication(ApplicationCommandLineArgs args)
 {
 	ApplicationSpecification spec;
 	spec.Name = "Sandbox";

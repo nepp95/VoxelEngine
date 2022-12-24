@@ -1,4 +1,4 @@
-project "Sandbox"
+project "EpEditor"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
@@ -27,7 +27,7 @@ project "Sandbox"
     }
 
     defines {
-        "_CRT_SECURE_NO_WARNINGS"
+        "_CRT_SECURE_NO_WARNINGS",
     }
 
     filter "system:windows"
@@ -38,12 +38,24 @@ project "Sandbox"
 		runtime "Debug"
 		symbols "On"
 
+        postbuildcommands {
+		    '{COPY} "../EpEngine/vendor/mono/bin/Debug/mono-2.0-sgen.dll" "%{cfg.targetdir}"'
+	    }
+
 	filter "configurations:Release"
 		defines "EP_RELEASE"
 		runtime "Release"
 		optimize "On"
 
-  	filter "configurations:Dist"
-    	defines "EP_DIST"
-		runtime "Release"
-		optimize "On"
+        postbuildcommands {
+		    '{COPY} "../EpEngine/vendor/mono/bin/Release/mono-2.0-sgen.dll" "%{cfg.targetdir}"'
+	    }
+
+    filter "configurations:Dist"
+        defines "EP_DIST"
+        runtime "Release"
+        optimize "On"
+
+        postbuildcommands {
+		    '{COPY} "../EpEngine/vendor/mono/bin/Release/mono-2.0-sgen.dll" "%{cfg.targetdir}"'
+	    }

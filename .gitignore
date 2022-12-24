@@ -9,7 +9,7 @@ __pycache__
 *.vereg
 
 # Debug
-Editor/Profile.json
+EpEditor/Profile.json
 
 # Binaries
 /bin

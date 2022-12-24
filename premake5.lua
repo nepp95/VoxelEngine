@@ -1,6 +1,6 @@
 include "Dependencies.lua"
 
-workspace "VoxelEngine"
+workspace "EpEngine"
 	architecture "x86_64"
 	startproject "Editor"
 	
@@ -8,7 +8,8 @@ workspace "VoxelEngine"
 	
 	configurations {
 		"Debug",
-		"Release"
+		"Release",
+		"Dist"
 	}
 
 	flags {
@@ -16,19 +17,19 @@ workspace "VoxelEngine"
 	}
 	
 	group "Dependencies"
-		include "Engine/vendor/box2d" -- Physics
-		include "Engine/vendor/glad" -- OpenGL abstraction
-		include "Engine/vendor/glfw" -- Window management
-		include "Engine/vendor/imgui" -- UI
+		include "EpEngine/vendor/box2d" -- Physics
+		include "EpEngine/vendor/glad" -- OpenGL abstraction
+		include "EpEngine/vendor/glfw" -- Window management
+		include "EpEngine/vendor/imgui" -- UI
 	group ""
 
 	group "Core"
-		include "Engine"
-		include "ScriptCore"
+		include "EpEngine"
+		include "EpScriptCore"
 	group ""
 
 	group "Tools"
-		include "Editor"
+		include "EpEditor"
 	group ""
 
 	group "Client"
