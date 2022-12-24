@@ -1,24 +1,13 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace EpEngine
 {
-    public class Main
+    public static class InternalCalls
     {
-        public float FloatVar { get; set; }
-
-        public Main()
-        {
-            Console.WriteLine("Main constructor!");
-        }
-
-        public void PrintMessage()
-        {
-            Console.WriteLine("Hello world!");
-        }
-
-        public void PrintCustomMessage(string message)
-        {
-            Console.WriteLine(message);
-        }
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void NativeLog(string text, int param);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void NativeLog_Vector(ref Vector3 param, out Vector3 result);
     }
 }

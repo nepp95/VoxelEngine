@@ -30,6 +30,10 @@ project "EpEditor"
         "_CRT_SECURE_NO_WARNINGS",
     }
 
+    dependson {
+        "ScriptCore"
+    }
+
     filter "system:windows"
 		systemversion "latest"
 
