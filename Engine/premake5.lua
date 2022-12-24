@@ -30,16 +30,20 @@ project "Engine"
 
     includedirs {
         "src",
+        "%{IncludeDir.box2d}",
         "%{IncludeDir.entt}",
         "%{IncludeDir.glad}",
         "%{IncludeDir.glfw}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.imgui}",
+        "%{IncludeDir.mono}",
         "%{IncludeDir.stb}",
         "%{IncludeDir.yaml_cpp}"
     }
 
     links {
+        "%{Library.mono}",
+        "box2d",
         "glad",
         "glfw",
         "imgui",

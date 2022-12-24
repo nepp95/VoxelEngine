@@ -3,7 +3,8 @@
 #include "Engine/Core/Application.h"
 #include "Engine/Scene/Components.h"
 #include "Engine/Scene/Entity.h"
-#include "Engine/Renderer/Camera.h"
+#include "Engine/Renderer/Camera/EditorCamera.h"
+#include "Engine/Renderer/Camera/SceneCamera.h"
 #include "Engine/Renderer/Texture.h"
 
 namespace VoxelEngine
@@ -15,7 +16,8 @@ namespace VoxelEngine
 		static void Shutdown();
 
 		// Scene
-		static void BeginScene(const Camera& camera);
+		static void BeginScene(const Camera& camera, const glm::mat4& transform);
+		static void BeginScene(const EditorCamera& camera);
 		static void EndScene();
 
 		// Render Quad

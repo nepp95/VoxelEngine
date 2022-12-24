@@ -5,6 +5,8 @@
 #include "Engine/Core/Log.h"
 #include "Engine/Core/Assert.h"
 #include "Engine/Debug/Profiler.h"
+#include "Engine/Utility/Converter.h"
+#include "Engine/Utility/Random.h"
 
 namespace VoxelEngine
 {

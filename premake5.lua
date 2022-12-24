@@ -16,16 +16,21 @@ workspace "VoxelEngine"
 	}
 	
 	group "Dependencies"
+		include "Engine/vendor/box2d" -- Physics
 		include "Engine/vendor/glad" -- OpenGL abstraction
 		include "Engine/vendor/glfw" -- Window management
-		include "Engine/vendor/imgui" -- Graphical user interface]
+		include "Engine/vendor/imgui" -- UI
 	group ""
 
 	group "Core"
 		include "Engine"
+		include "ScriptCore"
+	group ""
+
+	group "Tools"
 		include "Editor"
 	group ""
-	
+
 	group "Client"
 		include "Sandbox"
 	group ""

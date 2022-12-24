@@ -12,7 +12,9 @@ namespace VoxelEngine
 	public:
 		virtual ~Asset() = default;
 
+		void SetHandle(AssetHandle handle) { m_handle = handle; }
 		const AssetHandle& GetHandle() const { return m_handle; }
+
 		static AssetType GetStaticType() { return AssetType::None; }
 
 		virtual bool operator==(const Asset& other) const

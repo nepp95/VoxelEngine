@@ -32,7 +32,7 @@ namespace VoxelEngine {
 		// Scene management
 		void NewScene();
 		void OpenScene();
-		void OpenScene(const std::filesystem::path& path);
+		void OpenScene(const std::filesystem::path& filepath);
 		void SaveScene();
 		void SaveSceneAs();
 
@@ -50,7 +50,7 @@ namespace VoxelEngine {
 		float m_timestep{ 0.0f };
 
 		// Camera
-		Camera* m_camera;
+		EditorCamera m_editorCamera{ 30.0f, 1.778f, 0.1f, 1000.0f };
 
 		// Scene
 		Ref<Scene> m_activeScene; // runtime
