@@ -24,3 +24,7 @@ project "glad"
 	filter "configurations:Release"
 		runtime "Release"
 		optimize "On"
+
+	filter "configurations:Dist"
+		runtime "Release"
+		optimize "On"
