@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "ScriptEngine.h"
 
-#include "Engine/Scripting/ScriptGlue.h"
+#include "EpEngine/Scripting/ScriptGlue.h"
 
 #include <glm/glm.hpp>
 #include <mono/jit/jit.h>
@@ -95,7 +95,7 @@ namespace EpEngine
 
 			if (monoClass == nullptr)
 			{
-				VE_CORE_ERROR("Class '%' not found in namespace '%'!", className, namespaceName);
+				EP_CORE_ERROR("Class '%' not found in namespace '%'!", className, namespaceName);
 				return nullptr;
 			}
 
@@ -121,12 +121,12 @@ namespace EpEngine
 		s_data = new ScriptEngineData();
 
 		InitMono();
-		LoadAssembly("Resources/Scripts/ScriptCore.dll");
+		LoadAssembly("Resources/Scripts/EpScriptCore.dll");
 
 		// Add internal calls
 		ScriptGlue::RegisterFunctions();
 
-		s_data->EntityClass = ScriptClass("VoxelEngine", "Entity");
+		s_data->EntityClass = ScriptClass("EpEngine", "Entity");
 		MonoObject* instance = s_data->EntityClass.Instantiate();
 
 		// Call method
@@ -166,7 +166,7 @@ namespace EpEngine
 	void ScriptEngine::LoadAssembly(const std::filesystem::path& filepath)
 	{
 		// Setup app domain
-		s_data->AppDomain = mono_domain_create_appdomain("VoxelEngineScriptRuntime", nullptr);
+		s_data->AppDomain = mono_domain_create_appdomain("EpEngineScriptRuntime", nullptr);
 		mono_domain_set(s_data->AppDomain, true);
 
 		// Setup core assembly

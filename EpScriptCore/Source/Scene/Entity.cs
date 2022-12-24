@@ -1,6 +1,6 @@
 using System;
 
-namespace VoxelEngine
+namespace EpEngine
 {
     public class Entity
     {
