@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "SceneSerializer.h"
 
+#include "EpEngine/Utility/Converter.h"
+
 #include <yaml-cpp/yaml.h>
 
 namespace YAML
@@ -121,7 +123,7 @@ namespace EpEngine
 
 	bool SceneSerializer::Serialize(const std::filesystem::path& filepath)
 	{
-		EP_CORE_INFO("Serializing scene '%'", "Untitled");
+		EP_CORE_INFO("Serializing scene '{}'", "Untitled");
 
 		YAML::Emitter out;
 
@@ -157,7 +159,7 @@ namespace EpEngine
 			data = YAML::LoadFile(filepath.string());
 		} catch (YAML::ParserException e)
 		{
-			EP_CORE_ERROR("Failed to load .scene file '%'!\nError: %", filepath, e.what())
+			EP_CORE_ERROR("Failed to load .scene file '{}'!\nError: {}", filepath, e.what());
 			return false;
 		}
 
@@ -166,7 +168,7 @@ namespace EpEngine
 			return false;
 
 		std::string name = data["Scene"].as<std::string>();
-		EP_CORE_INFO("Deserializing scene '%'", name);
+		EP_CORE_INFO("Deserializing scene '{}'", name);
 
 		auto entities = data["Entities"];
 
@@ -185,7 +187,7 @@ namespace EpEngine
 			if (tagComponent)
 				name = tagComponent["Tag"].as<std::string>();
 
-			EP_CORE_INFO("Deserializing entity '%' (%)", name, uuid);
+			EP_CORE_INFO("Deserializing entity '{}' ({})", name, uuid);
 
 			Entity newEntity = m_scene->CreateEntityWithUUID(uuid, name);
 
@@ -251,7 +253,7 @@ namespace EpEngine
 	void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity entity)
 	{
 		EP_CORE_ASSERT(entity.HasComponent<IDComponent>() && entity.HasComponent<TagComponent>(), "Trying to serialize invalid entity!");
-		EP_CORE_INFO("Serializing entity '%' (%)", entity.GetName(), entity.GetUUID());
+		EP_CORE_INFO("Serializing entity '{}' ({})", entity.GetName(), entity.GetUUID());
 
 		out << YAML::BeginMap;
 		out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID();

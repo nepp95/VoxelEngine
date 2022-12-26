@@ -36,6 +36,7 @@ project "EpEngine"
         "%{IncludeDir.glm}",
         "%{IncludeDir.imgui}",
         "%{IncludeDir.mono}",
+        "%{IncludeDir.spdlog}",
         "%{IncludeDir.stb}",
         "%{IncludeDir.yaml_cpp}"
     }

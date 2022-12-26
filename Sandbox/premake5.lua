@@ -18,8 +18,7 @@ project "Sandbox"
         "%{wks.location}/EpEngine/vendor",
         "%{IncludeDir.entt}",
         "%{IncludeDir.glm}",
-        "%{IncludeDir.imgui}",
-        "%{IncludeDir.yaml_cpp}"
+        "%{IncludeDir.spdlog}"
     }
 
     links {

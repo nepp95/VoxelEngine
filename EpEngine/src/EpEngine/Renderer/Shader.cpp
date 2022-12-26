@@ -111,7 +111,7 @@ namespace EpEngine {
 			in.close();
 		} else
 		{
-			EP_CORE_ERROR("Could not open shader file: %", filepath);
+			EP_CORE_ERROR("Could not open shader file: {}", filepath);
 		}
 
 		return result;
@@ -135,7 +135,7 @@ namespace EpEngine {
 			// Extract shader type
 			size_t begin = pos + typeTokenLength + 1;
 			std::string type = source.substr(begin, eol - begin);
-			EP_CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type (%) specified!", type);
+			EP_CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type specified!");
 
 			// If there is no other type token, take the string till eof. Otherwise take it till the next type token.
 			size_t nextLinePos = source.find_first_not_of("\r\n", eol);

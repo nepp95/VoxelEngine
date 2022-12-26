@@ -28,12 +28,12 @@ namespace EpEngine
 	{
 		// TODO: Fix end line char
 		std::ifstream stream(filepath, std::ios::binary | std::ios::ate);
-		EP_CORE_ASSERT(stream, "Failed to read file: %", filepath);
+		EP_CORE_ASSERT(stream, "Failed to read shader file!");
 
 		std::streampos end = stream.tellg();
 		stream.seekg(0, std::ios::beg);
 		uint32_t fileSize = end - stream.tellg();
-		EP_CORE_ASSERT(fileSize != 0, "File '%' is empty!", filepath);
+		EP_CORE_ASSERT(fileSize != 0, "File is empty!");
 
 		char* buffer = new char[fileSize];
 		stream.read((char*)buffer, fileSize);

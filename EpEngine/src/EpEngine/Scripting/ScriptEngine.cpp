@@ -19,12 +19,12 @@ namespace EpEngine
 		static char* ReadBytes(const std::filesystem::path& filepath, uint32_t* size)
 		{
 			std::ifstream stream(filepath, std::ios::binary | std::ios::ate);
-			EP_CORE_ASSERT(stream, "Failed to read file: %", filepath);
+			EP_CORE_ASSERT(stream, "Failed to read file!");
 
 			std::streampos end = stream.tellg();
 			stream.seekg(0, std::ios::beg);
 			uint32_t fileSize = end - stream.tellg();
-			EP_CORE_ASSERT(size != 0, "File '%' is empty!", filepath);
+			EP_CORE_ASSERT(size != 0, "File is empty!");
 
 			char* buffer = new char[fileSize];
 			stream.read((char*)buffer, fileSize);
@@ -95,7 +95,7 @@ namespace EpEngine
 
 			if (monoClass == nullptr)
 			{
-				EP_CORE_ERROR("Class '%' not found in namespace '%'!", className, namespaceName);
+				EP_CORE_ERROR("Class '{}' not found in namespace '{}'!", className, namespaceName);
 				return nullptr;
 			}
 

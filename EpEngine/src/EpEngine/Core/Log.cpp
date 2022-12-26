@@ -1,37 +1,20 @@
 #include "pch.h"
 #include "Log.h"
 
+#include <spdlog/sinks/stdout_color_sinks.h>
+
 namespace EpEngine
 {
+	Ref<spdlog::logger> Log::s_coreLogger;
+	Ref<spdlog::logger> Log::s_clientLogger;
+
 	void Log::Init()
 	{
+		spdlog::set_pattern("%^[%T] %n: %v%$");
 
-	}
-
-	void Log::Shutdown()
-	{
-
-	}
-
-	void Log::SetOutputColor(const LogLevel& level)
-	{
-		if (level == LogLevel::Info)
-			std::cout << "\033[36m";
-		if (level == LogLevel::Warn)
-			std::cout << "\033[33m";
-		if (level == LogLevel::Error)
-			std::cout << "\033[1;31m";
-		if (level == LogLevel::Critical)
-			std::cout << "\033[31m";
-	}
-
-	void Log::ResetOutputColor()
-	{
-		std::cout << "\33[0m";
-	}
-
-	void Log::EndMessage()
-	{
-		std::cout << std::endl;
+		s_coreLogger = spdlog::stdout_color_mt("Engine");
+		s_coreLogger->set_level(spdlog::level::trace);
+		s_clientLogger = spdlog::stdout_color_mt("Application");
+		s_clientLogger->set_level(spdlog::level::trace);
 	}
 }

@@ -27,7 +27,7 @@ namespace EpEngine
 		// that were found in the recursive directory search.
 		WriteRegistry();
 
-		EP_CORE_INFO("% Assets loaded.", m_assetHandles.size());
+		EP_CORE_INFO("{} Assets loaded.", m_assetHandles.size());
 	}
 
 	void AssetManager::LoadAssetsFromRegistry()
@@ -47,7 +47,7 @@ namespace EpEngine
 			data = YAML::LoadFile(m_assetRegistryFilepath.string());
 		} catch (YAML::ParserException e)
 		{
-			EP_CORE_ERROR("Failed to load .vereg file '%'!\nError: %", m_assetRegistryFilepath.string(), e.what());
+			EP_CORE_ERROR("Failed to load .vereg file '{}'!\nError: {}", m_assetRegistryFilepath.string(), e.what());
 			return;
 		}
 
@@ -71,7 +71,7 @@ namespace EpEngine
 
 	void AssetManager::LoadAssetsFromDirectory(const std::filesystem::path& directoryPath)
 	{
-		EP_CORE_INFO("Loading assets from recursive directory search in '%'...", directoryPath.string());
+		EP_CORE_INFO("Loading assets from recursive directory search in '{}'...", directoryPath.string());
 
 		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(directoryPath))
 		{

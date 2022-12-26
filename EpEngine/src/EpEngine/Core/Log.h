@@ -1,63 +1,26 @@
 ﻿#pragma once
 
-#include <iostream>
-#include <sstream>
+#include "EpEngine/Core/Base.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
+
 namespace EpEngine
 {
-	enum class LogLevel
-	{
-		Info,
-		Warn,
-		Error,
-		Critical
-	};
-
 	class Log
 	{
 	public:
 		static void Init();
-		static void Shutdown();
 
-		static void SetOutputColor(const LogLevel& level);
-		static void ResetOutputColor();
-		static void EndMessage();
+		static Ref<spdlog::logger>& GetCoreLogger() { return s_coreLogger; }
+		static Ref<spdlog::logger>& GetClientLogger() { return s_clientLogger; }
 
-		static void ParseLocation(std::string file, int line)
-		{
-			std::stringstream ss;
-
-			size_t pos = file.find("src");
-			ss << "[" << file.substr(pos) << "]:" << line << ": ";
-			LogMessage(ss.str());
-		}
-
-		template<typename T>
-		static void LogMessage(T t)
-		{
-			std::cout << t;
-		}
-
-		template<typename T, typename... Args>
-		static void LogMessage(const char* chars, T t, Args... args)
-		{
-			// Reference: https://en.cppreference.com/w/cpp/language/parameter_pack
-
-			for (; *chars != '\0'; chars++)
-			{
-				if (*chars == '%')
-				{
-					LogMessage(t);
-					LogMessage(chars + 1, args...);
-					return;
-				}
-
-				LogMessage(*chars);
-			}
-		}
+	private:
+		static Ref<spdlog::logger> s_coreLogger;
+		static Ref<spdlog::logger> s_clientLogger;
 	};
 }
 
@@ -75,35 +38,14 @@ inline OStream& operator<<(OStream& os, const glm::mat<C, R, T, Q>& matrix)
 	return os << glm::to_string(matrix);
 }
 
-// Logging macros
-#define LOG(...) { \
-	::EpEngine::Log::LogMessage(__VA_ARGS__); \
-	::EpEngine::Log::ResetOutputColor(); \
-	::EpEngine::Log::EndMessage(); \
-}
+#define EP_CORE_TRACE(...)		::EpEngine::Log::GetCoreLogger()->trace(__VA_ARGS__)
+#define EP_CORE_INFO(...)		::EpEngine::Log::GetCoreLogger()->info(__VA_ARGS__)
+#define EP_CORE_WARN(...)		::EpEngine::Log::GetCoreLogger()->warn(__VA_ARGS__)
+#define EP_CORE_ERROR(...)		::EpEngine::Log::GetCoreLogger()->error(__VA_ARGS__)
+#define EP_CORE_CRITICAL(...)	::EpEngine::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
-#define LOG_WITH_LOCATION(...) { \
-	::EpEngine::Log::ParseLocation(__FILE__, __LINE__); \
-	LOG(__VA_ARGS__); \
-}
-
-#define EP_CORE_INFO(...) { \
-	::EpEngine::Log::SetOutputColor(::EpEngine::LogLevel::Info); \
-	LOG_WITH_LOCATION(__VA_ARGS__); \
-}
-
-#define EP_CORE_WARN(...) { \
-	::EpEngine::Log::SetOutputColor(::EpEngine::LogLevel::Warn); \
-	LOG_WITH_LOCATION(__VA_ARGS__); \
-}
-
-#define EP_CORE_ERROR(...) { \
-	::EpEngine::Log::SetOutputColor(::EpEngine::LogLevel::Error); \
-	LOG_WITH_LOCATION(__VA_ARGS__); \
-}
-
-// Only used in assertions! TODO: Make inaccessible global
-#define EP_CORE_CRITICAL(...) { \
-	::EpEngine::Log::SetOutputColor(::EpEngine::LogLevel::Critical); \
-	LOG_WITH_LOCATION(__VA_ARGS__); \
-}
+#define EP_TRACE(...)			::EpEngine::Log::GetClientLogger()->trace(__VA_ARGS__)
+#define EP_INFO(...)			::EpEngine::Log::GetClientLogger()->info(__VA_ARGS__)
+#define EP_WARN(...)			::EpEngine::Log::GetClientLogger()->warn(__VA_ARGS__)
+#define EP_ERROR(...)			::EpEngine::Log::GetClientLogger()->error(__VA_ARGS__)
+#define EP_CRITICAL(...)		::EpEngine::Log::GetClientLogger()->critical(__VA_ARGS__)

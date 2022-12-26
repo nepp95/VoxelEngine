@@ -13,3 +13,6 @@
 [submodule "EpEngine/vendor/box2d"]
 	path = EpEngine/vendor/box2d
 	url = https://github.com/nepp95/box2d.git
+[submodule "EpEngine/vendor/spdlog"]
+	path = EpEngine/vendor/spdlog
+	url = https://github.com/nepp95/spdlog.git

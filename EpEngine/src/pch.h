@@ -19,3 +19,4 @@
 #include <Windows.h>
 
 #include "EpEngine/Core/Base.h"
+#include "EpEngine/Core/Log.h"

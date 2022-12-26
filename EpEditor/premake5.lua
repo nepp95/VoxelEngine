@@ -19,7 +19,7 @@ project "EpEditor"
         "%{IncludeDir.entt}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.imgui}",
-        "%{IncludeDir.yaml_cpp}"
+        "%{IncludeDir.spdlog}"
     }
 
     links {
@@ -31,7 +31,7 @@ project "EpEditor"
     }
 
     dependson {
-        "ScriptCore"
+        "EpScriptCore"
     }
 
     filter "system:windows"
