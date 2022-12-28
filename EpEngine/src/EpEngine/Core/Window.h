@@ -44,7 +44,7 @@ namespace EpEngine
 
 		void SetEventCallback(const EventCallbackFn& callback) { m_callback = callback; }
 
-		GLFWwindow& GetNativeWindow() const { return *m_window; }
+		GLFWwindow* GetNativeWindow() const { return m_window; }
 
 	private:
 		WindowSpecification m_specification;

@@ -9,7 +9,7 @@ namespace EpEngine
 {
 	bool Input::IsKeyPressed(KeyCode key)
 	{
-		auto* window = &Application::Get().GetWindow().GetNativeWindow();
+		auto* window = Application::Get().GetWindow().GetNativeWindow();
 		auto state = glfwGetKey(window, key);
 
 		return state == GLFW_PRESS;
@@ -17,7 +17,7 @@ namespace EpEngine
 
 	bool Input::IsMouseButtonPressed(MouseCode button)
 	{
-		auto* window = &Application::Get().GetWindow().GetNativeWindow();
+		auto* window = Application::Get().GetWindow().GetNativeWindow();
 		auto state = glfwGetMouseButton(window, button);
 
 		return state == GLFW_PRESS;
@@ -25,7 +25,7 @@ namespace EpEngine
 
 	glm::vec2 Input::GetMousePosition()
 	{
-		auto* window = &Application::Get().GetWindow().GetNativeWindow();
+		auto* window = Application::Get().GetWindow().GetNativeWindow();
 		double xPos, yPos;
 		glfwGetCursorPos(window, &xPos, &yPos);
 

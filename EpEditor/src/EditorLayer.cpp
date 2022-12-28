@@ -1,11 +1,17 @@
 ﻿#include "EditorLayer.h"
 
+#include "EpEngine/Utility/FileDialog.h"
+
 #include <imgui/imgui.h>
 
 namespace EpEngine
 {
 	#define DEBUG_PANEL "DebugPanel"
 	#define SCENE_HIERARCHY_PANEL "SceneHierarchyPanel"
+
+	EditorLayer::EditorLayer()
+		: Layer("EditorLayer")
+	{}
 
 	void EditorLayer::OnAttach()
 	{
@@ -319,11 +325,25 @@ namespace EpEngine
 
 	void EditorLayer::NewScene()
 	{
+		if (m_sceneState != SceneState::Edit)
+			OnSceneStop();
+
+		m_scenePath = std::filesystem::path();
+
+		m_editorScene = CreateRef<Scene>();
+		m_editorScene->OnViewportResize((uint32_t) m_viewportSize.x, (uint32_t) m_viewportSize.y);
+		m_panelManager->SetSceneContext(m_editorScene);
 	}
 
 	void EditorLayer::OpenScene()
 	{
-		OpenScene("assets/scenes/test.scene");
+		std::filesystem::path filepath = FileDialog::OpenFile("EpEngine Scene (*.epscene)\0*.epscene\0");
+
+		if (!filepath.empty())
+		{
+			m_scenePath = filepath;
+			OpenScene(filepath);
+		}
 	}
 
 	void EditorLayer::OpenScene(const std::filesystem::path& filepath)
@@ -331,13 +351,19 @@ namespace EpEngine
 		if (m_sceneState != SceneState::Edit)
 			OnSceneStop();
 
-		Ref<Scene> newScene = CreateRef<Scene>();
+		if (filepath.extension().string() != ".epscene")
+		{
+			EP_WARN("Could not load {} because it is not a scene file!", filepath.filename().string());
+			return;
+		}
 
+		Ref<Scene> newScene = CreateRef<Scene>();
 		SceneSerializer serializer(newScene);
 		
 		if (serializer.Deserialize(filepath))
 		{
 			m_editorScene = newScene;
+			m_editorScene->OnViewportResize((uint32_t) m_viewportSize.x, (uint32_t) m_viewportSize.y);
 			m_panelManager->SetSceneContext(m_editorScene);
 		}
 	}
@@ -347,12 +373,25 @@ namespace EpEngine
 		if (m_sceneState != SceneState::Edit)
 			OnSceneStop();
 
-		SceneSerializer serializer(m_editorScene);
-		serializer.Serialize("assets/scenes/test.scene");
+		if (!m_scenePath.empty())
+		{
+			SceneSerializer serializer(m_editorScene);
+			serializer.Serialize(m_scenePath);
+		} else
+		{
+			SaveSceneAs();
+		}
 	}
 
 	void EditorLayer::SaveSceneAs()
 	{
+		std::filesystem::path filepath = FileDialog::SaveFile("EpEngine Scene (*.epscene)\0*.epscene\0");
+		
+		if (!filepath.empty())
+		{
+			m_scenePath = filepath;
+			SaveScene();
+		}
 	}
 
 	void EditorLayer::OnScenePlay()

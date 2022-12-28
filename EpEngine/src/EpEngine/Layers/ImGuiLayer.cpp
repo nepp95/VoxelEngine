@@ -40,7 +40,7 @@ namespace EpEngine
 		SetDarkThemeColors();
 
 		Application& app = Application::Get();
-		GLFWwindow* window = &app.GetWindow().GetNativeWindow();
+		GLFWwindow* window = app.GetWindow().GetNativeWindow();
 
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init("#version 450");
