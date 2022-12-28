@@ -118,6 +118,7 @@ namespace EpEngine
 		{
 			DisplayAddComponentEntry<CameraComponent>("Camera");
 			DisplayAddComponentEntry<SpriteComponent>("Sprite renderer");
+			DisplayAddComponentEntry<ScriptComponent>("Script");
 			DisplayAddComponentEntry<RigidBodyComponent>("Rigidbody");
 			DisplayAddComponentEntry<BoxColliderComponent>("Box Collider");
 
@@ -198,6 +199,28 @@ namespace EpEngine
 		{
 			// TODO: Texture changing/removing/adding
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+		});
+
+		DrawProperty<ScriptComponent>("Script", entity, [](auto& component)
+		{
+			std::string& name = component.ClassName;
+			// ImGui wants a char*, we use std::string
+			// We could cast a c_str to char*, but we still could not write to it
+			char buffer[256]{ 0 };
+			// Since ImGui accounts for the buffer size AND the null termination char, we can safely use strncpy.
+			std::strncpy(buffer, name.c_str(), sizeof(buffer));
+
+			bool scriptClassExists = ScriptEngine::EntityClassExists(name);
+
+			if (!scriptClassExists)
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f));
+
+			// Double quote prevents the label from showing
+			if (ImGui::InputText("Class", buffer, sizeof(buffer)))
+				name = std::string(buffer);
+
+			if (!scriptClassExists)
+				ImGui::PopStyleColor();
 		});
 
 		DrawProperty<RigidBodyComponent>("Rigidbody", entity, [](auto& component)

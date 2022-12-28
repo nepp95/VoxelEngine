@@ -46,7 +46,7 @@ namespace EpEngine
 
 		m_panelManager->SetSceneContext(m_editorScene);
 
-		OpenScene();
+		OpenScene("assets/scenes/scripting.epscene");
 	}
 
 	void EditorLayer::OnDetach()

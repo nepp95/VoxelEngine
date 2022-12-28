@@ -12,8 +12,4 @@ namespace EpEngine
 	UUID::UUID(uint64_t uuid)
 		: m_UUID(uuid)
 	{}
-
-	UUID::UUID(const UUID& other)
-		: m_UUID(other.m_UUID)
-	{}
 }

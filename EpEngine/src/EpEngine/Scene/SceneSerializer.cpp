@@ -245,6 +245,13 @@ namespace EpEngine
 				bcc.Restitution = boxColliderComponent["Restitution"].as<float>();
 				bcc.RestitutionThreshold = boxColliderComponent["RestitutionThreshold"].as<float>();
 			}
+
+			auto scriptComponent = entity["ScriptComponent"];
+			if (scriptComponent)
+			{
+				auto& sc = newEntity.AddComponent<ScriptComponent>();
+				sc.ClassName = scriptComponent["ClassName"].as<std::string>();
+			}
 		}
 
 		return true;
@@ -345,6 +352,17 @@ namespace EpEngine
 			out << YAML::Key << "Restitution" << YAML::Value << c.Restitution;
 			out << YAML::Key << "RestitutionThreshold" << YAML::Value << c.RestitutionThreshold;
 		
+			out << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<ScriptComponent>())
+		{
+			out << YAML::Key << "ScriptComponent" << YAML::Value;
+			out << YAML::BeginMap;
+
+			auto& c = entity.GetComponent<ScriptComponent>();
+			out << YAML::Key << "ClassName" << YAML::Value << c.ClassName;
+
 			out << YAML::EndMap;
 		}
 

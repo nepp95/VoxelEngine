@@ -5,6 +5,7 @@
 #include "EpEngine/Scene/Components.h"
 #include "EpEngine/Scene/Entity.h"
 #include "EpEngine/Renderer/Renderer.h"
+#include "EpEngine/Scripting/ScriptEngine.h"
 #include "EpEngine/Utility/Converter.h"
 
 #include <box2d/box2d.h>
@@ -39,6 +40,9 @@ namespace EpEngine
 		auto& tc = entity.AddComponent<TagComponent>();
 		tc.Tag = name.empty() ? "Entity" : name;
 
+		// Add entity to entity map
+		m_entityMap.insert_or_assign(uuid, entity);
+
 		// Return newly created entity
 		return entity;
 	}
@@ -46,6 +50,7 @@ namespace EpEngine
 	void Scene::DestroyEntity(Entity entity)
 	{
 		m_registry.destroy(entity);
+		m_entityMap.erase(entity.GetUUID());
 	}
 
 	void Scene::DuplicateEntity(Entity entity)
@@ -63,6 +68,8 @@ namespace EpEngine
 			newEntity.AddOrReplaceComponent<RigidBodyComponent>(entity.GetComponent<RigidBodyComponent>());
 		if (entity.HasComponent<BoxColliderComponent>())
 			newEntity.AddOrReplaceComponent<BoxColliderComponent>(entity.GetComponent<BoxColliderComponent>());
+		if (entity.HasComponent<ScriptComponent>())
+			newEntity.AddOrReplaceComponent<ScriptComponent>(entity.GetComponent<ScriptComponent>());
 	}
 
 	template<typename T>
@@ -107,29 +114,48 @@ namespace EpEngine
 		CopyComponent<SpriteComponent>(dstRegistry, srcRegistry, enttMap);
 		CopyComponent<RigidBodyComponent>(dstRegistry, srcRegistry, enttMap);
 		CopyComponent<BoxColliderComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<ScriptComponent>(dstRegistry, srcRegistry, enttMap);
 
 		return newScene;
 	}
 
 	void Scene::OnUpdateRuntime(float ts)
 	{
-		const int32_t velocityIterations = 6;
-		const int32_t positionIterations = 2;
-
-		m_physicsWorld->Step(ts, velocityIterations, positionIterations);
-
-		auto view = m_registry.view<RigidBodyComponent>();
-		for (auto entity : view)
+		/************************************************************************/
+		/* Scripting                                                            */
+		/************************************************************************/
 		{
-			auto& transform = m_registry.get<TransformComponent>(entity);
-			auto& rigidbody = m_registry.get<RigidBodyComponent>(entity);
+			auto view = m_registry.view<ScriptComponent>();
+			for (auto e : view)
+			{
+				Entity entity{ e, this };
+				ScriptEngine::OnUpdateEntity(entity, ts);
+			}
+		}
 
-			b2Body* body = (b2Body*) rigidbody.RuntimeBody;
-			const auto& position = body->GetPosition();
+		/************************************************************************/
+		/* Physics                                                              */
+		/************************************************************************/
+		{
+			const int32_t velocityIterations = 6;
+			const int32_t positionIterations = 2;
 
-			transform.Translation.x = position.x;
-			transform.Translation.y = position.y;
-			transform.Rotation.z = body->GetAngle();
+			m_physicsWorld->Step(ts, velocityIterations, positionIterations);
+
+			auto view = m_registry.view<RigidBodyComponent>();
+			for (auto e : view)
+			{
+				Entity entity{ e, this };
+				auto& transform = entity.GetComponent<TransformComponent>();
+				auto& rigidbody = entity.GetComponent<RigidBodyComponent>();
+
+				b2Body* body = (b2Body*)rigidbody.RuntimeBody;
+				const auto& position = body->GetPosition();
+
+				transform.Translation.x = position.x;
+				transform.Translation.y = position.y;
+				transform.Rotation.z = body->GetAngle();
+			}
 		}
 	}
 
@@ -176,47 +202,21 @@ namespace EpEngine
 
 	void Scene::OnRuntimeStart()
 	{
-		m_physicsWorld = new b2World({ 0.0f, -9.8f });
+		OnPhysicsStart();
+		ScriptEngine::OnRuntimeStart(this);
 
-		auto view = m_registry.view<RigidBodyComponent>();
-		for (auto entity : view)
+		auto view = m_registry.view<ScriptComponent>();
+		for (auto e : view)
 		{
-			Entity e{ entity, this };
-			auto& transform = e.GetComponent<TransformComponent>();
-			auto& rigidbody = e.GetComponent<RigidBodyComponent>();
-
-			b2BodyDef bodyDef;
-			bodyDef.type = Converter::RigidBodyTypeToBox2DBodyType(rigidbody.Type);
-			bodyDef.position.Set(transform.Translation.x, transform.Translation.y);
-			bodyDef.angle = transform.Rotation.z;
-
-			b2Body* body = m_physicsWorld->CreateBody(&bodyDef);
-			body->SetFixedRotation(rigidbody.FixedRotation);
-			rigidbody.RuntimeBody = body;
-
-			if (e.HasComponent<BoxColliderComponent>())
-			{
-				auto& boxCollider = e.GetComponent<BoxColliderComponent>();
-
-				b2PolygonShape boxShape;
-				boxShape.SetAsBox(0.5f, 0.5f);
-
-				b2FixtureDef fixtureDef;
-				fixtureDef.shape = &boxShape;
-				fixtureDef.density = boxCollider.Density;
-				fixtureDef.friction = boxCollider.Friction;
-				fixtureDef.restitution = boxCollider.Restitution;
-				fixtureDef.restitutionThreshold = boxCollider.RestitutionThreshold;
-
-				body->CreateFixture(&fixtureDef);
-			}
+			Entity entity{ e, this };
+			ScriptEngine::OnCreateEntity(entity);
 		}
 	}
 
 	void Scene::OnRuntimeStop()
 	{
-		delete m_physicsWorld;
-		m_physicsWorld = nullptr;
+		OnPhysicsStop();
+		ScriptEngine::OnRuntimeStop();
 	}
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
@@ -251,6 +251,14 @@ namespace EpEngine
 		return {};
 	}
 
+	Entity Scene::GetEntityByUUID(UUID uuid)
+	{
+		if (m_entityMap.find(uuid) != m_entityMap.end())
+			return Entity{ m_entityMap.at(uuid), this };
+
+		return {};
+	}
+
 	void Scene::RenderScene(EditorCamera& camera)
 	{
 		EP_PROFILE_FUNCTION();
@@ -269,6 +277,51 @@ namespace EpEngine
 
 		// End render
 		Renderer::EndScene();
+	}
+
+	void Scene::OnPhysicsStart()
+	{
+		m_physicsWorld = new b2World({ 0.0f, -9.8f });
+
+		auto view = m_registry.view<RigidBodyComponent>();
+		for (auto e : view)
+		{
+			Entity entity{ e, this };
+			auto& transform = entity.GetComponent<TransformComponent>();
+			auto& rigidbody = entity.GetComponent<RigidBodyComponent>();
+
+			b2BodyDef bodyDef;
+			bodyDef.type = Converter::RigidBodyTypeToBox2DBodyType(rigidbody.Type);
+			bodyDef.position.Set(transform.Translation.x, transform.Translation.y);
+			bodyDef.angle = transform.Rotation.z;
+
+			b2Body* body = m_physicsWorld->CreateBody(&bodyDef);
+			body->SetFixedRotation(rigidbody.FixedRotation);
+			rigidbody.RuntimeBody = body;
+
+			if (entity.HasComponent<BoxColliderComponent>())
+			{
+				auto& boxCollider = entity.GetComponent<BoxColliderComponent>();
+
+				b2PolygonShape boxShape;
+				boxShape.SetAsBox(boxCollider.Size.x * transform.Scale.x, boxCollider.Size.y * transform.Scale.y);
+
+				b2FixtureDef fixtureDef;
+				fixtureDef.shape = &boxShape;
+				fixtureDef.density = boxCollider.Density;
+				fixtureDef.friction = boxCollider.Friction;
+				fixtureDef.restitution = boxCollider.Restitution;
+				fixtureDef.restitutionThreshold = boxCollider.RestitutionThreshold;
+
+				body->CreateFixture(&fixtureDef);
+			}
+		}
+	}
+
+	void Scene::OnPhysicsStop()
+	{
+		delete m_physicsWorld;
+		m_physicsWorld = nullptr;
 	}
 
 	template<typename T>
@@ -304,5 +357,9 @@ namespace EpEngine
 
 	template<>
 	void Scene::OnComponentAdded<BoxColliderComponent>(Entity entity, BoxColliderComponent& component)
+	{}
+	
+	template<>
+	void Scene::OnComponentAdded<ScriptComponent>(Entity entity, ScriptComponent& component)
 	{}
 }

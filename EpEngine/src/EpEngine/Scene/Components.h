@@ -79,6 +79,9 @@ namespace EpEngine
 		SpriteComponent(const SpriteComponent&) = default;
 	};
 
+	/************************************************************************/
+	/* Physics                                                              */
+	/************************************************************************/
 	struct RigidBodyComponent
 	{
 		enum class BodyType { Static, Dynamic, Kinematic };
@@ -103,5 +106,19 @@ namespace EpEngine
 
 		BoxColliderComponent() = default;
 		BoxColliderComponent(const BoxColliderComponent&) = default;
+	};
+
+	/************************************************************************/
+	/* Scripting                                                            */
+	/************************************************************************/
+	struct ScriptComponent
+	{
+		std::string ClassName;
+
+		ScriptComponent() = default;
+		ScriptComponent(const ScriptComponent&) = default;
+
+		operator std::string& () { return ClassName; }
+		operator const std::string& () const { return ClassName; }
 	};
 }
