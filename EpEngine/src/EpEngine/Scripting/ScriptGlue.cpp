@@ -70,7 +70,7 @@ namespace EpEngine
 		EP_CORE_ASSERT(entity);
 
 		auto& rb = entity.GetComponent<RigidBodyComponent>();
-		b2Body* body = (b2Body*)rb.RuntimeBody;
+		b2Body* body = (b2Body*) rb.RuntimeBody;
 
 		body->ApplyLinearImpulseToCenter(b2Vec2(impulse->x, impulse->y), wake);
 	}

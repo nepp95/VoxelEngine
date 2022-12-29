@@ -3,8 +3,8 @@ project "EpScriptCore"
 	language "C#"
 	dotnetframework "4.8"
 
-	targetdir("%{wks.location}/EpEditor/Resources/Scripts")
-	objdir("%{wks.location}/EpEditor/Scripts/Intermediates")
+	targetdir("../EpEditor/Resources/Scripts")
+	objdir("../EpEditor/Scripts/Intermediates")
 
 	files {
 		"Source/**.cs",

@@ -33,5 +33,6 @@ workspace "EpEngine"
 	group ""
 
 	group "Client"
-		include "Sandbox"
+		--include "Sandbox" IF we uncomment this, the name needs to be changed because of below. Which should not be here anyway...
+		include "EpEditor/SandboxProject/Assets/Scripts"
 	group ""
