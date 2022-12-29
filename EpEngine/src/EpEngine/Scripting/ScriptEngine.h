@@ -12,6 +12,7 @@ extern "C" {
 	using MonoObject = struct _MonoObject;
 	using MonoMethod = struct _MonoMethod;
 	using MonoAssembly = struct _MonoAssembly;
+	using MonoImage = struct _MonoImage;
 }
 
 namespace EpEngine
@@ -37,6 +38,8 @@ namespace EpEngine
 		static Scene* GetSceneContext();
 		static std::map<std::string, Ref<ScriptClass>> GetEntityClasses();
 
+		static MonoImage* GetCoreAssemblyImage();
+
 	private:
 		static void InitMono();
 		static void ShutdownMono();
@@ -45,6 +48,7 @@ namespace EpEngine
 		static void LoadAssemblyClasses(MonoAssembly* assembly);
 
 		friend class ScriptClass;
+		friend class ScriptGlue;
 	};
 
 	class ScriptClass

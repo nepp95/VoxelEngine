@@ -1,3 +1,5 @@
+using System;
+
 namespace EpEngine
 {
     public class Entity
@@ -18,13 +20,28 @@ namespace EpEngine
         {
             get
             {
-                InternalCalls.Entity_GetTranslation(UUID, out Vector3 result);
+                InternalCalls.TransformComponent_GetTranslation(UUID, out Vector3 result);
                 return result;
             }
             set
             {
-                InternalCalls.Entity_SetTranslation(UUID, ref value);
+                InternalCalls.TransformComponent_SetTranslation(UUID, ref value);
             }
+        }
+
+        public bool HasComponent<T>() where T : Component, new()
+        {
+            Type componentType = typeof(T);
+            return InternalCalls.Entity_HasComponent(UUID, componentType);
+        }
+
+        public T GetComponent<T>() where T : Component, new()
+        {
+            if (!HasComponent<T>())
+                return null;
+
+            T component = new T() { Entity = this };
+            return component;
         }
     }
 }

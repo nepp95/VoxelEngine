@@ -1,7 +1,7 @@
 #pragma once
 
 #include "EpEngine/Scene/Entity.h"
-#include "EpEngine/Scene/Scene.h";
+#include "EpEngine/Scene/Scene.h"
 
 // Forward declaration
 namespace YAML

@@ -14,6 +14,20 @@ enum b2BodyType;
 
 namespace EpEngine
 {
+	/*
+		Components
+		
+		IDComponent
+		TagComponent
+		TransformComponent
+		CameraComponent
+		SpriteComponent
+		RigidBodyComponent
+		BoxColliderComponent
+		ScriptComponent
+	
+	*/
+
 	struct IDComponent
 	{
 		UUID uuid;

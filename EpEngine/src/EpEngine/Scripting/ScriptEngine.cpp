@@ -128,9 +128,9 @@ namespace EpEngine
 		InitMono();
 		LoadAssembly("Resources/Scripts/EpScriptCore.dll");
 		LoadAssemblyClasses(s_data->CoreAssembly);
-		auto& classes = s_data->EntityClasses;
 
 		// Add internal calls
+		ScriptGlue::RegisterComponents();
 		ScriptGlue::RegisterFunctions();
 
 		s_data->EntityClass = ScriptClass("EpEngine", "Entity");
@@ -230,6 +230,11 @@ namespace EpEngine
 	std::map<std::string, Ref<ScriptClass>> ScriptEngine::GetEntityClasses()
 	{
 		return s_data->EntityClasses;
+	}
+
+	MonoImage* ScriptEngine::GetCoreAssemblyImage()
+	{
+		return s_data->CoreAssemblyImage;
 	}
 
 	void ScriptEngine::InitMono()
@@ -337,12 +342,16 @@ namespace EpEngine
 
 	void ScriptInstance::InvokeOnCreate()
 	{
-		m_scriptClass->InvokeMethod(m_instance, m_onCreateMethod);
+		if (m_onCreateMethod)
+			m_scriptClass->InvokeMethod(m_instance, m_onCreateMethod);
 	}
 
 	void ScriptInstance::InvokeOnUpdate(float ts)
 	{
-		void* params = &ts;
-		m_scriptClass->InvokeMethod(m_instance, m_onUpdateMethod, &params);
+		if (m_onUpdateMethod)
+		{
+			void* params = &ts;
+			m_scriptClass->InvokeMethod(m_instance, m_onUpdateMethod, &params);
+		}
 	}
 }

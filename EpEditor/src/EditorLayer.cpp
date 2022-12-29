@@ -46,7 +46,7 @@ namespace EpEngine
 
 		m_panelManager->SetSceneContext(m_editorScene);
 
-		OpenScene("assets/scenes/scripting.epscene");
+		OpenScene("assets/scenes/physics.epscene");
 	}
 
 	void EditorLayer::OnDetach()
@@ -341,7 +341,6 @@ namespace EpEngine
 
 		if (!filepath.empty())
 		{
-			m_scenePath = filepath;
 			OpenScene(filepath);
 		}
 	}
@@ -362,6 +361,7 @@ namespace EpEngine
 		
 		if (serializer.Deserialize(filepath))
 		{
+			m_scenePath = filepath;
 			m_editorScene = newScene;
 			m_editorScene->OnViewportResize((uint32_t) m_viewportSize.x, (uint32_t) m_viewportSize.y);
 			m_panelManager->SetSceneContext(m_editorScene);
