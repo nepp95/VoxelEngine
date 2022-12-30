@@ -201,13 +201,10 @@ namespace EpEngine
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
 		});
 
-		DrawProperty<ScriptComponent>("Script", entity, [](auto& component)
+		DrawProperty<ScriptComponent>("Script", entity, [entity](auto& component) mutable
 		{
 			std::string& name = component.ClassName;
-			// ImGui wants a char*, we use std::string
-			// We could cast a c_str to char*, but we still could not write to it
 			char buffer[256]{ 0 };
-			// Since ImGui accounts for the buffer size AND the null termination char, we can safely use strncpy.
 			std::strncpy(buffer, name.c_str(), sizeof(buffer));
 
 			bool scriptClassExists = ScriptEngine::EntityClassExists(name);
@@ -215,9 +212,24 @@ namespace EpEngine
 			if (!scriptClassExists)
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f));
 
-			// Double quote prevents the label from showing
 			if (ImGui::InputText("Class", buffer, sizeof(buffer)))
 				name = std::string(buffer);
+
+			// Fields
+			Ref<ScriptInstance> scriptInstance = ScriptEngine::GetEntityScriptInstance(entity.GetUUID());
+			if (scriptInstance)
+			{
+				const auto& fields = scriptInstance->GetScriptClass()->GetFields();
+				for (const auto& [name, field] : fields)
+				{
+					if (field.Type == ScriptFieldType::Float)
+					{
+						float data = scriptInstance->GetFieldValue<float>(name);
+						if (ImGui::DragFloat(name.c_str(), &data))
+							scriptInstance->SetFieldValue(name, data);	
+					}
+				}
+			}
 
 			if (!scriptClassExists)
 				ImGui::PopStyleColor();
