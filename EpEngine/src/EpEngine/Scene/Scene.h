@@ -42,6 +42,8 @@ namespace EpEngine
 		Entity GetCameraEntity();
 		Entity GetEntityByUUID(UUID uuid);
 
+		bool IsRunning() const { return m_isRunning; }
+
 	private:
 		void RenderScene(EditorCamera& camera);
 
@@ -57,6 +59,7 @@ namespace EpEngine
 
 		uint32_t m_viewportWidth{ 0 };
 		uint32_t m_viewportHeight{ 0 };
+		bool m_isRunning{ false };
 
 		b2World* m_physicsWorld{ nullptr };
 

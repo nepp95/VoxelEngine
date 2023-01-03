@@ -16,8 +16,6 @@ namespace Sandbox
 
             m_transform = GetComponent<TransformComponent>();
             m_rigidBody = GetComponent<RigidBodyComponent>();
-
-            Speed = 0.03f;
         }
 
         public void OnUpdate(float ts)
@@ -35,13 +33,13 @@ namespace Sandbox
             else if (Input.IsKeyDown(KeyCode.D))
                 velocity.X = 1.0f;
 
-            velocity *= speed;
+            velocity *= speed * ts;
 
             m_rigidBody.ApplyLinearImpulse(velocity.XY, true);
 
-            Vector3 translation = m_transform.Translation;
-            translation += velocity * ts;
-            m_transform.Translation = translation;
+            //Vector3 translation = m_transform.Translation;
+            //translation += velocity * ts;
+            //m_transform.Translation = translation;
         }
     }
 }

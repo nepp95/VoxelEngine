@@ -40,6 +40,39 @@ namespace EpEngine
 		MonoClassField* ClassField;
 	};
 
+	struct ScriptFieldInstance
+	{
+		ScriptField Field;
+
+		ScriptFieldInstance()
+		{
+			memset(m_buffer, 0, sizeof(m_buffer));
+		}
+
+		template<typename T>
+		T GetValue()
+		{
+			static_assert(sizeof(T) <= 8, "Type too large!");
+			return *(T*)m_buffer;
+		}
+
+		template<typename T>
+		void SetValue(T value)
+		{
+			static_assert(sizeof(T) <= 8, "Type too large!");
+			EP_CORE_TRACE("Sizeof T: {}, value is: {}", sizeof(T), value);
+			memcpy(m_buffer, &value, sizeof(T));
+		}
+
+	private:
+		uint8_t m_buffer[8];
+
+		friend class ScriptInstance;
+		friend class ScriptEngine;
+	};
+
+	using ScriptFieldMap = std::unordered_map<std::string, ScriptFieldInstance>;
+
 	class ScriptEngine
 	{
 	public:
@@ -58,7 +91,9 @@ namespace EpEngine
 
 		static Scene* GetSceneContext();
 		static Ref<ScriptInstance> GetEntityScriptInstance(UUID uuid);
-		static std::map<std::string, Ref<ScriptClass>> GetEntityClasses();
+		static Ref<ScriptClass> GetEntityClass(const std::string& name);		
+		static std::unordered_map<std::string, Ref<ScriptClass>> GetEntityClasses();
+		static ScriptFieldMap& GetScriptFieldMap(UUID uuid);
 
 		static MonoImage* GetCoreAssemblyImage();
 
@@ -110,8 +145,9 @@ namespace EpEngine
 		template<typename T>
 		T GetFieldValue(const std::string& name)
 		{
-			bool success = GetFieldValueInternal(name, s_fieldValueBuffer);
-			if (!success)
+			static_assert(sizeof(T) <= 8, "Type too large!");
+
+			if (!GetFieldValueInternal(name, s_fieldValueBuffer));
 				return T();
 
 			return *(T*) s_fieldValueBuffer;
@@ -120,8 +156,8 @@ namespace EpEngine
 		template<typename T>
 		void SetFieldValue(const std::string& name, const T& value)
 		{
-			if (!SetFieldValueInternal(name, &value))
-				EP_CORE_ERROR("Failed to set field value (Field: {}, Value: {})", name, value);
+			static_assert(sizeof(T) <= 8, "Type too large!");
+			SetFieldValueInternal(name, &value);
 		}
 
 	private:
@@ -136,5 +172,8 @@ namespace EpEngine
 		MonoMethod* m_onUpdateMethod{ nullptr };
 
 		inline static char s_fieldValueBuffer[8];
+
+		friend class ScriptEngine;
+		friend struct ScriptFieldInstance;
 	};
 }

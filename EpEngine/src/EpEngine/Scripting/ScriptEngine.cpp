@@ -180,8 +180,9 @@ namespace EpEngine
 
 		ScriptClass EntityClass;
 
-		std::map<std::string, Ref<ScriptClass>> EntityClasses;
-		std::map<UUID, Ref<ScriptInstance>> EntityInstances;
+		std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;
+		std::unordered_map<UUID, Ref<ScriptInstance>> EntityInstances;
+		std::unordered_map<UUID, ScriptFieldMap> EntityScriptFields;
 
 		Scene* SceneContext{ nullptr };
 	};
@@ -280,9 +281,22 @@ namespace EpEngine
 		const auto& sc = entity.GetComponent<ScriptComponent>();
 		if (ScriptEngine::EntityClassExists(sc.ClassName))
 		{
+			UUID uuid = entity.GetUUID();
+
 			Ref<ScriptInstance> instance = CreateRef<ScriptInstance>(s_data->EntityClasses.at(sc.ClassName), entity);
 
-			s_data->EntityInstances.insert_or_assign(entity.GetUUID(), instance);
+			s_data->EntityInstances.insert_or_assign(uuid, instance);
+			auto& test1 = s_data->EntityScriptFields;
+			auto& test2 = s_data->EntityInstances;
+
+			auto it = s_data->EntityScriptFields.find(uuid);
+			if (it != s_data->EntityScriptFields.end())
+			{
+				const ScriptFieldMap& fieldMap = it->second;
+				for (const auto& [name, fieldInstance] : fieldMap)
+					instance->SetFieldValueInternal(name, fieldInstance.m_buffer);
+			}
+
 			instance->InvokeOnCreate();
 		}
 	}
@@ -310,9 +324,25 @@ namespace EpEngine
 		return it->second;
 	}
 
-	std::map<std::string, Ref<ScriptClass>> ScriptEngine::GetEntityClasses()
+	Ref<ScriptClass> ScriptEngine::GetEntityClass(const std::string& name)
+	{
+		auto it = s_data->EntityClasses.find(name);
+		if (it == s_data->EntityClasses.end())
+			return nullptr;
+
+		return it->second;
+	}
+
+	std::unordered_map<std::string, Ref<ScriptClass>> ScriptEngine::GetEntityClasses()
 	{
 		return s_data->EntityClasses;
+	}
+
+	ScriptFieldMap& ScriptEngine::GetScriptFieldMap(UUID uuid)
+	{
+		//EP_CORE_ASSERT(it != s_data->EntityScriptFields.end())
+
+		return s_data->EntityScriptFields[uuid];
 	}
 
 	MonoImage* ScriptEngine::GetCoreAssemblyImage()

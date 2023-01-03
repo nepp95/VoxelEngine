@@ -201,11 +201,11 @@ namespace EpEngine
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
 		});
 
-		DrawProperty<ScriptComponent>("Script", entity, [entity](auto& component) mutable
+		DrawProperty<ScriptComponent>("Script", entity, [entity, scene = m_context](auto& component) mutable
 		{
 			std::string& name = component.ClassName;
 			char buffer[256]{ 0 };
-			std::strncpy(buffer, name.c_str(), sizeof(buffer));
+			strcpy_s(buffer, sizeof(buffer), name.c_str());
 
 			bool scriptClassExists = ScriptEngine::EntityClassExists(name);
 
@@ -215,22 +215,62 @@ namespace EpEngine
 			if (ImGui::InputText("Class", buffer, sizeof(buffer)))
 				name = std::string(buffer);
 
+			UUID uuid = entity.GetUUID();
+
 			// Fields
-			Ref<ScriptInstance> scriptInstance = ScriptEngine::GetEntityScriptInstance(entity.GetUUID());
-			if (scriptInstance)
+			if (scene->IsRunning())
 			{
-				const auto& fields = scriptInstance->GetScriptClass()->GetFields();
-				for (const auto& [name, field] : fields)
+				Ref<ScriptInstance> scriptInstance = ScriptEngine::GetEntityScriptInstance(uuid);
+				if (scriptInstance)
 				{
-					if (field.Type == ScriptFieldType::Float)
+					const auto& fields = scriptInstance->GetScriptClass()->GetFields();
+					for (const auto& [name, field] : fields)
 					{
-						float data = scriptInstance->GetFieldValue<float>(name);
-						if (ImGui::DragFloat(name.c_str(), &data))
-							scriptInstance->SetFieldValue(name, data);	
+						if (field.Type == ScriptFieldType::Float)
+						{
+							float data = scriptInstance->GetFieldValue<float>(name);
+							if (ImGui::DragFloat(name.c_str(), &data))
+								scriptInstance->SetFieldValue(name, data);	
+						}
+					}
+				}
+			} else
+			{
+				if (scriptClassExists)
+				{
+					Ref<ScriptClass> entityClass = ScriptEngine::GetEntityClass(name);
+					const auto& fields = entityClass->GetFields();
+					auto& entityFields = ScriptEngine::GetScriptFieldMap(uuid);
+
+					for (const auto& [name, field] : fields)
+					{
+						if (entityFields.find(name) != entityFields.end())
+						{
+							ScriptFieldInstance& scriptField = entityFields.at(name);
+
+							if (field.Type == ScriptFieldType::Float)
+							{
+								float data = scriptField.GetValue<float>();
+								if (ImGui::DragFloat(name.c_str(), &data))
+									scriptField.SetValue(data);
+							}
+						} else
+						{
+							if (field.Type == ScriptFieldType::Float)
+							{
+								float data{ 0.0f };
+								if (ImGui::DragFloat(name.c_str(), &data))
+								{
+									ScriptFieldInstance& scriptField = entityFields[name];
+									scriptField.Field = field;
+									scriptField.SetValue(data);
+								}
+							}
+						}
 					}
 				}
 			}
-
+				
 			if (!scriptClassExists)
 				ImGui::PopStyleColor();
 		});

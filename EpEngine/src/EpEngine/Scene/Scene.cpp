@@ -202,6 +202,8 @@ namespace EpEngine
 
 	void Scene::OnRuntimeStart()
 	{
+		m_isRunning = true;
+
 		OnPhysicsStart();
 		ScriptEngine::OnRuntimeStart(this);
 
@@ -215,6 +217,8 @@ namespace EpEngine
 
 	void Scene::OnRuntimeStop()
 	{
+		m_isRunning = false;
+
 		OnPhysicsStop();
 		ScriptEngine::OnRuntimeStop();
 	}
