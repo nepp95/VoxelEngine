@@ -52,20 +52,19 @@ namespace EpEngine
 		template<typename T>
 		T GetValue()
 		{
-			static_assert(sizeof(T) <= 8, "Type too large!");
+			static_assert(sizeof(T) <= 16, "Type too large!");
 			return *(T*)m_buffer;
 		}
 
 		template<typename T>
 		void SetValue(T value)
 		{
-			static_assert(sizeof(T) <= 8, "Type too large!");
-			EP_CORE_TRACE("Sizeof T: {}, value is: {}", sizeof(T), value);
+			static_assert(sizeof(T) <= 16, "Type too large!");
 			memcpy(m_buffer, &value, sizeof(T));
 		}
 
 	private:
-		uint8_t m_buffer[8];
+		uint8_t m_buffer[16];
 
 		friend class ScriptInstance;
 		friend class ScriptEngine;
@@ -145,7 +144,7 @@ namespace EpEngine
 		template<typename T>
 		T GetFieldValue(const std::string& name)
 		{
-			static_assert(sizeof(T) <= 8, "Type too large!");
+			static_assert(sizeof(T) <= 16, "Type too large!");
 
 			if (!GetFieldValueInternal(name, s_fieldValueBuffer))
 				return T();
@@ -156,7 +155,7 @@ namespace EpEngine
 		template<typename T>
 		void SetFieldValue(const std::string& name, const T& value)
 		{
-			static_assert(sizeof(T) <= 8, "Type too large!");
+			static_assert(sizeof(T) <= 16, "Type too large!");
 			SetFieldValueInternal(name, &value);
 		}
 
@@ -171,9 +170,61 @@ namespace EpEngine
 		MonoMethod* m_onCreateMethod{ nullptr };
 		MonoMethod* m_onUpdateMethod{ nullptr };
 
-		inline static char s_fieldValueBuffer[8];
+		inline static char s_fieldValueBuffer[16];
 
 		friend class ScriptEngine;
 		friend struct ScriptFieldInstance;
 	};
+
+	namespace Utils
+	{
+		inline std::string ScriptFieldTypeToString(ScriptFieldType type)
+		{
+			switch (type)
+			{
+				case ScriptFieldType::Float:	return "Float";
+				case ScriptFieldType::Double:	return "Double";
+				case ScriptFieldType::Bool:		return "Bool";
+				case ScriptFieldType::Char:		return "Char";
+				case ScriptFieldType::Int16:	return "Int16";
+				case ScriptFieldType::Int32:	return "Int32";
+				case ScriptFieldType::Int64:	return "Int64";
+				case ScriptFieldType::Byte:		return "Byte";
+				case ScriptFieldType::UInt16:	return "UInt16";
+				case ScriptFieldType::UInt32:	return "UInt32";
+				case ScriptFieldType::UInt64:	return "UInt64";
+
+				case ScriptFieldType::Vector2:	return "Vector2";
+				case ScriptFieldType::Vector3:	return "Vector3";
+				case ScriptFieldType::Vector4:	return "Vector4";
+
+				case ScriptFieldType::Entity:	return "Entity";
+			}
+
+			EP_CORE_ASSERT(false, "Unknown ScriptFieldType!");
+			return "None";
+		}
+
+		inline ScriptFieldType ScriptFieldTypeFromString(std::string_view type)
+		{
+			if (type == "Float")		return ScriptFieldType::Float;
+			if (type == "Double")		return ScriptFieldType::Double;
+			if (type == "Bool")			return ScriptFieldType::Bool;
+			if (type == "Char")			return ScriptFieldType::Char;
+			if (type == "Int16")		return ScriptFieldType::Int16;
+			if (type == "Int32")		return ScriptFieldType::Int32;
+			if (type == "Int64")		return ScriptFieldType::Int64;
+			if (type == "Byte")			return ScriptFieldType::Byte;
+			if (type == "UInt16")		return ScriptFieldType::UInt16;
+			if (type == "UInt32")		return ScriptFieldType::UInt32;
+			if (type == "UInt64")		return ScriptFieldType::UInt64;
+			if (type == "Vector2")		return ScriptFieldType::Vector2;
+			if (type == "Vector3")		return ScriptFieldType::Vector3;
+			if (type == "Vector4")		return ScriptFieldType::Vector4;
+			if (type == "Entity")		return ScriptFieldType::Entity;
+
+			EP_CORE_ASSERT(false, "Unknown ScriptFieldType!");
+			return ScriptFieldType::None;
+		}
+	}
 }

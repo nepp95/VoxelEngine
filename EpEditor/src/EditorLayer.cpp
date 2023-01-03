@@ -46,7 +46,16 @@ namespace EpEngine
 
 		m_panelManager->SetSceneContext(m_editorScene);
 
-		OpenScene("assets/scenes/physics.epscene");
+		auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
+		if (commandLineArgs.Count > 1)
+		{
+			auto sceneFilepath = commandLineArgs[1];
+			OpenScene(sceneFilepath);
+		} else
+		{
+			// TODO: Remove when projects have been added!
+			OpenScene("assets/scenes/physics.epscene");
+		}
 	}
 
 	void EditorLayer::OnDetach()
@@ -245,7 +254,7 @@ namespace EpEngine
 
 		m_viewportFocused = ImGui::IsWindowFocused();
 		m_viewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportFocused && !m_viewportHovered);
+		Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportHovered);
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_viewportSize = { viewportPanelSize.x, viewportPanelSize.y };
@@ -409,7 +418,7 @@ namespace EpEngine
 
 	void EditorLayer::OnSceneStop()
 	{
-		EP_CORE_ASSERT(m_sceneState == SceneState::Play, "Tried to stop a runtime scene which wasn't running!");
+		EP_ASSERT(m_sceneState == SceneState::Play, "Tried to stop a runtime scene which wasn't running!");
 		m_sceneState = SceneState::Edit;
 
 		m_activeScene->OnRuntimeStop();

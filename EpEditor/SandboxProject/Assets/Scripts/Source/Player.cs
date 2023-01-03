@@ -8,7 +8,7 @@ namespace Sandbox
         private TransformComponent m_transform;
         private RigidBodyComponent m_rigidBody;
 
-        public float Speed;
+        public float Speed = 0.0f;
 
         public void OnCreate()
         {

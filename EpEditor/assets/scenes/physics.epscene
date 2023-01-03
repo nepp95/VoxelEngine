@@ -39,6 +39,8 @@ Entities:
       Primary: true
     ScriptComponent:
       ClassName: Sandbox.Camera
+      ScriptFields:
+        []
   - Entity: 11017977659349142388
     TagComponent:
       Tag: Wall Left
@@ -95,9 +97,13 @@ Entities:
     BoxColliderComponent:
       Offset: [0, 0]
       Size: [0.5, 0.5]
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
+      Density: 0.800000012
+      Friction: 0.100000001
+      Restitution: 0.5
       RestitutionThreshold: 0.5
     ScriptComponent:
       ClassName: Sandbox.Player
+      ScriptFields:
+        - Name: Speed
+          Type: Float
+          Data: 5

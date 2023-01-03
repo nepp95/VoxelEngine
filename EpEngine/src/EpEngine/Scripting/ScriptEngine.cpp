@@ -134,32 +134,6 @@ namespace EpEngine
 			return ScriptFieldType::None;
 		}
 
-		std::string ScriptFieldTypeToString(ScriptFieldType type)
-		{
-			switch (type)
-			{
-				case ScriptFieldType::Float:	return "Float";
-				case ScriptFieldType::Double:	return "Double";
-				case ScriptFieldType::Bool:		return "Bool";
-				case ScriptFieldType::Char:		return "Char";
-				case ScriptFieldType::Int16:	return "Int16";
-				case ScriptFieldType::Int32:	return "Int32";
-				case ScriptFieldType::Int64:	return "Int64";
-				case ScriptFieldType::Byte:		return "Byte";
-				case ScriptFieldType::UInt16:	return "UInt16";
-				case ScriptFieldType::UInt32:	return "UInt32";
-				case ScriptFieldType::UInt64:	return "UInt64";
-
-				case ScriptFieldType::Vector2:	return "Vector2";
-				case ScriptFieldType::Vector3:	return "Vector3";
-				case ScriptFieldType::Vector4:	return "Vector4";
-
-				case ScriptFieldType::Entity:	return "Entity";
-			}
-
-			return "<Invalid>";
-		}
-
 		std::string MonoTypeToString(MonoType* monoType)
 		{
 			ScriptFieldType type = MonoTypeToScriptFieldType(monoType);
