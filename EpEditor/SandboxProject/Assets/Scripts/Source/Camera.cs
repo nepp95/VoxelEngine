@@ -1,13 +1,28 @@
 ﻿using EpEngine;
+using System;
 
 namespace Sandbox
 {
     public class Camera : Entity
     {
-        public Entity otherEntity;
+        private Entity Player;
+        public Entity OtherEntity;
+        public float DistanceFromPlayer = 5.0f;
+
+        void OnCreate()
+        {
+            Player = FindEntityByName("Player");
+        }
 
         public void OnUpdate(float ts)
         {
+            if (Player != null)
+            {
+                Translation = new Vector3(Player.Translation.XY, DistanceFromPlayer);
+            }
+
+            Translation = new Vector3(Player.Translation.XY, DistanceFromPlayer);
+
             float speed = 1.0f;
             Vector3 velocity = Vector3.Zero;
 

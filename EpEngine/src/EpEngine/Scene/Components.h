@@ -30,13 +30,13 @@ namespace EpEngine
 
 	struct IDComponent
 	{
-		UUID uuid;
+		UUID ID;
 
 		IDComponent() = default;
 		IDComponent(const IDComponent& other) = default;
 
-		operator UUID&() { return uuid; }
-		operator const UUID&() const { return uuid; }
+		operator UUID&() { return ID; }
+		operator const UUID&() const { return ID; }
 	};
 
 	struct TagComponent

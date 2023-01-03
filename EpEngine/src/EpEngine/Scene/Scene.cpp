@@ -79,7 +79,7 @@ namespace EpEngine
 
 		for (auto srcEntity : view)
 		{
-			entt::entity dstEntity = enttMap.at(src.get<IDComponent>(srcEntity));
+			entt::entity dstEntity = enttMap.at(src.get<IDComponent>(srcEntity).ID);
 			auto& srcComponent = src.get<T>(srcEntity);
 			dst.emplace_or_replace<T>(dstEntity, srcComponent);
 		}
@@ -95,6 +95,9 @@ namespace EpEngine
 	Ref<Scene> Scene::Copy(Ref<Scene> scene)
 	{
 		Ref<Scene> newScene = CreateRef<Scene>();
+		newScene->m_viewportHeight = scene->m_viewportHeight;
+		newScene->m_viewportWidth = scene->m_viewportWidth;
+
 		std::unordered_map<UUID, entt::entity> enttMap;
 
 		auto& srcRegistry = scene->m_registry;
@@ -225,6 +228,9 @@ namespace EpEngine
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
 	{
+		if (m_viewportWidth == width && m_viewportHeight == height)
+			return;
+
 		m_viewportWidth = width;
 		m_viewportHeight = height;
 
@@ -233,7 +239,6 @@ namespace EpEngine
 		for (auto entity : view)
 		{
 			auto& cameraComponent = view.get<CameraComponent>(entity);
-
 			cameraComponent.Camera.SetViewportSize(width, height);
 		}
 	}
@@ -260,6 +265,18 @@ namespace EpEngine
 		if (m_entityMap.find(uuid) != m_entityMap.end())
 			return Entity{ m_entityMap.at(uuid), this };
 
+		return {};
+	}
+
+	Entity Scene::FindEntityByName(const std::string& name)
+	{
+		auto view = m_registry.view<TagComponent>();
+		for (auto& e : view)
+		{
+			const auto& tc = view.get<TagComponent>(e);
+			if (tc.Tag == name)
+				return Entity{ e, this };
+		}
 		return {};
 	}
 

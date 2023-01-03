@@ -41,6 +41,7 @@ namespace EpEngine
 
 		Entity GetCameraEntity();
 		Entity GetEntityByUUID(UUID uuid);
+		Entity FindEntityByName(const std::string& name);
 
 		bool IsRunning() const { return m_isRunning; }
 

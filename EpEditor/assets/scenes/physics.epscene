@@ -24,23 +24,25 @@ Entities:
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Translation: [0, 0, 0]
+      Translation: [0, 6.30000019, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     CameraComponent:
       Camera:
-        ProjectionType: 1
+        ProjectionType: 0
         PerspectiveFov: 0.785398185
         PerspectiveNear: 0.00999999978
         PerspectiveFar: 1000
         OrthographicSize: 25
-        OrthographicNear: -1
-        OrthographicFar: 1
+        OrthographicNear: -10
+        OrthographicFar: 10
       Primary: true
     ScriptComponent:
       ClassName: Sandbox.Camera
       ScriptFields:
-        []
+        - Name: DistanceFromPlayer
+          Type: Float
+          Data: 20
   - Entity: 11017977659349142388
     TagComponent:
       Tag: Wall Left
@@ -83,7 +85,7 @@ Entities:
       RestitutionThreshold: 0.5
   - Entity: 2608290871690426620
     TagComponent:
-      Tag: Square
+      Tag: Player
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
@@ -106,4 +108,4 @@ Entities:
       ScriptFields:
         - Name: Speed
           Type: Float
-          Data: 5
+          Data: 10

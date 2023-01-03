@@ -72,6 +72,7 @@ namespace EpEngine
 		m_timestep = ts;
 
 		// Handle resize
+		// TODO: WHAT IS THIS IF STATEMENT!!!!!
 		bool resizeEvent{ false };
 		if (FramebufferSpecification specification = m_framebuffer->GetSpecification();
 			m_viewportSize.x > 0.0f && m_viewportSize.y > 0.0f &&
@@ -340,7 +341,6 @@ namespace EpEngine
 		m_scenePath = std::filesystem::path();
 
 		m_editorScene = CreateRef<Scene>();
-		m_editorScene->OnViewportResize((uint32_t) m_viewportSize.x, (uint32_t) m_viewportSize.y);
 		m_panelManager->SetSceneContext(m_editorScene);
 	}
 
@@ -372,7 +372,6 @@ namespace EpEngine
 		{
 			m_scenePath = filepath;
 			m_editorScene = newScene;
-			m_editorScene->OnViewportResize((uint32_t) m_viewportSize.x, (uint32_t) m_viewportSize.y);
 			m_panelManager->SetSceneContext(m_editorScene);
 		}
 	}

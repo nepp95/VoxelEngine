@@ -177,37 +177,6 @@ namespace EpEngine
 		ScriptGlue::RegisterFunctions();
 
 		s_data->EntityClass = ScriptClass("EpEngine", "Entity", true);
-
-#if 0
-		MonoObject* instance = s_data->EntityClass.Instantiate();
-
-		// Call method
-		MonoMethod* printMessageFunc = s_data->EntityClass.GetMethod("PrintMessage", 0);
-		s_data->EntityClass.InvokeMethod(instance, printMessageFunc);
-
-		// Call method with param
-		MonoMethod* printIntFunc = s_data->EntityClass.GetMethod("PrintInt", 1);
-
-		int value = 5;
-		void* params = &value;
-
-		s_data->EntityClass.InvokeMethod(instance, printIntFunc, &params);
-
-		// Call method with multiple params
-		MonoMethod* printIntsFunc = s_data->EntityClass.GetMethod("PrintInts", 2);
-
-		int value1 = 7, value2 = 8;
-		void* params2[2] = { &value1, &value2 };
-
-		s_data->EntityClass.InvokeMethod(instance, printIntsFunc, params2);
-
-		// Call method with string param
-		MonoMethod* printCustomMessageFunc = s_data->EntityClass.GetMethod("PrintCustomMessage", 1);
-		MonoString* str = mono_string_new(s_data->AppDomain, "test string");
-		void* params3 = str;
-
-		s_data->EntityClass.InvokeMethod(instance, printCustomMessageFunc, &params3);
-#endif
 	}
 
 	void ScriptEngine::Shutdown()
@@ -322,6 +291,14 @@ namespace EpEngine
 	MonoImage* ScriptEngine::GetCoreAssemblyImage()
 	{
 		return s_data->CoreAssemblyImage;
+	}
+
+	MonoObject* ScriptEngine::GetManagedInstance(UUID uuid)
+	{
+		auto it = s_data->EntityInstances.find(uuid);
+		EP_CORE_ASSERT(it != s_data->EntityInstances.end());
+
+		return it->second->GetManagedObject();
 	}
 
 	void ScriptEngine::InitMono()

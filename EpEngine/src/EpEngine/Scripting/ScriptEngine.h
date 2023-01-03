@@ -95,6 +95,7 @@ namespace EpEngine
 		static ScriptFieldMap& GetScriptFieldMap(UUID uuid);
 
 		static MonoImage* GetCoreAssemblyImage();
+		static MonoObject* GetManagedInstance(UUID uuid);
 
 	private:
 		static void InitMono();
@@ -140,6 +141,7 @@ namespace EpEngine
 		void InvokeOnUpdate(float ts);
 
 		Ref<ScriptClass> GetScriptClass() { return m_scriptClass; }
+		MonoObject* GetManagedObject() { return m_instance; }
 
 		template<typename T>
 		T GetFieldValue(const std::string& name)

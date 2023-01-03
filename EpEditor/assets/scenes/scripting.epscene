@@ -1,17 +1,5 @@
 Scene: Untitled
 Entities:
-  - Entity: 7039841154172525857
-    TagComponent:
-      Tag: Square
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    SpriteComponent:
-      TextureHandle: 0
-      Color: [0.828431368, 0.117767185, 0.117767185, 1]
-    ScriptComponent:
-      ClassName: Sandbox.Player
   - Entity: 7749658691749185205
     TagComponent:
       Tag: Camera
@@ -29,3 +17,13 @@ Entities:
         OrthographicNear: -1
         OrthographicFar: 1
       Primary: true
+  - Entity: 7039841154172525857
+    TagComponent:
+      Tag: Square
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      TextureHandle: 0
+      Color: [0.828431368, 0.117767185, 0.117767185, 1]

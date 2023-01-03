@@ -43,5 +43,20 @@ namespace EpEngine
             T component = new T() { Entity = this };
             return component;
         }
+
+        public Entity FindEntityByName(string name)
+        {
+            ulong uuid = InternalCalls.Entity_FindEntityByName(name);
+            if (uuid == 0)
+                return null;
+
+            return new Entity(uuid);
+        }
+
+        public T As<T>() where T : Entity, new()
+        {
+            object instance = InternalCalls.GetScriptInstance(UUID);
+            return instance as T;
+        }
     }
 }

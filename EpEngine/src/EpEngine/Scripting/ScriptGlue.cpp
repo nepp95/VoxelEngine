@@ -29,6 +29,26 @@ namespace EpEngine
 		return s_entityHasComponentFuncs.at(managedType)(entity);
 	}
 
+	static uint64_t Entity_FindEntityByName(MonoString* string)
+	{
+		Scene* scene = ScriptEngine::GetSceneContext();
+		EP_CORE_ASSERT(scene);
+
+		char* cStr = mono_string_to_utf8(string);
+		std::string str(cStr);
+		mono_free(cStr);
+
+		Entity entity = scene->FindEntityByName(str);
+		EP_CORE_ASSERT(entity);
+
+		return entity.GetUUID();
+	}
+
+	static MonoObject* GetScriptInstance(UUID uuid)
+	{
+		return ScriptEngine::GetManagedInstance(uuid);
+	}
+
 	static void TransformComponent_GetTranslation(UUID uuid, glm::vec3* outTranslation)
 	{
 		Scene* scene = ScriptEngine::GetSceneContext();
@@ -112,6 +132,8 @@ namespace EpEngine
 	void ScriptGlue::RegisterFunctions()
 	{
 		EP_ADD_INTERNAL_CALL(Entity_HasComponent);
+		EP_ADD_INTERNAL_CALL(Entity_FindEntityByName);
+		EP_ADD_INTERNAL_CALL(GetScriptInstance);
 		EP_ADD_INTERNAL_CALL(TransformComponent_GetTranslation);
 		EP_ADD_INTERNAL_CALL(TransformComponent_SetTranslation);
 		EP_ADD_INTERNAL_CALL(RigidBodyComponent_ApplyLinearImpulse);
