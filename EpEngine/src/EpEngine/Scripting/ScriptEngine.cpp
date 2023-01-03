@@ -510,7 +510,7 @@ namespace EpEngine
 			return false;
 
 		const ScriptField& field = it->second;
-		mono_field_get_value(m_instance, field.ClassField, s_fieldValueBuffer);
+		mono_field_get_value(m_instance, field.ClassField, buffer);
 
 		return true;
 	}

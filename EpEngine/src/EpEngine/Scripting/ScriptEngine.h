@@ -147,7 +147,7 @@ namespace EpEngine
 		{
 			static_assert(sizeof(T) <= 8, "Type too large!");
 
-			if (!GetFieldValueInternal(name, s_fieldValueBuffer));
+			if (!GetFieldValueInternal(name, s_fieldValueBuffer))
 				return T();
 
 			return *(T*) s_fieldValueBuffer;
