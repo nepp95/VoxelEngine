@@ -121,6 +121,8 @@ namespace EpEngine
 
 	void ScriptGlue::RegisterComponents()
 	{
+		s_entityHasComponentFuncs.clear();
+
 		RegisterComponent<TransformComponent>();
 		RegisterComponent<CameraComponent>();
 		RegisterComponent<SpriteComponent>();

@@ -152,6 +152,9 @@ namespace EpEngine
 		MonoAssembly* AppAssembly{ nullptr };
 		MonoImage* AppAssemblyImage{ nullptr };
 
+		std::filesystem::path CoreAssemblyFilepath;
+		std::filesystem::path AppAssemblyFilepath;
+
 		ScriptClass EntityClass;
 
 		std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;
@@ -168,14 +171,15 @@ namespace EpEngine
 		s_data = new ScriptEngineData();
 
 		InitMono();
+		ScriptGlue::RegisterFunctions();
+
 		LoadAssembly("Resources/Scripts/EpScriptCore.dll");
 		LoadAppAssembly("SandboxProject/Assets/Scripts/Binaries/Sandbox.dll");
 		LoadAssemblyClasses();
 
-		// Add internal calls
 		ScriptGlue::RegisterComponents();
-		ScriptGlue::RegisterFunctions();
 
+		// Get the base entity class
 		s_data->EntityClass = ScriptClass("EpEngine", "Entity", true);
 	}
 
@@ -192,6 +196,7 @@ namespace EpEngine
 		mono_domain_set(s_data->AppDomain, true);
 
 		// Setup core assembly
+		s_data->CoreAssemblyFilepath = filepath;
 		s_data->CoreAssembly = Utils::LoadMonoAssembly(filepath);
 		s_data->CoreAssemblyImage = mono_assembly_get_image(s_data->CoreAssembly);
 		// Utils::PrintAssemblyTypes(s_data->CoreAssembly);
@@ -199,8 +204,31 @@ namespace EpEngine
 
 	void ScriptEngine::LoadAppAssembly(const std::filesystem::path& filepath)
 	{
+		s_data->AppAssemblyFilepath = filepath;
 		s_data->AppAssembly = Utils::LoadMonoAssembly(filepath);
 		s_data->AppAssemblyImage = mono_assembly_get_image(s_data->AppAssembly);
+	}
+
+	void ScriptEngine::ReloadAssembly()
+	{
+		// TODO: Stop scene when it is active? Might crash.
+
+		// We get the active domain away from the one we are trying to reload
+		// App --> Root
+		mono_domain_set(mono_get_root_domain(), false);
+
+		// Unload the app domain which is now free to unload
+		mono_domain_unload(s_data->AppDomain);
+
+		// We can then start reloading the assembly
+		LoadAssembly(s_data->CoreAssemblyFilepath);
+		LoadAppAssembly(s_data->AppAssemblyFilepath);
+		LoadAssemblyClasses();
+
+		ScriptGlue::RegisterComponents();
+
+		// Get the base entity class
+		s_data->EntityClass = ScriptClass("EpEngine", "Entity", true);
 	}
 
 	void ScriptEngine::OnRuntimeStart(Scene* scene)
@@ -314,8 +342,12 @@ namespace EpEngine
 
 	void ScriptEngine::ShutdownMono()
 	{
-		// TODO: This is not the correct way but "Mono is pain".
+		mono_domain_set(mono_get_root_domain(), false);
+
+		mono_domain_unload(s_data->AppDomain);
 		s_data->AppDomain = nullptr;
+
+		mono_jit_cleanup(s_data->RootDomain);
 		s_data->RootDomain = nullptr;
 	}
 

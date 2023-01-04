@@ -1,19 +1,20 @@
---workspace "Sandbox"
---	architecture "x86_64"
---	startproject "Sandbox"
---
---	configurations {
---		"Debug",
---		"Release",
---		"Dist"
---	}
---
---	flags {
---		"MultiProcessorCompile"
---	}
+include "../../../../vendor/premake/premake_customization/solution_items.lua"
+
+workspace "Sandbox"
+	architecture "x86_64"
+	startproject "Sandbox"
+
+	configurations {
+		"Debug",
+		"Release",
+		"Dist"
+	}
+
+	flags {
+		"MultiProcessorCompile"
+	}
 
 project "Sandbox"
-	location ""
 	kind "SharedLib"
 	language "C#"
 	dotnetframework "4.8"

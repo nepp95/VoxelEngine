@@ -235,6 +235,14 @@ namespace EpEngine
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("Scripting"))
+			{
+				if (ImGui::MenuItem("Reload assembly", "CTRL+R"))
+					ScriptEngine::ReloadAssembly();
+
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenuBar();
 		}
 
@@ -304,6 +312,13 @@ namespace EpEngine
 			{
 				if (control)
 					OpenScene();
+				break;
+			}
+
+			case Key::R:
+			{
+				if (control)
+					ScriptEngine::ReloadAssembly();
 				break;
 			}
 

@@ -1,3 +1,4 @@
+include "./vendor/premake/premake_customization/solution_items.lua"
 include "Dependencies.lua"
 
 workspace "EpEngine"
@@ -17,6 +18,7 @@ workspace "EpEngine"
 	}
 	
 	group "Dependencies"
+		include "vendor/premake" -- Premake
 		include "EpEngine/vendor/box2d" -- Physics
 		include "EpEngine/vendor/glad" -- OpenGL abstraction
 		include "EpEngine/vendor/glfw" -- Window management
@@ -33,6 +35,6 @@ workspace "EpEngine"
 	group ""
 
 	group "Client"
-		--include "Sandbox" IF we uncomment this, the name needs to be changed because of below. Which should not be here anyway...
-		include "EpEditor/SandboxProject/Assets/Scripts"
+		include "Sandbox"
+		--include "EpEditor/SandboxProject/Assets/Scripts"
 	group ""
