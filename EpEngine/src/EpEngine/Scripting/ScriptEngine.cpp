@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "ScriptEngine.h"
 
+#include "EpEngine/Core/Application.h"
 #include "EpEngine/Scripting/ScriptGlue.h"
 
+#include <filewatch.h>
 #include <glm/glm.hpp>
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
@@ -161,10 +163,27 @@ namespace EpEngine
 		std::unordered_map<UUID, Ref<ScriptInstance>> EntityInstances;
 		std::unordered_map<UUID, ScriptFieldMap> EntityScriptFields;
 
+		Scope<filewatch::FileWatch<std::filesystem::path>> AppAssemblyFilewatch;
+		bool AssemblyReloadPending{ false };
+
 		Scene* SceneContext{ nullptr };
 	};
 
 	static ScriptEngineData* s_data;
+
+	static void OnAppAssemblyFileSystemEvent(const std::filesystem::path& path, const filewatch::Event changeType)
+	{
+		if (!s_data->AssemblyReloadPending && changeType == filewatch::Event::modified)
+		{
+			s_data->AssemblyReloadPending = true;
+
+			Application::Get().SubmitToMainThread([]()
+			{
+				s_data->AppAssemblyFilewatch.reset();
+				ScriptEngine::ReloadAssembly();
+			});
+		}
+	}
 
 	void ScriptEngine::Init()
 	{
@@ -207,10 +226,14 @@ namespace EpEngine
 		s_data->AppAssemblyFilepath = filepath;
 		s_data->AppAssembly = Utils::LoadMonoAssembly(filepath);
 		s_data->AppAssemblyImage = mono_assembly_get_image(s_data->AppAssembly);
+
+		s_data->AppAssemblyFilewatch = CreateScope<filewatch::FileWatch<std::filesystem::path>>(filepath, OnAppAssemblyFileSystemEvent);
+		s_data->AssemblyReloadPending = false;
 	}
 
 	void ScriptEngine::ReloadAssembly()
 	{
+		EP_CORE_INFO("Reloading assembly...");
 		// TODO: Stop scene when it is active? Might crash.
 
 		// We get the active domain away from the one we are trying to reload
@@ -229,6 +252,8 @@ namespace EpEngine
 
 		// Get the base entity class
 		s_data->EntityClass = ScriptClass("EpEngine", "Entity", true);
+
+		EP_CORE_INFO("Reloaded assembly");
 	}
 
 	void ScriptEngine::OnRuntimeStart(Scene* scene)

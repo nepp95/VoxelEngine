@@ -432,7 +432,9 @@ namespace EpEngine
 
 	void EditorLayer::OnSceneStop()
 	{
-		EP_ASSERT(m_sceneState == SceneState::Play, "Tried to stop a runtime scene which wasn't running!");
+		if (m_sceneState == SceneState::Edit)
+			return;
+
 		m_sceneState = SceneState::Edit;
 
 		m_activeScene->OnRuntimeStop();

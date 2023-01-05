@@ -14,7 +14,7 @@ namespace Sandbox
             Player = FindEntityByName("Player");
         }
 
-        public void OnUpdate(float ts)
+        void OnUpdate(float ts)
         {
             if (Player != null)
             {

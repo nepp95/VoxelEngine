@@ -43,7 +43,6 @@ namespace EpEngine
 		~Application();
 
 		void Close();
-		void Run();
 		void OnEvent(Event& e);
 
 		void PushLayer(Layer* layer);
@@ -51,15 +50,22 @@ namespace EpEngine
 
 		void RenderGui();
 
-		bool OnWindowClose(WindowCloseEvent& e);
-		bool OnWindowResize(WindowResizeEvent& e);
-
 		const ApplicationSpecification& GetSpecification() const { return m_specification; }
 		static Application& Get() { return *s_instance; }
 
 		ImGuiLayer* GetImGuiLayer() { return m_imGuiLayer; }
 		Window& GetWindow() { return *m_window; }
 		Profiler* GetProfiler() { return m_profiler; }
+
+		void SubmitToMainThread(const std::function<void()>& func);
+
+	private:
+		void Run();
+
+		bool OnWindowClose(WindowCloseEvent& e);
+		bool OnWindowResize(WindowResizeEvent& e);
+
+		void ExecuteMainThreadQueue();
 
 	private:
 		Scope<Window> m_window;
@@ -75,6 +81,9 @@ namespace EpEngine
 		float m_targetFps{ 60.0f };
 
 		Profiler* m_profiler{ nullptr };
+
+		std::mutex m_mainThreadQueueMutex;
+		std::vector<std::function<void()>> m_mainThreadQueue;
 
 		static Application* s_instance;
 		friend int ::main(int argc, char** argv);

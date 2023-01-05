@@ -17,6 +17,7 @@ project "EpEditor"
         "%{wks.location}/EpEngine/src",
         "%{wks.location}/EpEngine/vendor",
         "%{IncludeDir.entt}",
+		"%{IncludeDir.filewatch}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.imgui}",
         "%{IncludeDir.spdlog}"

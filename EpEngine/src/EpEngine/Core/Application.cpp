@@ -73,6 +73,8 @@ namespace EpEngine
 			m_lastFrameTime = time;
 			m_accumulatedTs += ts;
 
+			ExecuteMainThreadQueue();
+
 			if (!m_isMinimized)
 			{
 				EP_PROFILE_SCOPE_CAT("Application", "Frametime");
@@ -151,6 +153,13 @@ namespace EpEngine
 		m_imGuiLayer->End();
 	}
 
+	void Application::SubmitToMainThread(const std::function<void()>& func)
+	{
+		std::scoped_lock<std::mutex> lock(m_mainThreadQueueMutex);
+
+		m_mainThreadQueue.emplace_back(func);
+	}
+
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
 		Close();
@@ -171,5 +180,15 @@ namespace EpEngine
 		glViewport(0, 0, e.GetWidth(), e.GetHeight());
 
 		return true;
+	}
+
+	void Application::ExecuteMainThreadQueue()
+	{
+		std::scoped_lock<std::mutex> lock(m_mainThreadQueueMutex);
+
+		for (auto& func : m_mainThreadQueue)
+			func();
+
+		m_mainThreadQueue.clear();
 	}
 }

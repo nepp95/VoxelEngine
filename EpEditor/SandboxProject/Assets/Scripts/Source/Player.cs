@@ -10,7 +10,7 @@ namespace Sandbox
 
         public float Speed = 0.0f;
 
-        public void OnCreate()
+        void OnCreate()
         {
             Console.WriteLine($"Player.OnCreate - {UUID}");
 
@@ -18,7 +18,7 @@ namespace Sandbox
             m_rigidBody = GetComponent<RigidBodyComponent>();
         }
 
-        public void OnUpdate(float ts)
+        void OnUpdate(float ts)
         {
             float speed = Speed;
             Vector3 velocity = Vector3.Zero;

@@ -16,6 +16,14 @@ extern "C" {
 	using MonoClassField = struct _MonoClassField;
 }
 
+namespace filewatch
+{
+	template<class T>
+	class FileWatch;
+
+	enum class Event;
+}
+
 namespace EpEngine
 {
 	class ScriptClass;
@@ -105,6 +113,8 @@ namespace EpEngine
 
 		static MonoObject* InstantiateClass(MonoClass* monoClass);
 		static void LoadAssemblyClasses();
+
+		//static void OnAppAssemblyFileSystemEvent(const std::filesystem::path& path, const filewatch::Event changeType);
 
 		friend class ScriptClass;
 		friend class ScriptGlue;
