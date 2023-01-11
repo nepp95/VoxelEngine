@@ -20,18 +20,6 @@ namespace EpEngine
 		m_editorScene = CreateRef<Scene>();
 		m_activeScene = m_editorScene;
 
-		//auto entity = m_editorScene->CreateEntity();
-		//auto& sc = entity.AddComponent<SpriteComponent>();
-		//sc.TextureHandle = AssetManager::GetMetadata("assets/textures/grass.png").Handle;
-
-		// Camera
-		//auto cameraEntity = m_editorScene->CreateEntity("Camera");
-		//auto& cc = cameraEntity.AddComponent<CameraComponent>();
-		//cc.Camera.SetPitch(0.0f);
-		//cc.Camera.SetYaw(-90.0f);
-		//cc.Camera.SetPosition({ 0.0f, 0.0f, 2.0f });
-		//m_camera = &cc.Camera;
-
 		// Create framebuffer
 		FramebufferSpecification fbSpecification;
 		fbSpecification.Width = 1280;
