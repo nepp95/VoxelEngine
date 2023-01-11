@@ -78,14 +78,23 @@ namespace EpEngine
 			if (GetMetadata(dirEntry.path()).IsValid())
 				continue;
 
+			if (dirEntry.is_directory())
+				continue;
+
+			std::string path = dirEntry.path().string();
+
 			// TODO: This is very error prone! Come up with an other way.
 			// Get asset type from path
-			std::string assetType = dirEntry.path().parent_path().string().substr(7);
+			AssetType type = AssetType::None;
 
-			switch (Utils::AssetTypeFromString(assetType))
+			if (path.find("Textures") != std::string::npos)
+				type = AssetType::Texture;
+
+			switch (type)
 			{
 				case AssetType::None:
 				{
+					EP_CORE_ERROR("Asset type could not be deduced from path: {}", path);
 					break;
 				}
 
@@ -96,6 +105,7 @@ namespace EpEngine
 				}
 			}
 		}
+		WriteRegistry();
 	}
 
 	const AssetMetadata& AssetManager::GetMetadata(AssetHandle handle)

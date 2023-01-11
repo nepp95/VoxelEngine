@@ -17,6 +17,11 @@ namespace EpEngine
 	{
 		EP_PROFILE_FUNCTION();
 
+		// Load resources // Resources are not in our asset registry
+		m_iconPlay = CreateRef<Texture>("Resources/Textures/Icons/PlayButton.png");
+		m_iconStop = CreateRef<Texture>("Resources/Textures/Icons/StopButton.png");
+
+		// Create scene
 		m_editorScene = CreateRef<Scene>();
 		m_activeScene = m_editorScene;
 
@@ -210,25 +215,6 @@ namespace EpEngine
 					Application::Get().Close();
 
 				ImGui::EndMenu(); // File
-			}
-
-			if (ImGui::BeginMenu("Scene"))
-			{
-				if (ImGui::MenuItem("Start scene"))
-					OnScenePlay();
-				
-				if (ImGui::MenuItem("End scene"))
-					OnSceneStop();
-				
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::BeginMenu("Scripting"))
-			{
-				if (ImGui::MenuItem("Reload assembly", "CTRL+R"))
-					ScriptEngine::ReloadAssembly();
-
-				ImGui::EndMenu();
 			}
 
 			ImGui::EndMenuBar();
@@ -433,6 +419,27 @@ namespace EpEngine
 
 	void EditorLayer::UIToolbar()
 	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
 
+		ImGui::Begin("Scene Control", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+		float buttonSize = ImGui::GetWindowHeight() - 4.0f;
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (buttonSize * 0.5f));
+
+		if (m_sceneState == SceneState::Edit)
+		{
+			if (ImGui::ImageButton("##Play", (ImTextureID)m_iconPlay->GetRendererID(), ImVec2(buttonSize, buttonSize)))
+				OnScenePlay();
+		} else if (m_sceneState == SceneState::Play)
+		{
+			if (ImGui::ImageButton("##Stop", (ImTextureID)m_iconStop->GetRendererID(), ImVec2(buttonSize, buttonSize)))
+				OnSceneStop();
+		}
+
+		ImGui::PopStyleVar(3);
+		ImGui::End();
 	}
 }

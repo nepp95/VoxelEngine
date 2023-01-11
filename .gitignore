@@ -17,3 +17,4 @@ EpEditor/Profile.json
 /vendor/premake/bin
 /EpEditor/Resources/Scripts
 /EpEditor/Scripts/Intermediates
+/EpEditor/Resources/**/Raw

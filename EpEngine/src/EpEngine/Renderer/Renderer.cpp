@@ -59,7 +59,6 @@ namespace EpEngine
 		EP_PROFILE_FUNCTION();
 
 		RenderCommand::Init();
-		AssetManager::Init();
 
 		// Create vertex array and buffers
 		s_data.QuadVertexArray = CreateRef<VertexArray>();

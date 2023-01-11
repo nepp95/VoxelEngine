@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "Application.h"
 
+#include "EpEngine/Asset/AssetManager.h"
 #include "EpEngine/Renderer/Renderer.h"
 #include "EpEngine/Scripting/ScriptEngine.h"
 #include "EpEngine/Utility/Filesystem.h"
@@ -33,6 +34,7 @@ namespace EpEngine
 
 		// Initialize systems
 		Filesystem::Init();
+		AssetManager::Init();
 		Renderer::Init();
 		ScriptEngine::Init();
 
