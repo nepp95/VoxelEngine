@@ -41,7 +41,7 @@ namespace EpEngine
 
 		data = stbi_load(m_filepath.string().c_str(), &width, &height, &channels, 0);
 
-		EP_CORE_ASSERT(data, "Failed to load texture file: %", m_filepath);
+		EP_CORE_ASSERT(data, "Failed to load texture file!");
 
 		m_isLoaded = true;
 		m_width = width;

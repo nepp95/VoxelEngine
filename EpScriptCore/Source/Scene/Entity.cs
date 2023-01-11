@@ -4,41 +4,59 @@ namespace EpEngine
 {
     public class Entity
     {
-        public Entity()
+        protected Entity()
         {
-            Console.WriteLine("Entity constructor!");
-            InternalCalls.NativeLog("Test!", 5);
+            UUID = 0;
         }
 
-        private void Log(string text, int param)
+        internal Entity(ulong uuid)
         {
-            InternalCalls.NativeLog(text, param);
+            UUID = uuid;
         }
 
-        private Vector3 Log(Vector3 param)
+        public readonly ulong UUID;
+
+        public Vector3 Translation
         {
-            InternalCalls.NativeLog_Vector(ref param, out Vector3 result);
-            return result;
+            get
+            {
+                InternalCalls.TransformComponent_GetTranslation(UUID, out Vector3 result);
+                return result;
+            }
+            set
+            {
+                InternalCalls.TransformComponent_SetTranslation(UUID, ref value);
+            }
         }
 
-        public void PrintMessage()
+        public bool HasComponent<T>() where T : Component, new()
         {
-            Console.WriteLine("Hello world!");
+            Type componentType = typeof(T);
+            return InternalCalls.Entity_HasComponent(UUID, componentType);
         }
 
-        public void PrintInt(int value)
+        public T GetComponent<T>() where T : Component, new()
         {
-            Console.WriteLine($"Value is: {value}");
+            if (!HasComponent<T>())
+                return null;
+
+            T component = new T() { Entity = this };
+            return component;
         }
 
-        public void PrintInts(int value1, int value2)
+        public Entity FindEntityByName(string name)
         {
-            Console.WriteLine($"Value 1 is: {value1}, value 2 is: {value2}");
+            ulong uuid = InternalCalls.Entity_FindEntityByName(name);
+            if (uuid == 0)
+                return null;
+
+            return new Entity(uuid);
         }
 
-        public void PrintCustomMessage(string message)
+        public T As<T>() where T : Entity, new()
         {
-            Console.WriteLine($"String is: {message}");
+            object instance = InternalCalls.GetScriptInstance(UUID);
+            return instance as T;
         }
     }
 }

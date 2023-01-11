@@ -4,6 +4,7 @@
 #include "EpEngine/Events/ApplicationEvent.h"
 #include "EpEngine/Events/KeyEvent.h"
 #include "EpEngine/Events/MouseEvent.h"
+#include "EpEngine/Renderer/Renderer.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -12,7 +13,7 @@ namespace EpEngine
 {
 	static void GLFWErrorCallback(int error, const char* description)
 	{
-		EP_CORE_ERROR("GLFW Error: (%) %", error, description);
+		EP_CORE_ERROR("GLFW Error: ({}) {}", error, description);
 	}
 
 	Window::Window(const WindowSpecification& specification)
@@ -40,7 +41,7 @@ namespace EpEngine
 		}
 
 		// Create window
-		EP_CORE_INFO("Creating window of size %x%", m_specification.Width, m_specification.Height);
+		EP_CORE_INFO("Creating window '{}' ({}, {})", m_specification.Title, m_specification.Width, m_specification.Height);
 		m_window = glfwCreateWindow(m_specification.Width, m_specification.Height, m_specification.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_window);
 
@@ -49,13 +50,17 @@ namespace EpEngine
 		EP_CORE_ASSERT(status, "Could not initialize Glad!");
 
 		// Log computer specs
+		auto& specs = Renderer::GetSpecs();
+		specs.GpuVendor = (const char*) glGetString(GL_VENDOR);
+		specs.GpuModel = (const char*) glGetString(GL_RENDERER);
+		specs.GpuDriverVersion = (const char*) glGetString(GL_VERSION);
 		EP_CORE_INFO("GPU Info:");
-		EP_CORE_INFO("\tVendor: %", glGetString(GL_VENDOR));
-		EP_CORE_INFO("\tRenderer: %", glGetString(GL_RENDERER));
-		EP_CORE_INFO("\tVersion: %", glGetString(GL_VERSION));
+		EP_CORE_INFO("\tVendor: {}", specs.GpuVendor);
+		EP_CORE_INFO("\tModel: {}", specs.GpuModel);
+		EP_CORE_INFO("\tDriver Version: {}", specs.GpuDriverVersion);
 
 		EP_CORE_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 6),
-		            "Engine requires at least OpenGL version 4.6!");
+		            "Engine requires OpenGL version 4.6!");
 
 		SetVSync(m_specification.VSync);
 

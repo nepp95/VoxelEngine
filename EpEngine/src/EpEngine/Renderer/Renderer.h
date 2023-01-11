@@ -9,6 +9,13 @@
 
 namespace EpEngine
 {
+	struct RendererSpecs
+	{
+		std::string GpuVendor;
+		std::string GpuModel;
+		std::string GpuDriverVersion;
+	};
+
 	class Renderer
 	{
 	public:
@@ -54,9 +61,14 @@ namespace EpEngine
 		static Statistics GetStats();
 		//
 
+		static RendererSpecs GetSpecs() { return s_specs; }
+
 	private:
 		static void Flush();
 		static void NextBatch();
 		static void StartBatch();
+
+	private:
+		static RendererSpecs s_specs;
 	};
 }

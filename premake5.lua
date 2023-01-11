@@ -1,3 +1,4 @@
+include "./vendor/premake/premake_customization/solution_items.lua"
 include "Dependencies.lua"
 
 workspace "EpEngine"
@@ -17,6 +18,7 @@ workspace "EpEngine"
 	}
 	
 	group "Dependencies"
+		include "vendor/premake" -- Premake
 		include "EpEngine/vendor/box2d" -- Physics
 		include "EpEngine/vendor/glad" -- OpenGL abstraction
 		include "EpEngine/vendor/glfw" -- Window management
@@ -34,4 +36,5 @@ workspace "EpEngine"
 
 	group "Client"
 		include "Sandbox"
+		--include "EpEditor/SandboxProject/Assets/Scripts"
 	group ""

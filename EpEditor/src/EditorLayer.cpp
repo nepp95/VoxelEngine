@@ -1,5 +1,7 @@
 ﻿#include "EditorLayer.h"
 
+#include "EpEngine/Utility/FileDialog.h"
+
 #include <imgui/imgui.h>
 
 namespace EpEngine
@@ -7,24 +9,16 @@ namespace EpEngine
 	#define DEBUG_PANEL "DebugPanel"
 	#define SCENE_HIERARCHY_PANEL "SceneHierarchyPanel"
 
+	EditorLayer::EditorLayer()
+		: Layer("EditorLayer")
+	{}
+
 	void EditorLayer::OnAttach()
 	{
 		EP_PROFILE_FUNCTION();
 
 		m_editorScene = CreateRef<Scene>();
 		m_activeScene = m_editorScene;
-
-		//auto entity = m_editorScene->CreateEntity();
-		//auto& sc = entity.AddComponent<SpriteComponent>();
-		//sc.TextureHandle = AssetManager::GetMetadata("assets/textures/grass.png").Handle;
-
-		// Camera
-		//auto cameraEntity = m_editorScene->CreateEntity("Camera");
-		//auto& cc = cameraEntity.AddComponent<CameraComponent>();
-		//cc.Camera.SetPitch(0.0f);
-		//cc.Camera.SetYaw(-90.0f);
-		//cc.Camera.SetPosition({ 0.0f, 0.0f, 2.0f });
-		//m_camera = &cc.Camera;
 
 		// Create framebuffer
 		FramebufferSpecification fbSpecification;
@@ -40,7 +34,16 @@ namespace EpEngine
 
 		m_panelManager->SetSceneContext(m_editorScene);
 
-		OpenScene();
+		auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
+		if (commandLineArgs.Count > 1)
+		{
+			auto sceneFilepath = commandLineArgs[1];
+			OpenScene(sceneFilepath);
+		} else
+		{
+			// TODO: Remove when projects have been added!
+			OpenScene("assets/scenes/physics.epscene");
+		}
 	}
 
 	void EditorLayer::OnDetach()
@@ -57,6 +60,7 @@ namespace EpEngine
 		m_timestep = ts;
 
 		// Handle resize
+		// TODO: WHAT IS THIS IF STATEMENT!!!!!
 		bool resizeEvent{ false };
 		if (FramebufferSpecification specification = m_framebuffer->GetSpecification();
 			m_viewportSize.x > 0.0f && m_viewportSize.y > 0.0f &&
@@ -219,6 +223,14 @@ namespace EpEngine
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("Scripting"))
+			{
+				if (ImGui::MenuItem("Reload assembly", "CTRL+R"))
+					ScriptEngine::ReloadAssembly();
+
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenuBar();
 		}
 
@@ -239,7 +251,7 @@ namespace EpEngine
 
 		m_viewportFocused = ImGui::IsWindowFocused();
 		m_viewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportFocused && !m_viewportHovered);
+		Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportHovered);
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_viewportSize = { viewportPanelSize.x, viewportPanelSize.y };
@@ -291,6 +303,13 @@ namespace EpEngine
 				break;
 			}
 
+			case Key::R:
+			{
+				if (control)
+					ScriptEngine::ReloadAssembly();
+				break;
+			}
+
 			case Key::S:
 			{
 				if (control)
@@ -319,11 +338,23 @@ namespace EpEngine
 
 	void EditorLayer::NewScene()
 	{
+		if (m_sceneState != SceneState::Edit)
+			OnSceneStop();
+
+		m_scenePath = std::filesystem::path();
+
+		m_editorScene = CreateRef<Scene>();
+		m_panelManager->SetSceneContext(m_editorScene);
 	}
 
 	void EditorLayer::OpenScene()
 	{
-		OpenScene("assets/scenes/test.scene");
+		std::filesystem::path filepath = FileDialog::OpenFile("EpEngine Scene (*.epscene)\0*.epscene\0");
+
+		if (!filepath.empty())
+		{
+			OpenScene(filepath);
+		}
 	}
 
 	void EditorLayer::OpenScene(const std::filesystem::path& filepath)
@@ -331,12 +362,18 @@ namespace EpEngine
 		if (m_sceneState != SceneState::Edit)
 			OnSceneStop();
 
-		Ref<Scene> newScene = CreateRef<Scene>();
+		if (filepath.extension().string() != ".epscene")
+		{
+			EP_WARN("Could not load {} because it is not a scene file!", filepath.filename().string());
+			return;
+		}
 
+		Ref<Scene> newScene = CreateRef<Scene>();
 		SceneSerializer serializer(newScene);
 		
 		if (serializer.Deserialize(filepath))
 		{
+			m_scenePath = filepath;
 			m_editorScene = newScene;
 			m_panelManager->SetSceneContext(m_editorScene);
 		}
@@ -347,12 +384,25 @@ namespace EpEngine
 		if (m_sceneState != SceneState::Edit)
 			OnSceneStop();
 
-		SceneSerializer serializer(m_editorScene);
-		serializer.Serialize("assets/scenes/test.scene");
+		if (!m_scenePath.empty())
+		{
+			SceneSerializer serializer(m_editorScene);
+			serializer.Serialize(m_scenePath);
+		} else
+		{
+			SaveSceneAs();
+		}
 	}
 
 	void EditorLayer::SaveSceneAs()
 	{
+		std::filesystem::path filepath = FileDialog::SaveFile("EpEngine Scene (*.epscene)\0*.epscene\0");
+		
+		if (!filepath.empty())
+		{
+			m_scenePath = filepath;
+			SaveScene();
+		}
 	}
 
 	void EditorLayer::OnScenePlay()
@@ -370,7 +420,9 @@ namespace EpEngine
 
 	void EditorLayer::OnSceneStop()
 	{
-		EP_CORE_ASSERT(m_sceneState == SceneState::Play, "Tried to stop a runtime scene which wasn't running!");
+		if (m_sceneState == SceneState::Edit)
+			return;
+
 		m_sceneState = SceneState::Edit;
 
 		m_activeScene->OnRuntimeStop();

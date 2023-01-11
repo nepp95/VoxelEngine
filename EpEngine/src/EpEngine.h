@@ -45,6 +45,9 @@
 #include "EpEngine/Scene/Scene.h"
 #include "EpEngine/Scene/SceneSerializer.h"
 
+// Scripting
+#include "EpEngine/Scripting/ScriptEngine.h"
+
 // Utility
 #include "EpEngine/Utility/Filesystem.h"
 #include "EpEngine/Utility/Random.h"

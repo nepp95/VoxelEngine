@@ -9,9 +9,7 @@ namespace EpEngine {
 	class EditorLayer : public Layer
 	{
 	public:
-		EditorLayer()
-			: Layer("EditorLayer")
-		{}
+		EditorLayer();
 		EditorLayer(const EditorLayer& other) = delete;
 
 		~EditorLayer() override = default;
@@ -53,6 +51,7 @@ namespace EpEngine {
 		EditorCamera m_editorCamera{ 30.0f, 1.778f, 0.1f, 1000.0f };
 
 		// Scene
+		std::filesystem::path m_scenePath;
 		Ref<Scene> m_activeScene; // runtime
 		Ref<Scene> m_editorScene; // editor
 
@@ -65,7 +64,7 @@ namespace EpEngine {
 		// Viewport
 		bool m_viewportFocused{false}, m_viewportHovered{false};
 		glm::vec2 m_viewportBounds[2];
-		glm::vec2 m_viewportSize{ 0.0f, 0.0f };
+		glm::vec2 m_viewportSize{ 1280.0f, 720.0f };
 
 		// Framebuffer
 		Ref<Framebuffer> m_framebuffer;

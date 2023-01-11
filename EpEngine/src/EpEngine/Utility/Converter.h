@@ -4,6 +4,7 @@
 
 namespace EpEngine
 {
+	// TODO: Make inline
 	struct Converter
 	{
 		// Delete constructors/destructor

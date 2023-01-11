@@ -17,9 +17,10 @@ project "EpEditor"
         "%{wks.location}/EpEngine/src",
         "%{wks.location}/EpEngine/vendor",
         "%{IncludeDir.entt}",
+		"%{IncludeDir.filewatch}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.imgui}",
-        "%{IncludeDir.yaml_cpp}"
+        "%{IncludeDir.spdlog}"
     }
 
     links {
@@ -31,7 +32,7 @@ project "EpEditor"
     }
 
     dependson {
-        "ScriptCore"
+        "EpScriptCore"
     }
 
     filter "system:windows"

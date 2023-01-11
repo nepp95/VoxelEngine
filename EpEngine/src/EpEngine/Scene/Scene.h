@@ -40,17 +40,27 @@ namespace EpEngine
 		glm::vec2 GetViewportSize() const { return glm::vec2{ m_viewportWidth, m_viewportHeight }; }
 
 		Entity GetCameraEntity();
+		Entity GetEntityByUUID(UUID uuid);
+		Entity FindEntityByName(const std::string& name);
+
+		bool IsRunning() const { return m_isRunning; }
 
 	private:
 		void RenderScene(EditorCamera& camera);
+
+		void OnPhysicsStart();
+		void OnPhysicsStop();
 
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
 
 	private:
 		entt::registry m_registry;
+		std::unordered_map<UUID, entt::entity> m_entityMap;
+
 		uint32_t m_viewportWidth{ 0 };
 		uint32_t m_viewportHeight{ 0 };
+		bool m_isRunning{ false };
 
 		b2World* m_physicsWorld{ nullptr };
 

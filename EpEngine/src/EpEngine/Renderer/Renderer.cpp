@@ -52,6 +52,7 @@ namespace EpEngine
 	};
 
 	static RendererData s_data;
+	RendererSpecs Renderer::s_specs;
 
 	void Renderer::Init()
 	{

@@ -198,7 +198,7 @@ namespace EpEngine
 	{
 		if (width == 0 || height == 0 || width > s_maxFramebufferSize || height > s_maxFramebufferSize)
 		{
-			EP_CORE_WARN("Attempted to resize framebuffer to %x%", width, height);
+			EP_CORE_WARN("Attempted to resize framebuffer to {}x{}", width, height);
 			return;
 		}
 

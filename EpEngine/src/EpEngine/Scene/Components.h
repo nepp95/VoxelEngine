@@ -14,15 +14,29 @@ enum b2BodyType;
 
 namespace EpEngine
 {
+	/*
+		Components
+		
+		IDComponent
+		TagComponent
+		TransformComponent
+		CameraComponent
+		SpriteComponent
+		RigidBodyComponent
+		BoxColliderComponent
+		ScriptComponent
+	
+	*/
+
 	struct IDComponent
 	{
-		UUID uuid;
+		UUID ID;
 
 		IDComponent() = default;
 		IDComponent(const IDComponent& other) = default;
 
-		operator UUID&() { return uuid; }
-		operator const UUID&() const { return uuid; }
+		operator UUID&() { return ID; }
+		operator const UUID&() const { return ID; }
 	};
 
 	struct TagComponent
@@ -79,6 +93,9 @@ namespace EpEngine
 		SpriteComponent(const SpriteComponent&) = default;
 	};
 
+	/************************************************************************/
+	/* Physics                                                              */
+	/************************************************************************/
 	struct RigidBodyComponent
 	{
 		enum class BodyType { Static, Dynamic, Kinematic };
@@ -103,5 +120,19 @@ namespace EpEngine
 
 		BoxColliderComponent() = default;
 		BoxColliderComponent(const BoxColliderComponent&) = default;
+	};
+
+	/************************************************************************/
+	/* Scripting                                                            */
+	/************************************************************************/
+	struct ScriptComponent
+	{
+		std::string ClassName;
+
+		ScriptComponent() = default;
+		ScriptComponent(const ScriptComponent&) = default;
+
+		operator std::string& () { return ClassName; }
+		operator const std::string& () const { return ClassName; }
 	};
 }

@@ -31,11 +31,13 @@ project "EpEngine"
         "src",
         "%{IncludeDir.box2d}",
         "%{IncludeDir.entt}",
+        "%{IncludeDir.filewatch}",
         "%{IncludeDir.glad}",
         "%{IncludeDir.glfw}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.imgui}",
         "%{IncludeDir.mono}",
+        "%{IncludeDir.spdlog}",
         "%{IncludeDir.stb}",
         "%{IncludeDir.yaml_cpp}"
     }
