@@ -68,5 +68,9 @@ namespace EpEngine {
 
 		// Framebuffer
 		Ref<Framebuffer> m_framebuffer;
+
+		// Resources
+		Ref<Texture> m_iconPlay;
+		Ref<Texture> m_iconStop;
 	};
 }
